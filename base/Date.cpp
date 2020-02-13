@@ -284,7 +284,18 @@ Date Date::getNow()
   ::GetSystemTimeAsFileTime(&nativeTime);
   return internal::nativeToDate(nativeTime);
 #else // unix
-  return Date(::time(0) * 1000000LL);
+
+#if 1
+  struct timespec time;
+  int status = clock_gettime(_CLOCK_REALTIME, &time);
+  if (!INLINE_ASSERT(!status)) {
+    return Date(::time(nullptr) * 1000000LL);
+  }
+  return static_cast<int64>(1000000) * time.tv_sec + (time.tv_nsec + 500)/1000;
+#else
+  return Date(::time(nullptr) * 1000000LL);
+#endif
+  
 #endif
 }
 
@@ -662,30 +673,17 @@ Date::DateTime Date::split(bool local) const noexcept
 
 String Date::getISO8601(int offset) const
 {
-  // ISO:8601
   // https://tools.ietf.org/html/rfc3339
-  // 2020-02-12T18:15:23.6780015Z
 
-  int HH = 0;
-  int MM = 0;
-  int sign = 1;
   if (offset == 0) {
   } else {
-    if (offset < 0) {
-      sign = -1;
-      offset = -offset;
-    }
-    int HH = offset/100;
-    int MM = offset % 100;
+    int HH = ((offset > 0) ? offset : -offset)/60;
     if (HH > 24) {
-      _throw DateException("Invalid timezone offset.");
-    }
-    if (MM >= 60) {
       _throw DateException("Invalid timezone offset.");
     }
   }
 
-  Date temp(date + sign * (HH * 60 + MM) * 60 * 1000000ULL);
+  Date temp(date + offset * 60 * 1000000ULL);
   auto dt = temp.split();
 
   StringOutputStream sos;
@@ -699,9 +697,50 @@ String Date::getISO8601(int offset) const
   if (offset == 0) {
     sos << 'Z'; // UTC
   } else {
+    int sign = 1;
+    if (offset < 0) {
+      sign = -1;
+      offset = -offset;
+    }
     sos << ((sign > 0) ? '+' : '-')
-        << setWidth(2) << ZEROPAD << HH << ':'
-        << setWidth(2) << ZEROPAD << MM;
+        << setWidth(2) << ZEROPAD << (offset / 60) << ':'
+        << setWidth(2) << ZEROPAD << (offset % 60);
+  }
+  return sos;
+}
+
+String Date::getISO8601Compact(int offset) const
+{
+  if (offset == 0) {
+  } else {
+    int HH = ((offset > 0) ? offset : -offset)/60;
+    if (HH > 24) {
+      _throw DateException("Invalid timezone offset.");
+    }
+  }
+
+  Date temp(date + offset * 60 * 1000000ULL);
+  auto dt = temp.split();
+
+  StringOutputStream sos;
+  sos << setWidth(4) << ZEROPAD << dt.year
+      << setWidth(2) << ZEROPAD << (dt.month + 1)
+      << setWidth(2) << ZEROPAD << dt.day
+      << 'T' << setWidth(2) << ZEROPAD << dt.hour
+      << setWidth(2) << ZEROPAD << dt.minute
+      << setWidth(2) << ZEROPAD << dt.second;
+
+  if (offset == 0) {
+    sos << 'Z'; // UTC
+  } else {
+    int sign = 1;
+    if (offset < 0) {
+      sign = -1;
+      offset = -offset;
+    }
+    sos << ((sign > 0) ? '+' : '-')
+        << setWidth(2) << ZEROPAD << (offset / 60)
+        << setWidth(2) << ZEROPAD << (offset % 60);
   }
   return sos;
 }
@@ -744,19 +783,28 @@ Date Date::parseISO8601(const String& text, bool subsecond)
   
   Parser parser(text);
   dt.year = parser.readDigits(4); // year
-  parser.read('-');
+  bool compact = (parser.peek() != '-');
+  if (!compact) {
+    parser.read('-');
+  }
   dt.month = parser.readDigits(2) - 1; // month
-  parser.read('-');
+  if (!compact) {
+    parser.read('-');
+  }
   dt.day = parser.readDigits(2); // day
   parser.read('T');
   dt.hour = parser.readDigits(2); // hours
-  parser.read(':');
+  if (!compact) {
+    parser.read(':');
+  }
   dt.minute = parser.readDigits(2); // minutes
-  parser.read(':');
+  if (!compact) {
+    parser.read(':');
+  }
   dt.second = parser.readDigits(2); // seconds
   
   unsigned int us = 0;
-  if (subsecond) {
+  if (!compact && subsecond) {
     if (parser.hasMore() && (parser.peek() == '.')) {
       parser.read('.');
       unsigned int count = parser.getNumberOfDigits();
@@ -783,10 +831,15 @@ Date Date::parseISO8601(const String& text, bool subsecond)
       parser.read('-');
       sign = -1;
     }
-    unsigned int HH = parser.readDigits(2); // hours
-    parser.read(':');
-    unsigned int MM = parser.readDigits(2); // minutes
-    offset = sign * ((HH * 60 + MM) * 60) * 1000000;
+    int HH = parser.readDigits(2); // hours
+    int MM = 0;
+    if (parser.hasMore()) {
+      if (!compact) {
+        parser.read(':');
+      }
+      MM = parser.readDigits(2); // minutes
+    }
+    offset = sign * ((HH * 60 + MM) * 60) * 1000000ULL;
   }
   
   if (parser.hasMore()) {
@@ -796,7 +849,8 @@ Date Date::parseISO8601(const String& text, bool subsecond)
     _throw InvalidFormat("Invalid date/time.");
   }
   
-  int64 result = makeDate(dt).getValue() - offset;
+  int64 result = makeDate(dt).getValue();
+  result -= offset;
   if (result > 0) {
     result += us;
   } else {
@@ -1143,8 +1197,20 @@ public:
     String text = now.getISO8601_US();
     // fout << text << ENDL;
     Date now2 = Date::parseISO8601(text, true);
-    String text2 = now.getISO8601_US();
+    String text2 = now2.getISO8601_US();
     TEST_ASSERT(text2 == text); // do not compare date value due to potential subsecond rounding
+
+    text = now.getISO8601Compact();
+    // fout << text << ENDL;
+    now2 = Date::parseISO8601(text, true);
+    text2 = now2.getISO8601Compact();
+    TEST_ASSERT(text2 == text); // do not compare date value due to potential subsecond rounding
+
+    text = now.getISO8601(60);
+    // fout << text << ENDL;
+    now2 = Date::parseISO8601(text, true);
+    text2 = now2.getISO8601();
+    // fout << text2 << ENDL;
   }
 };
 

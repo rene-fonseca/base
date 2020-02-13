@@ -378,8 +378,15 @@ public:
   */
   DateTime split(bool local = false) const noexcept;
 
-  /** Returns date/time in ISO 8601 format. E.g. 2020-01-31T18:00:00Z. */
+  /**
+    Returns date/time in ISO 8601 format. E.g. 2020-01-31T18:00:00Z. Offset is in minutes. Date should be in UTC when using offset.
+  */
   String getISO8601(int offset = 0) const;
+
+  /**
+    Returns date/time in ISO 8601 format. E.g. 20200131T180000Z. Offset is in minutes. Date should be in UTC when using offset.
+  */
+  String getISO8601Compact(int offset = 0) const;
 
   /** Returns date/time in ISO 8601 format with milliseconds. E.g. 2020-01-31T18:00:00.123Z. */
   String getISO8601_MS() const;

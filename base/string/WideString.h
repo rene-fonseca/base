@@ -898,6 +898,12 @@ public:
     return insert(getLength(), string);
   }
 
+  /** Returns the span. */
+  static inline ConstSpan<wchar> toSpan(const wchar* string) noexcept
+  {
+    return ConstSpan<wchar>(string, getNullTerminatedLength(string));
+  }
+
   /**
     Appends the native string to this string.
 
@@ -950,6 +956,11 @@ public:
   WideString& append(const NativeWideString& string, MemorySize maximum);
 
   /**
+    Appends span.
+  */
+  WideString& append(const ConstSpan<Char>& buffer);
+
+  /**
     Appends the NULL-terminated string to this string.
 
     @param string The string to be appended.
@@ -978,11 +989,28 @@ public:
   }
 
   /**
+    Inserts the span into this string.
+
+    @param index Specifies the position to insert the character. If the index
+    exceeds the end of this string the character is inserted at the end.
+    @param span The characters to be inserted.
+  */
+  WideString& insert(MemorySize index, const ConstSpan<Char>& span);
+  
+  /**
+    Inserts the span into this string.
+
+    @param index Specifies the position to insert the character. If the index
+    exceeds the end of this string the character is inserted at the end.
+    @param span The characters to be inserted.
+  */
+  WideString& insert(MemorySize index, const ConstSpan<wchar>& src);
+
+  /**
     Inserts the character into this string.
 
     @param index Specifies the position to insert the character. If the index
     exceeds the end of this string the character is inserted at the end.
-
     @param ch The character to be inserted.
   */
   WideString& insert(MemorySize index, ucs4 ch);

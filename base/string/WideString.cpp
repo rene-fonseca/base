@@ -721,45 +721,65 @@ WideString& WideString::insert(MemorySize index, const WideString& str)
   return *this;
 }
 
-WideString& WideString::insert(MemorySize index, const WideLiteral& literal)
+WideString& WideString::insert(MemorySize index, const ConstSpan<Char>& span)
 {
   const MemorySize length = getLength();
-  const MemorySize nativeLength = literal.getLength();
+  const MemorySize newLength = length + span.getSize();
+  auto buffer = getBuffer(newLength);
+  if (index >= length) {
+    // insert section at end of string
+    copyTo(buffer + length, span);
+  } else {
+    // insert section in middle or beginning of string
+    move<Char>(
+      buffer + index + span.getSize(),
+      buffer + index,
+      length - index
+    );
+    copyTo(buffer + index, span);
+  }
+  buffer[newLength] = Traits::TERMINATOR;
+  return *this;
+}
+
+WideString& WideString::insert(MemorySize index, const ConstSpan<wchar>& src)
+{
+  const MemorySize length = getLength();
+  const MemorySize srcLength = src.getSize();
   ucs4* buffer = elements->getElements();
   if (index >= length) {
     // insert section at end of string
-    const MemorySize _length = Unicode::WCharToUCS4(nullptr, literal.getValue(), nativeLength);
+    const MemorySize _length = Unicode::WCharToUCS4(nullptr, src.begin(), srcLength);
     setLength(length + _length);
-    Unicode::WCharToUCS4(buffer + length, literal.getValue(), nativeLength);
+    Unicode::WCharToUCS4(buffer + length, src.begin(), srcLength);
   } else {
     // insert section in middle or beginning of string
-    const MemorySize _length = Unicode::WCharToUCS4(nullptr, literal.getValue(), nativeLength);
+    const MemorySize _length = Unicode::WCharToUCS4(nullptr, src.begin(), srcLength);
     setLength(length + _length);
     move<ucs4>(buffer + index + _length, buffer + index, length - index);
-    Unicode::WCharToUCS4(buffer + index, literal.getValue(), nativeLength);
+    Unicode::WCharToUCS4(buffer + index, src.begin(), srcLength);
   }
   return *this;
 }
 
-WideString& WideString::insert(MemorySize index, const NativeWideString& src)
+WideString& WideString::insert(MemorySize index, const WideLiteral& src)
 {
-  // return insert(index, MemorySpan(src.getValue(), src.getLength()));
-  return *this;
+  return insert(index, ConstSpan<wchar>(src.getValue(), src.getLength()));
 }
 
-WideString& WideString::append(const WideLiteral& literal)
+WideString& WideString::insert(MemorySize index, const NativeWideString& src)
 {
-  const MemorySize length = getLength();
-  const MemorySize nativeLength = literal.getLength();
-  ucs4* buffer = elements->getElements();
-  const MemorySize _length = Unicode::WCharToUCS4(nullptr, literal.getValue(), nativeLength);
-  setLength(length + _length);
-  Unicode::WCharToUCS4(buffer + length, literal.getValue(), nativeLength);
-  return *this;
+  return insert(index, ConstSpan<wchar>(src.getValue(), src.getLength()));
+}
+
+WideString& WideString::append(const WideLiteral& src)
+{
+  return insert(getLength(), ConstSpan<wchar>(src.getValue(), src.getLength()));
 }
 
 WideString& WideString::append(const WideLiteral& literal, MemorySize maximum)
 {
+  // not good since we need to handle multi code chars return insert(getLength(), ConstSpan<wchar>(src.getValue(), minimum(src.getLength()), maximum));
   const MemorySize length = getLength();
   const MemorySize nativeLength = literal.getLength();
   ucs4* buffer = elements->getElements();
@@ -787,6 +807,21 @@ WideString& WideString::append(const wchar* string, MemorySize maximum)
   stringLength = minimum<MemorySize>(stringLength, maximum);
   setLength(length + stringLength);
   Unicode::WCharToUCS4(buffer + length, string, stringLength);
+  return *this;
+}
+
+WideString& WideString::append(const ConstSpan<Char>& src)
+{
+  if (src) {
+    const MemorySize suffixLength = src.getSize();
+    if (suffixLength > 0) {
+      const MemorySize length = getLength();
+      const MemorySize newLength = length + suffixLength;
+      auto buffer = getBuffer(newLength);
+      copyTo(buffer + length, src);
+      buffer[newLength] = Traits::TERMINATOR;
+    }
+  }
   return *this;
 }
 

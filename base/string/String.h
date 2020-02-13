@@ -833,7 +833,7 @@ public:
   String& append(const NativeString& string, MemorySize maximum);
 
   /**
-    Appens memory span. Does nothing is buffer is not proper.
+    Appends span.
   */
   String& append(const ConstSpan<char>& buffer);
 
@@ -858,7 +858,7 @@ public:
   }
 
   /**
-    Inserts the memory span into this string.
+    Inserts the span into this string.
 
     @param index Specifies the position to insert the character. If the index
     exceeds the end of this string the character is inserted at the end.

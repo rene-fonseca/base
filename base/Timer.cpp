@@ -87,11 +87,11 @@ namespace internal {
       if (!INLINE_ASSERT(!status)) {
         return 0;
       }
-      return static_cast<uint64>(1000000) * time.tv_sec + (time.tv_nsec + 500)/1000;
+      return static_cast<int64>(1000000) * time.tv_sec + (time.tv_nsec + 500)/1000;
 #else
       struct timeval temp;
       gettimeofday(&temp, 0);
-      return static_cast<uint64>(1000000) * temp.tv_sec + temp.tv_usec;
+      return static_cast<int64>(1000000) * temp.tv_sec + temp.tv_usec;
 #endif
   }
 

@@ -285,15 +285,21 @@ Date Date::getNow()
   return internal::nativeToDate(nativeTime);
 #else // unix
 
-#if 1
-  struct timespec time;
-  int status = clock_gettime(_CLOCK_REALTIME, &time);
-  if (!INLINE_ASSERT(!status)) {
-    return Date(::time(nullptr) * 1000000LL);
-  }
-  return static_cast<int64>(1000000) * time.tv_sec + (time.tv_nsec + 500)/1000;
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
+    // _POSIX_C_SOURCE >= 199309L
+    struct timespec time;
+    int status = clock_gettime(CLOCK_REALTIME, &time);
+    if (!INLINE_ASSERT(!status)) {
+      return Date(::time(nullptr) * 1000000LL);
+    }
+    return static_cast<int64>(1000000) * time.tv_sec + (time.tv_nsec + 500)/1000;
 #else
-  return Date(::time(nullptr) * 1000000LL);
+    struct timeval temp;
+    if (!INLINE_ASSERT(gettimeofday(&temp, 0) == 0)) {
+      return Date(::time(nullptr) * 1000000LL);
+    }
+    return static_cast<uint64>(1000000) * temp.tv_sec + temp.tv_usec;
 #endif
   
 #endif

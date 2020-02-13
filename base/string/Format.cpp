@@ -111,6 +111,18 @@ String Format::Subst::format() const
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
+namespace {
+
+  class MyClass {
+  public:
+  };
+  
+  FormatOutputStream& operator<<(FormatOutputStream& stream, const MyClass& value)
+  {
+    return stream << "MyClass";
+  }
+}
+  
 class TEST_CLASS(Format) : public UnitTest {
 public:
 
@@ -121,6 +133,8 @@ public:
   {
     TEST_EQUAL(Format::subst("My name is %1 and I'm %2 years old.", "John", 18), "My name is John and I'm 18 years old.");
     TEST_EQUAL(Format::subst("Current percent is %1%%.", 45), "Current percent is 45%.");
+
+    TEST_EQUAL(Format::subst("Class %1", MyClass()), "Class MyClass");
 
     TEST_EQUAL(Format::subst("%1", false), "false");
     TEST_EQUAL(Format::subst("%1", true), "true");

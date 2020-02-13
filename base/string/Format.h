@@ -15,7 +15,6 @@
 
 #include <base/string/StringOutputStream.h>
 #include <base/string/UTF8Stringify.h>
-#include <base/AnyValue.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

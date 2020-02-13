@@ -96,11 +96,6 @@ UTF8Stringify::UTF8Stringify(wchar src)
   MemorySize length = Unicode::writeUTF8(reinterpret_cast<uint8*>(tiny), ch);
   BASSERT(length <= getArraySize(tiny));
   span = ConstSpan<char>(tiny, length);
-/*
-  String temp(src);
-  buffer = temp.getContainer();
-  span = temp.getSpan();
-*/
 }
 
 UTF8Stringify::UTF8Stringify(ucs4 src)
@@ -108,11 +103,6 @@ UTF8Stringify::UTF8Stringify(ucs4 src)
   MemorySize length = Unicode::writeUTF8(reinterpret_cast<uint8*>(tiny), src);
   BASSERT(length <= getArraySize(tiny));
   span = ConstSpan<char>(tiny, length);
-/*
-  String temp(src);
-  buffer = temp.getContainer();
-  span = temp.getSpan();
-*/
 }
 
 UTF8Stringify::UTF8Stringify(const char* src)
@@ -155,10 +145,12 @@ UTF8Stringify::UTF8Stringify(const String& src)
 
 UTF8Stringify::UTF8Stringify(const WideString& src)
 {
+#if 0
   MemoryDiff length = Unicode::UCS4ToUTF8(nullptr, src.native(), src.getLength());
-  if (length <= getArraySize(tiny)) {
+  if (static_cast<MemorySize>(length) <= getArraySize(tiny)) {
     Unicode::UCS4ToUTF8(reinterpret_cast<uint8*>(&tiny), src.native(), src.getLength());
   }
+#endif
   
   String temp(src);
   buffer = temp.getContainer();

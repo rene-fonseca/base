@@ -139,14 +139,15 @@ public:
 
   static String formatBytes(uint64 bytes)
   {
+    StringOutputStream sos;;
     if (bytes > 5ULL * 1024 * 1024 * 1024) {
-      return format() << bytes*10/1024/1024/10.0 << " Gb";
+      return sos << setPrecision(1) << bytes*10/1024/1024/10.0 << " Gb";
     } else if (bytes > 5 * 1024 * 1024) {
-      return format() << bytes * 10 / (1024 * 1024) / 10.0 << " Mb";
+      return sos << setPrecision(1) << bytes * 10 / (1024 * 1024) / 10.0 << " Mb";
     } else if (bytes > 5 * 1024) {
-      return format() << bytes * 10 / 1024 / 10.0 << " Kb";
+      return sos << setPrecision(1) << bytes * 10 / 1024 / 10.0 << " Kb";
     }
-    return format() << bytes;
+    return sos << bytes;
   }
   
   String formatProgress(uint64 bytes, uint64 total)
@@ -252,7 +253,13 @@ public:
     : Application("https")
   {
   }
-  
+
+  void onTermination() noexcept override
+  {
+    fout << (String(" ") * 79U) << EOL;
+    Application::onTermination();
+  }
+
   bool parseArguments()
   {
     Array<String> arguments = getArguments();
@@ -304,7 +311,7 @@ public:
     return true;
   }
 
-  void main()
+  void main() override
   {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL

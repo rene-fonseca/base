@@ -1499,36 +1499,6 @@ public:
   /** Substitutes string using % syntax. */
   template<typename... ARGS>
   String operator()(ARGS&&... args);
-
-#if 0
-  /** Substitutes string using % syntax. */
-  String operator()(const String&) const;
-  /** Substitutes string using % syntax. */
-  String operator()(const String&, const String&) const;
-  /** Substitutes string using % syntax. */
-  String operator()(const String&, const String&, const String&) const;
-  /** Substitutes string using % syntax. */
-  String operator()(const String&, const String&, const String&, const String&) const;
-  /** Substitutes string using % syntax. */
-  String operator()(const String&, const String&, const String&, const String&, const String&) const;
-  /** Substitutes string using % syntax. */
-  String operator()(const String&, const String&, const String&, const String&, const String&, const String&) const;
-  /** Substitutes string using % syntax. */
-  String operator()(const String&, const String&, const String&, const String&, const String&, const String&,
-    const String&) const;
-  /** Substitutes string using % syntax. */
-  String operator()(const String&, const String&, const String&, const String&, const String&, const String&,
-    const String&, const String&) const;
-  /** Substitutes string using % syntax. */
-  String operator()(const String&, const String&, const String&, const String&, const String&, const String&,
-    const String&, const String&, const String&) const;
-  /** Substitutes string using % syntax. */
-  String operator()(const String&, const String&, const String&, const String&, const String&, const String&,
-    const String&, const String&, const String&, const String&) const;
-  /** Substitutes string using % syntax. */
-  String operator()(const String&, const String&, const String&, const String&, const String&, const String&,
-    const String&, const String&, const String&, const String&, const String&) const;
-#endif
 };
 
 template<>

@@ -175,12 +175,12 @@ public:
     fout << "Substitution OK: " << Format::subst(MESSAGE("Current percent is %1%%."), 45) << ENDL;
     fout << "Substitution OK: " << Format::subst(MESSAGE("My name is %1 %2 and I'm %3 years old. You can call me %1."), "John", "Doe", 18) << ENDL;
     fout << "Substitution BAD: " << Format::subst(MESSAGE("Get invalid argument %111."), "John", 18) << ENDL;
-    fout << "Substitution BAD: " << Format::subst(MESSAGE("Request substitution index 0 is bad (%0)."), { MESSAGE("Note") }) << ENDL;
-    fout << "Substitution BAD: " << Format::subst(MESSAGE("Request substitution index 0 is bad (%0)."), { "Note" }) << ENDL;
-    fout << "Substitution BAD: " << Format::subst(MESSAGE("Bad substitution string %.")) << ENDL;
-    fout << "Substitution BAD: " << Format::subst(MESSAGE("Bad substitution string %")) << ENDL;
+    fout << "Substitution BAD: " << Format::subst(MESSAGE("Request substitution index 0 is bad (%0)."), MESSAGE("Note")) << ENDL;
+    fout << "Substitution BAD: " << Format::subst(MESSAGE("Request substitution index 0 is bad (%0)."), "Note") << ENDL;
+    // fout << "Substitution BAD: " << Format::subst(MESSAGE("Bad substitution string %.")) << ENDL;
+    // fout << "Substitution BAD: " << Format::subst(MESSAGE("Bad substitution string %")) << ENDL;
     fout << "Substitution BAD: " << Format::subst(MESSAGE("My full name is %1 %2 and I'm %3 years old."), String("John"), String("Doe")) << ENDL;
-    fout << "Substitution OK: " << Format::subst(MESSAGE("My full name is %1 %2 and I like %3 but not %4."), {MESSAGE("John"), MESSAGE("Doe"), MESSAGE("football"), MESSAGE("tennis")}) << ENDL;
+    fout << "Substitution OK: " << Format::subst(MESSAGE("My full name is %1 %2 and I like %3 but not %4."), MESSAGE("John"), MESSAGE("Doe"), MESSAGE("football"), MESSAGE("tennis")) << ENDL;
 
 
 

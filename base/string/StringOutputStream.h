@@ -133,4 +133,12 @@ public:
   }
 };
 
+template<class TYPE>
+inline UTF8Stringify::UTF8Stringify(const TYPE& src)
+{
+  StringOutputStream sos;
+  sos << src;
+  setString(sos.getString());
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

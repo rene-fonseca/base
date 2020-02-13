@@ -24,6 +24,7 @@
 #include <base/Literal.h>
 #include <base/WideLiteral.h>
 #include <base/string/ASCIITraits.h>
+#include <base/string/UTF8Stringify.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -1490,6 +1491,16 @@ public:
     return result;
   }
 
+  /**
+    Simple string substitution.
+  */
+  static String substImpl(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs);
+
+  /** Substitutes string using % syntax. */
+  template<typename... ARGS>
+  String operator()(ARGS&&... args);
+
+#if 0
   /** Substitutes string using % syntax. */
   String operator()(const String&) const;
   /** Substitutes string using % syntax. */
@@ -1517,6 +1528,7 @@ public:
   /** Substitutes string using % syntax. */
   String operator()(const String&, const String&, const String&, const String&, const String&, const String&,
     const String&, const String&, const String&, const String&, const String&) const;
+#endif
 };
 
 template<>
@@ -1613,6 +1625,14 @@ inline String operator "" _s(const char* text, size_t length)
 inline String operator "" _s(const wchar* text, size_t length)
 {
   return String(text, length);
+}
+
+/** Substitutes string using % syntax. */
+template<typename... ARGS>
+String String::operator()(ARGS&&... args)
+{
+  const UTF8Stringify strings[] = { UTF8Stringify(std::forward<ARGS>(args))... }; // has use-local on buffer
+  return substImpl(*this, strings, getArraySize(strings));
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

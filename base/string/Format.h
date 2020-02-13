@@ -13,8 +13,9 @@
 
 #pragma once
 
-#include <base/AnyValue.h>
 #include <base/string/StringOutputStream.h>
+#include <base/string/UTF8Stringify.h>
+#include <base/AnyValue.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -45,9 +46,23 @@ typedef StringOutputStream format;
 class _COM_AZURE_DEV__BASE__API Format {
 public:
 
+  /**
+    Simple string substitution.
+  */
+  static String substImpl(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs);
+
+  /** Substitutes the given string with the arguments. */
+  template<typename... ARGS>
+  static String subst(const UTF8Stringify& text, ARGS&&... args)
+  {
+    const UTF8Stringify strings[] = { UTF8Stringify(std::forward<ARGS>(args))... }; // has use-local on buffer
+    return substImpl(text, strings, getArraySize(strings));
+  }
+
   /** The maximum supported arguments. */
-  static constexpr unsigned int MAX_ARGS = 16;
-  
+  static constexpr unsigned int MAX_ARGS = 64;
+
+#if 0
   /**
     Simple string substitution.
 
@@ -78,6 +93,7 @@ public:
   static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j);
   static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j, const AnyValue& k);
   static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j, const AnyValue& k, const AnyValue& l);
+#endif
 
 #if 0 // used for older GCC
   static inline String subst(const char* text)
@@ -96,24 +112,29 @@ public:
   }
 #endif
 
+#if 0
   /** String substitution. */
   static String subst(const String& text, const std::initializer_list<const char*>& list);
   /** String substitution. */
   static String subst(const String& text, const std::initializer_list<Literal>& list);
   /** String substitution. */
   static String subst(const String& text, const std::initializer_list<String>& list);
+#endif
 
   /** String substitution implementation. */
   class _COM_AZURE_DEV__BASE__API Subst {
   private:
 
-    const String& text;
+    const ConstSpan<char> text;
     const ConstSpan<char>* args = nullptr;
     MemorySize numberOfArgs = 0;
   public:
 
     /** Initializes substitution. */
-    Subst(const String& text, const ConstSpan<char>* args, MemorySize numberOfArgs);
+    // Subst(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs);
+
+    /** Initializes substitution. */
+    Subst(const ConstSpan<char>& text, const ConstSpan<char>* args, MemorySize numberOfArgs);
 
     /** Returns the number of arguments. */
     inline MemorySize getNumberOfArgs() const noexcept

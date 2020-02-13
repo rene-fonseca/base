@@ -464,7 +464,7 @@ String& String::append(const NativeString& string, MemorySize maximum)
 String& String::append(ucs4 ch)
 {
   uint8 buffer[6];
-  MemoryDiff length = Unicode::UCS4ToUTF8(buffer, &ch, 1);
+  MemoryDiff length = Unicode::writeUTF8(buffer, ch);
   return append(ConstSpan<char>(reinterpret_cast<const char*>(buffer), length));
 }
 
@@ -1089,6 +1089,20 @@ String String::getValidUTF8() const
   return result;
 }
 
+String String::substImpl(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs)
+{
+  ConstSpan<char> spans[Format::MAX_ARGS];
+  if (numberOfArgs > getArraySize(spans)) {
+    _throw OutOfRange("Too many arguments.");
+  }
+  MemorySize j = 0;
+  for (MemorySize i = 0; i < numberOfArgs; ++i) {
+    spans[j++] = args[i].getSpan();
+  }
+  Format::Subst s(text.getSpan(), spans, numberOfArgs);
+  return s.format();
+}
+
 String escape(const String& s)
 {
   String stream(s.getLength() + 128);
@@ -1189,31 +1203,6 @@ public:
 
 TEST_REGISTER(String);
 
-#endif
-
-#if 0
-// TAG: can we encode string literal in String - e.g bit 0? or if compiler could generate static struct with compatible storage object
-
-class ConstStringLiteral {
-private:
-
-  const char* text = "";
-public:
-  
-  inline ConstStringLiteral() noexcept
-  {
-  }
-
-  inline ConstStringLiteral(const char* literal) noexcept
-    : text(literal)
-  {
-  }
-  
-  inline operator const char*() const noexcept
-  {
-    return text;
-  }
-};
 #endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

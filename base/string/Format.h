@@ -54,7 +54,7 @@ public:
   /**
     Simple string substitution.
 
-    String text = Format::subst(MESSAGE("My name is %1 and my last name is %2."), {"John", "Doe"});
+    String text = Format::subst(MESSAGE("My name is %1 and my last name is %2."), "John", "Doe");
   */
   template<typename... ARGS>
   static String subst(const UTF8Stringify& text, ARGS&&... args)
@@ -72,16 +72,11 @@ public:
 
     const UTF8Stringify& text;
     const UTF8Stringify* args;
-    // const ConstSpan<char> text;
-    // const ConstSpan<char>* args = nullptr;
     MemorySize numberOfArgs = 0;
   public:
 
     /** Initializes substitution. */
     Subst(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs);
-
-    /** Initializes substitution. */
-    // Subst(const ConstSpan<char>& text, const ConstSpan<char>* args, MemorySize numberOfArgs);
 
     /** Returns the number of arguments. */
     inline MemorySize getNumberOfArgs() const noexcept

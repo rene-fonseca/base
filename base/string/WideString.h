@@ -1701,6 +1701,15 @@ inline WideString operator-(const WideString& left, const wchar* right)
 */
 _COM_AZURE_DEV__BASE__API WideString operator*(const WideString& src, unsigned int count);
 
+/**
+  Returns a string that is the concatenation of the given string the given number of times.
+  Returns empty string for 0 or negative.
+*/
+inline WideString operator*(const WideString& src, int count)
+{
+  return (count > 0) ? (src * static_cast<unsigned int>(count)) : WideString();
+}
+
 template<>
 inline void swapper<WideString>(WideString& a, WideString& b)
 {

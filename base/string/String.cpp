@@ -1009,7 +1009,7 @@ String operator-(const String& left, const String& right)
 String operator*(const String& src, unsigned int count)
 {
   String result;
-  if (src && count) {
+  if (src && (count > 0)) {
     if (count == 1) {
       return src;
     }

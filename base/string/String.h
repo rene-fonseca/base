@@ -1566,6 +1566,15 @@ inline String operator-(const String& left, const wchar* right)
 */
 _COM_AZURE_DEV__BASE__API String operator*(const String& src, unsigned int count);
 
+/**
+  Returns a string that is the concatenation of the given string the given number of times.
+  Returns empty string for 0 or negative.
+*/
+inline String operator*(const String& src, int count)
+{
+  return (count > 0) ? (src * static_cast<unsigned int>(count)) : String();
+}
+
 /** Appends value to string. This allows use of String as if StringOutputStream for string types. */
 template<class TYPE>
 inline String& operator<<(String& string, const TYPE& value)

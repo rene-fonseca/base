@@ -1528,7 +1528,7 @@ WideString operator-(const WideString& left, const WideString& right)
 WideString operator*(const WideString& src, unsigned int count)
 {
   WideString result;
-  if (src && count) {
+  if (src && (count > 0)) {
     if (count == 1) {
       return src;
     }

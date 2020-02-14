@@ -333,6 +333,19 @@
 #define _COM_AZURE_DEV__BASE__HAVE_MEMMOVE
 #define _COM_AZURE_DEV__BASE__HAVE_MEMSET
 
+#if 0 // cling: how can we set _COM_AZURE_DEV__BASE__INSTALL_PATH from command line
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING) && \
+    defined(_COM_AZURE_DEV__BASE__INSTALL_PATH)
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+#  pragma cling add_library_path(@_COM_AZURE_DEV__BASE__INSTALL_PATH@ "/lib/debug")
+#else
+#  pragma cling add_library_path(@_COM_AZURE_DEV__BASE__INSTALL_PATH@ "/lib/release")
+#endif
+#  pragma cling add_library_path(@_COM_AZURE_DEV__BASE__INSTALL_PATH@ "/lib")
+#  pragma cling add_include_path(@_COM_AZURE_DEV__BASE__INSTALL_PATH@ "/include")
+#endif
+#endif
+
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
 #  define _COM_AZURE_DEV__BASE__SHARED_LIBRARY
 #  pragma cling load("libbase")

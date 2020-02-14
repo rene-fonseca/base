@@ -52,7 +52,8 @@ void Trace::message(const char* message) noexcept
   ::OutputDebugString(ToWCharString(message));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case
   win32::OutputDebugString(message);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   printf("Trace: %s\n", message);
@@ -86,7 +87,8 @@ void Trace::member(const void* pointer, const char* message) noexcept
   ::OutputDebugString(ToWCharString(buffer));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case
   win32::OutputDebugString(buffer);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   printf("Trace: %s\n", static_cast<const char*>(buffer));

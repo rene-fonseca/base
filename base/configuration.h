@@ -333,6 +333,11 @@
 #define _COM_AZURE_DEV__BASE__HAVE_MEMMOVE
 #define _COM_AZURE_DEV__BASE__HAVE_MEMSET
 
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+#  define _COM_AZURE_DEV__BASE__SHARED_LIBRARY
+#  pragma cling load("libbase")
+#endif
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #if defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
 #  define _COM_AZURE_DEV__BASE__API __declspec(dllexport)

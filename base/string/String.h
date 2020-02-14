@@ -215,6 +215,10 @@ protected:
     Compare the NULL-terminated strings ignoring the case.
   */
   static int compareToIgnoreCase(const char* left, const char* right) noexcept;
+private:
+  
+  /** Prevent accidential use with bool operators. */
+  String(bool) = delete;
 public:
 
   /**

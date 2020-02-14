@@ -590,25 +590,25 @@ public:
 
       inline Element& operator=(const bool value)
       {
-        object.setValue(key, new Boolean(value)); // TAG: reuse
+        object.setValue(key, Reference<Value>(new Boolean(value))); // TAG: reuse
         return *this;
       }
 
       inline Element& operator=(const int value)
       {
-        object.setValue(key, new Integer(value)); // TAG: reuse
+        object.setValue(key, Reference<Value>(new Integer(value))); // TAG: reuse
         return *this;
       }
 
       inline Element& operator=(const double value)
       {
-        object.setValue(key, new Float(value)); // TAG: reuse
+        object.setValue(key, Reference<Value>(new Float(value))); // TAG: reuse
         return *this;
       }
 
       inline Element& operator=(const char* value)
       {
-        object.setValue(key, new String(value)); // TAG: reuse
+        object.setValue(key, Reference<Value>(new String(value))); // TAG: reuse
         return *this;
       }
 
@@ -626,15 +626,22 @@ public:
       MemorySize index = 0;
     public:
 
-      inline ReadElement(const Object& _object, MemorySize _index) : object(_object), index(_index)
+      inline ReadElement(const Object& _object, MemorySize _index)
+        : object(_object), index(_index)
       {
       }
 
-      inline operator Reference<Value>() const {
+      inline operator Reference<Value>() const
+      {
         return object.getValue(i, v);
       }
     };
 #endif
+
+    inline Element getValueImpl(const Reference<String>& key)
+    {
+      return Element(*this, key);
+    }
 
     inline Element operator[](const Reference<String>& key)
     {
@@ -643,17 +650,17 @@ public:
 
     inline Element operator[](const base::String& key)
     {
-      return operator[](new String(key)); // TAG: reuse
+      return getValueImpl(new String(key)); // TAG: reuse
     }
 
     inline Element operator[](const Literal& key)
     {
-      return operator[](new String(key)); // TAG: reuse
+      return getValueImpl(new String(key)); // TAG: reuse
     }
 
     inline Element operator[](const char* key)
     {
-      return operator[](new String(key)); // TAG: reuse
+      return getValueImpl(new String(key)); // TAG: reuse
     }
 
 #if 0

@@ -440,7 +440,8 @@ String IEEE1394::getDescription(unsigned short node)
   return String();
 }
 
-String IEEE1394::getKeywords(unsigned short node) {
+String IEEE1394::getKeywords(unsigned short node)
+{
   // TAG: also search subdirectories?
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   // minimum size for general format
@@ -487,7 +488,7 @@ String IEEE1394::getKeywords(unsigned short node) {
         if (i > 0) {
           result += " ";
         }
-        result += String(leaf[i]);
+        result += leaf[i];
       }
       return result;
     } else if (keyType == IEEE1394::KEY_TYPE_DIRECTORY) {

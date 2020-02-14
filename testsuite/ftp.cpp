@@ -159,8 +159,8 @@ private:
   unsigned int retryAttempts = 0;
 protected:
 
-  static bool translateReplyCode(
-    char a, char b, char c, ReplyCode& result) {
+  static bool translateReplyCode(char a, char b, char c, ReplyCode& result)
+  {
     result.valid = false;
 
     switch (a) {
@@ -216,7 +216,8 @@ protected:
     return true;
   }
 
-  void getResponse() {
+  void getResponse()
+  {
     FormatInputStream instream(controlConnection);
 
     replyCode.valid = false; // invalidate
@@ -228,7 +229,7 @@ protected:
     }
 
     while (true) { // read response
-      String line(256);
+      String line(static_cast<MemorySize>(256));
 
       while (true) { // read line
         char ch = 0;
@@ -277,7 +278,8 @@ protected:
   }
 
   /** Sends password to server. */
-  void requestPassword(const String& password) {
+  void requestPassword(const String& password)
+  {
     if (verbosity >= DEBUG_EXTENDED) {
       fout << "DEBUG: Sending command '" << CMD_PASSWORD
            << "' with value '" << password << '\'' << ENDL;
@@ -288,7 +290,8 @@ protected:
   }
 
   /** Sends command to server without an argument. */
-  void request(const String& command) {
+  void request(const String& command)
+  {
     if (verbosity >= DEBUG_EXTENDED) {
       fout << "DEBUG: Sending command '" << command << "' with no value" << ENDL;
     }
@@ -298,7 +301,8 @@ protected:
   }
 
   /** Sends command to server with an argument. */
-  void request(const String& command, const String& value) {
+  void request(const String& command, const String& value)
+  {
     if (verbosity >= DEBUG_EXTENDED) {
       fout << "DEBUG: Sending command '" << command << "' with value '" << value << '\'' << ENDL;
     }
@@ -308,7 +312,8 @@ protected:
   }
 public:
 
-  static bool isValidString(const String& str) {
+  static bool isValidString(const String& str)
+  {
     if (str.isEmpty()) {
       return false;
     }
@@ -321,7 +326,8 @@ public:
     return true;
   }
 
-  static bool isValidPrintableString(const String& str) {
+  static bool isValidPrintableString(const String& str)
+  {
     if (str.isEmpty()) {
       return false;
     }
@@ -338,26 +344,32 @@ public:
     : endPoint(ep),
       verbosity(v),
       retryDelay(DEFAULT_RETRY_DELAY),
-      retryAttempts(DEFAULT_RETRY_ATTEMPTS) {
+      retryAttempts(DEFAULT_RETRY_ATTEMPTS)
+  {
   }
 
-  unsigned int getRetryDelay() const {
+  unsigned int getRetryDelay() const
+  {
     return retryDelay;
   }
 
-  void setRetryDelay(unsigned int value) {
+  void setRetryDelay(unsigned int value)
+  {
     retryDelay = value;
   }
 
-  unsigned int getRetryAttempts() const {
+  unsigned int getRetryAttempts() const
+  {
     return retryAttempts;
   }
 
-  void setRetryAttempts(unsigned int value) {
+  void setRetryAttempts(unsigned int value)
+  {
     retryAttempts = value;
   }
 
-  void connect() {
+  void connect()
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Establishing control connection to: "
            << endPoint << ENDL;
@@ -367,43 +379,50 @@ public:
     getResponse();
   }
 
-  int sendUser(const String& username) {
+  int sendUser(const String& username)
+  {
     bassert(isValidString(username), InvalidFormat("Invalid FTP string."));
     request(CMD_USER, username);
     getResponse();
     return replyCode.reply;
   }
 
-  int sendPassword(const String& password) {
+  int sendPassword(const String& password)
+  {
     bassert(isValidString(password), InvalidFormat("Invalid FTP string."));
     requestPassword(password);
     getResponse();
     return replyCode.reply;
   }
 
-  int sendAccount(const String& account) {
+  int sendAccount(const String& account)
+  {
     bassert(isValidString(account), InvalidFormat("Invalid FTP string."));
     request(CMD_ACCOUNT, account);
     getResponse();
     return replyCode.reply;
   }
 
-  void sendReinitialize() {
+  void sendReinitialize()
+  {
     request(CMD_REINITIALIZE);
     getResponse();
   }
 
-  void sendHelp() {
+  void sendHelp()
+  {
     request(CMD_HELP);
     getResponse();
   }
 
-  void sendNoOperation() {
+  void sendNoOperation()
+  {
     request(CMD_NOOP);
     getResponse();
   }
 
-  void getSystemType() {
+  void getSystemType()
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Getting system type..." << ENDL;
     }
@@ -411,7 +430,8 @@ public:
     getResponse();
   }
 
-  void getStatus() {
+  void getStatus()
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Getting status..." << ENDL;
     }
@@ -419,7 +439,8 @@ public:
     getResponse();
   }
 
-  void setType(Representation representation) {
+  void setType(Representation representation)
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Setting type..." << ENDL;
     }
@@ -438,7 +459,8 @@ public:
     getResponse();
   }
 
-  void setStructure(Structure structure) {
+  void setStructure(Structure structure)
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Setting file structure..." << ENDL;
     }
@@ -456,7 +478,8 @@ public:
     getResponse();
   }
 
-  void setMode(Mode mode) {
+  void setMode(Mode mode)
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Setting mode..." << ENDL;
     }
@@ -474,7 +497,8 @@ public:
     getResponse();
   }
 
-  void getList() {
+  void getList()
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: List..." << ENDL;
     }
@@ -482,7 +506,8 @@ public:
     getResponse();
   }
 
-  void readDirectoryList() {
+  void readDirectoryList()
+  {
     Allocator<uint8> buffer(4096);
 
     while (true) { // read line until response
@@ -521,7 +546,8 @@ public:
     }
   }
 
-  void readData(long long sizeOfFile) {
+  void readData(long long sizeOfFile)
+  {
     Allocator<uint8> buffer(4096 * 16);
     File file("ftpoutput", File::WRITE, File::CREATE | File::TRUNCATE);
 
@@ -546,7 +572,8 @@ public:
     fout << ENDL;
   }
 
-  void restart(const String& marker) {
+  void restart(const String& marker)
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Restarting..." << ENDL;
     }
@@ -557,7 +584,8 @@ public:
 
   // File commands
 
-  void renameFile(const String& from, const String& to) {
+  void renameFile(const String& from, const String& to)
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Renaming file system object..." << ENDL;
     }
@@ -567,7 +595,8 @@ public:
     getResponse();
   }
 
-  void deleteFile(const String& path) {
+  void deleteFile(const String& path)
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Deleting file system object..." << ENDL;
     }
@@ -578,7 +607,8 @@ public:
 
   // Directory commands
 
-  void getCurrentDirectory() {
+  void getCurrentDirectory()
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Getting current directory..." << ENDL;
     }
@@ -586,7 +616,8 @@ public:
     getResponse();
   }
 
-  void changeDirectory(const String& path) {
+  void changeDirectory(const String& path)
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Changing working directory..." << ENDL;
     }
@@ -600,7 +631,8 @@ public:
     }
   }
 
-  void makeDirectory(const String& path) {
+  void makeDirectory(const String& path)
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Creating new directory..." << ENDL;
     }
@@ -622,7 +654,7 @@ private:
 
   String clipPassiveResponse(const String& response, int& index)
   {
-    String result(3);
+    String result(static_cast<MemorySize>(3));
     for (int count = 3;
       count && (index < static_cast<int>(response.getLength())) &&
         (response[index] >= '0') && (response[index] <= '9'); --count) {
@@ -633,7 +665,8 @@ private:
   }
 public:
 
-  void login(const String& username, const String& password) {
+  void login(const String& username, const String& password)
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Sending user and password..." << ENDL;
     }
@@ -711,7 +744,8 @@ public:
 //const Literal CMD_NAME_LIST = MESSAGE("NLST"); // request name list
 //const Literal CMD_SITE = MESSAGE("SITE"); // site specific
 
-  void abort() {
+  void abort()
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Aborting..." << ENDL;
     }
@@ -719,7 +753,8 @@ public:
     getResponse(); // wait for completed
   }
 
-  void requestActiveTransfer() {
+  void requestActiveTransfer()
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Requesting active transfer mode..." << ENDL;
     }
@@ -742,12 +777,14 @@ public:
     getResponse(); // wait for completed
   }
 
-  void waitForConnection() {
+  void waitForConnection()
+  {
     dataConnection = serverDataConnection.accept();
     fout << "Incoming connection from: " << dataConnection.getAddress() << ENDL;
   }
 
-  void requestPassiveTransfer() {
+  void requestPassiveTransfer()
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Requesting passive transfer mode..." << ENDL;
     }
@@ -758,7 +795,7 @@ public:
     for (i = 4; (i < static_cast<int>(response.getLength())) && ((response[i] < '0') || (response[i] > '9')); ++i); // find first digit of addr
     bassert(i < static_cast<int>(response.getLength()), FTPException("Invalid reply."));
 
-    String address(15);
+    String address(static_cast<MemorySize>(15));
     for (unsigned int number = 0; number < 4; ++number) { // read address
       String result = clipPassiveResponse(response, i);
       bassert(response[i++] == ',', FTPException("Invalid reply."));  // skip ','
@@ -771,7 +808,8 @@ public:
     String portHigh = clipPassiveResponse(response, i);
     bassert(response[i++] == ',', FTPException("Invalid reply."));  // skip ','
     String portLow = clipPassiveResponse(response, i);
-    unsigned short port = UnsignedInteger(portHigh).getValue() * 256 + UnsignedInteger(portLow).getValue(); // TAG: make UnsignedInteger class and use this here
+    unsigned short port = UnsignedInteger(portHigh).getValue() * 256 + UnsignedInteger(portLow).getValue();
+    // TAG: make UnsignedInteger class and use this here
 
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Establishing data connection to: "
@@ -800,10 +838,12 @@ private:
   FileTransferProtocolClient& client;
 public:
 
-  MyThread(FileTransferProtocolClient& _client) : client(_client) {
+  MyThread(FileTransferProtocolClient& _client) : client(_client)
+  {
   }
 
-  void run() {
+  void run()
+  {
     while (true) {
       client.waitForConnection();
     }
@@ -812,7 +852,8 @@ public:
 
 
 
-void ftpclient(const String& resource, const String& file) {
+void ftpclient(const String& resource, const String& file)
+{
   Url url(resource);
 
   if (url.getScheme().isEmpty()) {
@@ -896,7 +937,8 @@ public:
   {
   }
 
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL

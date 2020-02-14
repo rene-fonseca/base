@@ -358,6 +358,10 @@ protected:
     Compare the NULL-terminated strings ignoring the case.
   */
   static int compareToIgnoreCase(const ucs4* left, const ucs4* right) noexcept;
+private:
+  
+  /** Prevent accidential use with bool operators. */
+  WideString(bool) = delete;
 public:
 
   /**

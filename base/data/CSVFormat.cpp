@@ -105,7 +105,7 @@ String CSVFormat::join(const std::initializer_list<String>& items)
 Array<String> CSVFormat::parse(const String& line)
 {
   Array<String> result;
-  String field(1024);
+  String field(static_cast<MemorySize>(1024));
   UTF8Iterator i = line.getUTF8BeginReadIterator();
   const UTF8Iterator end = line.getUTF8EndReadIterator();
   bool inQuote = false;

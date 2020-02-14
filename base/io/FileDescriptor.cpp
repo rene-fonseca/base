@@ -118,14 +118,14 @@ bool FileDescriptor::isANSITerminal() const noexcept
 #endif
   
   const Map<String, String>* terminalEnvironment = nullptr;
-  if (!app) {
+  if (!app || !app->getEnvironment()) {
     // get external environment instead
     static Map<String, String> _terminalEnvironment = getTerminalEnvironment();
     terminalEnvironment = &_terminalEnvironment;
   }
   
   // https://bixense.com/clicolors/
-  const Map<String, String>& env = app ? app->getEnvironment() : *terminalEnvironment;
+  const Map<String, String>& env = (app && app->getEnvironment()) ? app->getEnvironment() : *terminalEnvironment;
   if (auto value = env.find("CLICOLOR_FORCE")) { // defaults to disabled
     if (*value != "0") {
       return true;

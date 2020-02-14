@@ -17,6 +17,19 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+unsigned short InetEndPoint::getPort(const String& service)
+{
+  try {
+    Integer integer(service);
+    if ((integer < 0) || (integer > 0xffff)) {
+      _throw ServiceNotFound("Port is out of range.");
+    }
+    return integer;
+  } catch (InvalidFormat&) {
+    return InetService(service).getPort();
+  }
+}
+
 InetEndPoint InetEndPoint::getEndPoint(const String& endpoint)
 {
   auto index = endpoint.indexOf(':');
@@ -48,31 +61,18 @@ InetEndPoint::InetEndPoint(
 
 InetEndPoint::InetEndPoint(
   const InetAddress& _address, const String& service)
-  : address(_address)
+  : address(_address), port(getPort(service))
 {
-  try {
-    Integer integer(service);
-    if ((integer < 0) || (integer > 0xffff)) {
-      _throw ServiceNotFound("Port is out of range.", this);
-    }
-    port = integer;
-  } catch (InvalidFormat&) {
-    port = InetService(service).getPort();
-  }
+}
+
+InetEndPoint::InetEndPoint(const String& host, unsigned short _port)
+  : address(host), port(_port)
+{
 }
 
 InetEndPoint::InetEndPoint(const String& host, const String& service)
-  : address(host)
+  : address(host), port(getPort(service))
 {
-  try {
-    Integer integer(service);
-    if ((integer < 0) || (integer > 0xffff)) {
-      _throw ServiceNotFound("Port is out of range.", this);
-    }
-    port = integer;
-  } catch (InvalidFormat&) {
-    port = InetService(service).getPort();
-  }
 }
 
 InetEndPoint::InetEndPoint(const InetEndPoint& copy) noexcept

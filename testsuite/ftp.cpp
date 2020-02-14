@@ -229,7 +229,7 @@ protected:
     }
 
     while (true) { // read response
-      String line(static_cast<MemorySize>(256));
+      String line(String::makeCapacity(256));
 
       while (true) { // read line
         char ch = 0;
@@ -654,7 +654,7 @@ private:
 
   String clipPassiveResponse(const String& response, int& index)
   {
-    String result(static_cast<MemorySize>(3));
+    String result(String::makeCapacity(3));
     for (int count = 3;
       count && (index < static_cast<int>(response.getLength())) &&
         (response[index] >= '0') && (response[index] <= '9'); --count) {
@@ -795,7 +795,7 @@ public:
     for (i = 4; (i < static_cast<int>(response.getLength())) && ((response[i] < '0') || (response[i] > '9')); ++i); // find first digit of addr
     bassert(i < static_cast<int>(response.getLength()), FTPException("Invalid reply."));
 
-    String address(static_cast<MemorySize>(15));
+    String address(String::makeCapacity(15));
     for (unsigned int number = 0; number < 4; ++number) { // read address
       String result = clipPassiveResponse(response, i);
       bassert(response[i++] == ',', FTPException("Invalid reply."));  // skip ','

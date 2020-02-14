@@ -391,6 +391,20 @@ public:
   */
   explicit WideString(MemorySize capacity);
 
+  /** Returns a new string of the given length. */
+  static inline WideString makeLength(MemorySize length)
+  {
+    WideString result;
+    result.forceToLength(length);
+    return result;
+  }
+
+  /** Returns an empty string with the given capacity. */
+  static inline WideString makeCapacity(MemorySize capacity)
+  {
+    return WideString(capacity);
+  }
+
   class _COM_AZURE_DEV__BASE__API Default {};
   
   /** Forces a non-null empty string. Avoid this. */

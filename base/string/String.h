@@ -241,6 +241,20 @@ public:
   */
   explicit String(MemorySize capacity);
 
+  /** Returns a new string of the given length. */
+  static inline String makeLength(MemorySize length)
+  {
+    String result;
+    result.forceToLength(length);
+    return result;
+  }
+
+  /** Returns an empty string with the given capacity. */
+  static inline String makeCapacity(MemorySize capacity)
+  {
+    return String(capacity);
+  }
+
   class _COM_AZURE_DEV__BASE__API Default {};
   
   /** Forces a non-null empty string. Avoid this. */

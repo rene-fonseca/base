@@ -275,19 +275,19 @@ public:
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
 int main(int argc, const char* argv[]) noexcept \
 { \
-  Application::Stub stub; \
+  com::azure::dev::base::Application::Stub stub; \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, nullptr); \
 }
 #elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
 int main(int argc, const char* argv[]) noexcept \
 { \
-  Application::Stub stub; \
+  com::azure::dev::base::Application::Stub stub; \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, nullptr); \
 } \
 int start() noexcept \
 { \
-  Application::Stub stub; \
+  com::azure::dev::base::Application::Stub stub; \
   const char* args[] = {"cling"}; \
   return com::azure::dev::base::Application::stub<APPLICATION>(getArraySize(args), args, nullptr); \
 }
@@ -295,7 +295,7 @@ int start() noexcept \
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
 int main(int argc, const char* argv[], const char* env[]) noexcept \
 { \
-  Application::Stub stub; \
+  com::azure::dev::base::Application::Stub stub; \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, env); \
 }
 #endif

@@ -214,7 +214,7 @@ public:
     TEST_EQUAL(String("My name is %1 %2.")("John", "Doe"), "My name is John Doe.");
 
     TEST_EQUAL("My name is %1 %2." % Subst("John", "Doe"), "My name is John Doe.");
-    TEST_ASSERT("Complex %1 %2 %3 %4." % Subst(true, -123, Array<int>({1,-5,9,-11}), String("=") * 64));
+    TEST_ASSERT("Complex %1 %2 %3 %4." % Subst(true, -123, Array<int>({1,-5,9,-11}), (String("=") * 64).native()));
   }
 };
 

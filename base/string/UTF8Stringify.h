@@ -36,7 +36,16 @@ private:
   char tiny[3 * 8] = {0}; // TAG: disable clear for release build
   
   void setString(const StringOutputStream& src);
+
+  /** Returns true if the tiny buffer is used. */
+  inline bool isUsingTiny() const noexcept
+  {
+    return (span.begin() >= tiny) && (span.end() <= (tiny + getArraySize(tiny)));
+  }
 public:
+
+  /** Initialize buffer. */
+  UTF8Stringify();
 
   /** Initialize buffer. */
   UTF8Stringify(bool src);
@@ -92,7 +101,16 @@ public:
   /** Initialize buffer. Include StringOutputStream to get implementation. */
   template<class TYPE>
   UTF8Stringify(const TYPE& src);
-  
+
+  /** Initialize buffer. */
+  UTF8Stringify(UTF8Stringify&& move);
+
+  /** Initialize buffer. */
+  UTF8Stringify& operator=(UTF8Stringify&& assign);
+
+  /** Forces ownership of the data. */
+  void ensureOwnership();
+
   /** Returns the span. */
   inline const ConstSpan<char>& getSpan() const noexcept
   {

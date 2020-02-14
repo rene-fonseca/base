@@ -21,6 +21,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+UTF8Stringify::UTF8Stringify()
+{
+}
+
 UTF8Stringify::UTF8Stringify(bool src)
 {
   span = src ? ConstSpan<char>("true", 4) : ConstSpan<char>("false", 5);
@@ -169,6 +173,61 @@ UTF8Stringify::UTF8Stringify(FormatOutputStream& src)
   String temp(src.toString());
   buffer = temp.getContainer();
   span = temp.getSpan();
+}
+
+UTF8Stringify::UTF8Stringify(UTF8Stringify&& move)
+{
+  if (move.buffer) { // owned
+    buffer = moveObject(move.buffer);
+    span = move.span;
+    move.span = ConstSpan<char>();
+    return;
+  }
+
+  if (isUsingTiny()) {
+    const char* end = copyTo(tiny, move.span);
+    span = ConstSpan<char>(tiny, end);
+    return;
+  }
+
+  span = move.span; // not owned
+}
+
+UTF8Stringify& UTF8Stringify::operator=(UTF8Stringify&& move)
+{
+  if (move.buffer) { // owned
+    buffer = moveObject(move.buffer);
+    span = move.span;
+    move.span = ConstSpan<char>();
+    return *this;
+  }
+
+  if (isUsingTiny()) {
+    const char* end = copyTo(tiny, move.span);
+    span = ConstSpan<char>(tiny, end);
+    return *this;
+  }
+
+  span = move.span; // not owned
+  return *this;
+}
+
+void UTF8Stringify::ensureOwnership()
+{
+  if (!buffer) { // not owned
+    if (isUsingTiny()) {
+      return; // we are using the tiny buffer so nothing to do
+    }
+    if (span.getSize() <= getArraySize(tiny)) { // use tiny if possible
+      const char* end = copyTo(tiny, span);
+      span = ConstSpan<char>(tiny, end);
+      return;
+    }
+    // we cant differentiate string literals from dynamic strings
+    String temp(span.begin(), span.getSize());
+    buffer = temp.getContainer();
+    span = temp.getSpan();
+  }
 }
 
 void UTF8Stringify::setString(const StringOutputStream& src)

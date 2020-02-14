@@ -100,4 +100,46 @@ inline FormatOutputStream& operator<<(FormatOutputStream& stream, const Format::
   return stream << subst.format();
 }
 
+/**
+  Simple string substitution.
+
+  String text = translate(MESSAGE("My name is %1 and my last name is %2.")) % Subst("John", "Doe");
+*/
+class _COM_AZURE_DEV__BASE__API Subst {
+private:
+
+  UTF8Stringify args[16];
+  MemorySize size = 0;
+
+  /** Sets the args. */
+  void setArgs(UTF8Stringify* args, MemorySize size);
+public:
+
+  /**
+    Simple string substitution.
+  */
+  template<typename... ARGS>
+  Subst(ARGS&&... args)
+  {
+    // temporaries can be released on return so we force copy of data to buffer in setArgs()
+    UTF8Stringify strings[] = { UTF8Stringify(std::forward<ARGS>(args))... };
+    setArgs(strings, getArraySize(strings));
+  }
+
+  /** Returns the arguments. */
+  inline const UTF8Stringify* getArgs() const noexcept
+  {
+    return args;
+  }
+
+  /** Returns the number of arguments. */
+  inline MemorySize getNumberOfArgs() const noexcept
+  {
+    return size;
+  }
+};
+
+/** Substitutes text using % style. */
+_COM_AZURE_DEV__BASE__API String operator%(const UTF8Stringify& text, const Subst& subst);
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

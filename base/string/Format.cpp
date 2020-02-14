@@ -109,6 +109,37 @@ String Format::Subst::format() const
   return buffer;
 }
 
+#if 0
+void Subst::setArgs(std::initializer_list<UTF8Stringify> _args)
+{
+  if (_args.size() > getArraySize(args)) {
+    _throw OutOfRange("Too many arguments.", this);
+  }
+  MemorySize i = 0;
+  for (const UTF8Stringify& arg : _args) { // we cant move arg since const
+    args[i] = arg;
+  }
+  size = _args.size();
+}
+#endif
+
+void Subst::setArgs(UTF8Stringify* _args, MemorySize _size)
+{
+  if (size > getArraySize(args)) {
+    _throw OutOfRange("Too many arguments.", this);
+  }
+  for (MemorySize i = 0; i < _size; ++i) {
+    args[i] = moveObject(_args[i]);
+    args[i].ensureOwnership(); // make sure we dont release temp memory
+  }
+  size = _size;
+}
+
+String operator%(const UTF8Stringify& text, const Subst& subst)
+{
+  return Format::substImpl(text, subst.getArgs(), subst.getNumberOfArgs());
+}
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 namespace {
@@ -122,7 +153,7 @@ namespace {
     return stream << "MyClass";
   }
 }
-  
+
 class TEST_CLASS(Format) : public UnitTest {
 public:
 
@@ -181,6 +212,9 @@ public:
 
     TEST_EQUAL("My name is %1 %2."_s("John", "Doe"), "My name is John Doe.");
     TEST_EQUAL(String("My name is %1 %2.")("John", "Doe"), "My name is John Doe.");
+
+    TEST_EQUAL("My name is %1 %2." % Subst("John", "Doe"), "My name is John Doe.");
+    TEST_ASSERT("Complex %1 %2 %3 %4." % Subst(true, -123, Array<int>({1,-5,9,-11}), String("=") * 64));
   }
 };
 

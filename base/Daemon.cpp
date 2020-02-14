@@ -185,12 +185,13 @@ namespace win32 {
 
 };
 
-Daemon::Daemon(Runnable* runnable) {
+Daemon::Daemon(Runnable* runnable)
+{
   static unsigned int singleton = 0;
   bassert(singleton == 0, SingletonException("Daemon has been instantiated."));
   ++singleton;
   if (!runnable) {
-    _throw OutOfDomain();
+    _throw NullPointer("Daemon missing runnable.");
   }
   bassert(Application::getApplication(), Exception("Application has not been institiated."));
   DaemonImpl::runnable = runnable;
@@ -301,7 +302,7 @@ Daemon::Daemon(Runnable* runnable)
   bassert(singleton == 0, SingletonException("Daemon has been instantiated."));
   ++singleton;
   if (!runnable) {
-    _throw OutOfDomain();
+    _throw NullPointer("Daemon missing runnable.");
   }
   bassert(Application::getApplication(), Exception("Application has not been institiated."));
 

@@ -755,7 +755,7 @@ namespace internal
 void Application::setArgumentsAndEnvironment(int _numberOfArguments, const char* _arguments[], const char* _environment[])
 {
   if (!((_numberOfArguments > 0) && _arguments)) {
-    _throw OutOfDomain();
+    _throw OutOfDomain("Invalid arguments.");
   }
 
   internal::numberOfArguments = _numberOfArguments;

@@ -48,12 +48,16 @@ void Trace::message(const char* message) noexcept
     return;
   }
   
+  if (Runtime::getRuntimeEnvironment()) {
+    printf("Trace: %s\n", message);
+    return;
+  }
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::OutputDebugString(ToWCharString(message));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case
   win32::OutputDebugString(message);
-#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING) || \
-      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   printf("Trace: %s\n", message);
@@ -83,12 +87,17 @@ void Trace::member(const void* pointer, const char* message) noexcept
 #if (_COM_AZURE_DEV__BASE__INT_SIZE > 8)
 #  error pointer type not supported
 #endif
+  
+  if (Runtime::getRuntimeEnvironment()) {
+    printf("Trace: %s\n", static_cast<const char*>(buffer));
+    return;
+  }
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::OutputDebugString(ToWCharString(buffer));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case
   win32::OutputDebugString(buffer);
-#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING) || \
-      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   printf("Trace: %s\n", static_cast<const char*>(buffer));

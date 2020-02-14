@@ -130,6 +130,10 @@ public:
       _COM_AZURE_DEV__BASE__CHECK_VERSION(); // ensure compatible version
       _COM_AZURE_DEV__BASE__CHECK_DEBUG_RELEASE(); // ensure using expected debug vs release library
       
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+      Runtime::setRuntimeEnvironment("cling");
+#endif
+      
       // check runtime
       Version::isBuildCompatible();
 
@@ -273,6 +277,18 @@ int main(int argc, const char* argv[]) noexcept \
 { \
   Application::Stub stub; \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, nullptr); \
+}
+#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+#define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
+int domain(int argc, const char* argv[]) noexcept \
+{ \
+  Application::Stub stub; \
+  return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, nullptr); \
+} \
+int start() noexcept \
+{ \
+  Application::Stub stub; \
+  return com::azure::dev::base::Application::stub<APPLICATION>(0, nullptr, nullptr); \
 }
 #else
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \

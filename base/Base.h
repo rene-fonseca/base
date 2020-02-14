@@ -338,6 +338,12 @@ public:
   /** Returns true if global initialization or destruction is in progress. */
   static bool isGlobalStateInGoodCondition() noexcept;
 
+  /** Sets the runtime environment. */
+  static void setRuntimeEnvironment(const char* id) noexcept; // TAG: used for JIT/Interpreter environment rename
+
+  /** Returns true if a runtime environment is used. */
+  static bool getRuntimeEnvironment() noexcept;
+
   /** Triggers failure due to unimplemented method/feature. */
   [[noreturn]] static void notImplemented(const char* who);
 

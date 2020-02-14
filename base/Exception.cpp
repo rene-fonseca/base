@@ -185,6 +185,11 @@ Exception::StackTrace Exception::getStackTrace()
 // throw_handler* std::get_throw_handler() noexcept;
 void Exception::onThrow(const Exception& exception) noexcept
 {
+  if (Runtime::getRuntimeEnvironment()) {
+    fout << "Throwing: " << exception << ENDL; // print until supported
+    StackFrame::dump();
+  }
+  
   if (!SUPPORTS_EXCEPTIONS) { // we could allow this to be an option
     fout << "Throwing: " << exception << ENDL; // print until supported
     // StackFrame::dump();

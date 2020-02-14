@@ -155,6 +155,7 @@ namespace _impl {
 
   bool initializing = true;
   bool destructing = false;
+  bool runtimeEnvironment = false;
 
   class RuntimeState {
   public:
@@ -439,6 +440,16 @@ bool Runtime::isGlobalDestruction() noexcept
 bool Runtime::isGlobalStateInGoodCondition() noexcept
 {
   return !Runtime::isGlobalInitialization() && !Runtime::isGlobalDestruction();
+}
+
+void Runtime::setRuntimeEnvironment(const char* _id) noexcept
+{
+  _impl::runtimeEnvironment = _id != nullptr;
+}
+
+bool Runtime::getRuntimeEnvironment() noexcept
+{
+  return _impl::runtimeEnvironment;
 }
 
 void Runtime::notImplemented(const char* who)

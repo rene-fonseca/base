@@ -785,17 +785,21 @@ void Application::setArgumentsAndEnvironment(int _numberOfArguments, const char*
   // TAG: allow initialization for shared library also - move to static data
 }
 
+namespace {
+
+  PreferredAtomicCounter applicationSingleton;
+}
+
 Application::Application(const String& _formalName)
   : formalName(_formalName),
     exitCode(EXIT_CODE_NORMAL),
     terminated(false),
     hangingup(false)
 {
-  static unsigned int singleton = 0;
-  if (singleton != 0) {
+  if (applicationSingleton) {
     _throw SingletonException("Application has been initialized.", this);
   }
-  ++singleton;
+  ++applicationSingleton;
 
   // install signal handler
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1048,7 +1052,10 @@ Application::~Application() noexcept {
   
   std::set_terminate(internal::terminationExceptionHandler);
   std::set_unexpected(internal::unexpectedExceptionHandler);
-  application = 0;
+  application = nullptr;
+
+  --applicationSingleton;
+  BASSERT(!applicationSingleton);
 }
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)

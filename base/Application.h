@@ -280,7 +280,7 @@ int main(int argc, const char* argv[]) noexcept \
 }
 #elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
-int domain(int argc, const char* argv[]) noexcept \
+int main(int argc, const char* argv[]) noexcept \
 { \
   Application::Stub stub; \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, nullptr); \
@@ -288,7 +288,8 @@ int domain(int argc, const char* argv[]) noexcept \
 int start() noexcept \
 { \
   Application::Stub stub; \
-  return com::azure::dev::base::Application::stub<APPLICATION>(0, nullptr, nullptr); \
+  const char* args[] = {"cling"}; \
+  return com::azure::dev::base::Application::stub<APPLICATION>(getArraySize(args), args, nullptr); \
 }
 #else
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \

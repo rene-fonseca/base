@@ -400,11 +400,17 @@ public:
     return *this;
   }
 
+  /**
+    Returns true if equal to value.
+  */
   inline bool operator==(const TYPE _value) const noexcept
   {
     return load() == _value;
   }
 
+  /**
+    Returns true if not equal to value.
+  */
   inline bool operator!=(const TYPE _value) const noexcept
   {
     return load() != _value;

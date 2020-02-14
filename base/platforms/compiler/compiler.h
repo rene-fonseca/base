@@ -22,7 +22,8 @@
 #  include <base/platforms/compiler/gcc/gcc.h>
 #elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
 #  include <base/platforms/compiler/msc/msc.h>
-#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM)
+#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
+      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
 #  include <base/platforms/compiler/llvm/llvm.h>
 #elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_SUNWSPRO)
 #  include <base/platforms/compiler/sunwspro/sunwspro.h>

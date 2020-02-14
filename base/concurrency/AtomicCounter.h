@@ -16,6 +16,7 @@
 #include <base/Primitives.h>
 
 #if ((_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
+     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING) || \
      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC))
 // https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
 // https://en.cppreference.com/w/cpp/atomic/memory_order

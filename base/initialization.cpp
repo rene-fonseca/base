@@ -331,7 +331,7 @@ namespace internal {
     } catch (...) {
       stream << "Internal error: Unsupported exception was raised in violation with exception specification during application initialization or cleanup." << FLUSH;
     }
-    Trace::message(stream.getString().getElements());
+    Trace::message(stream.getString().native());
     SystemLogger::write(SystemLogger::ERROR, stream.getString());
     ferr << stream.getString() << ENDL;
     exit(Application::EXIT_CODE_INITIALIZATION);

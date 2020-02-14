@@ -171,7 +171,7 @@ public:
     
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
     // TAG: need runtime debug mode support (e.g. bool Trace::debug or with level support)
-    Trace::message(stream.getString().getElements());
+    Trace::message(stream.getString().native());
 #endif
     exit(Application::EXIT_CODE_INTERNAL_ERROR); // TAG: is abort() better
   }
@@ -209,7 +209,7 @@ public:
   StringOutputStream stream;
   stream << "messageHandler: message=" << message << " primary="
          << primaryParameter << " second=" << secondaryParameter << FLUSH;
-  Trace::message(stream.getString().getElements());
+  Trace::message(stream.getString().native());
   if (::InSendMessage()) {
     ::ReplyMessage(0);
   }
@@ -314,7 +314,7 @@ public:
     //StringOutputStream stream;
     //stream << "messageHandler: message=" << message << " primary="
     //       << primaryParameter << " second=" << secondaryParameter << FLUSH;
-    //Trace::message(stream.getString().getElements());
+    //Trace::message(stream.getString().native());
     switch (message) {
     case WM_QUIT:
       Trace::message("Quit.");

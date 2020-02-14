@@ -53,9 +53,10 @@ public:
     };
   };
   
-  void calculateMD5Sum(const String& string) {
+  void calculateMD5Sum(const String& string)
+  {
     MD5Sum checksum;
-    checksum.push(Cast::pointer<const uint8*>(string.getElements()), string.getLength());
+    checksum.push(string.getBytes(), string.getLength());
     checksum.pushEnd();
 
     fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
@@ -64,9 +65,10 @@ public:
          << ENDL;
   }
 
-  void calculateSHA1(const String& string) {
+  void calculateSHA1(const String& string)
+  {
     SHA1 checksum;
-    checksum.push(Cast::pointer<const uint8*>(string.getElements()), string.getLength());
+    checksum.push(string.getBytes(), string.getLength());
     checksum.pushEnd();
 
     fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
@@ -75,9 +77,10 @@ public:
          << ENDL;
   }
   
-  void calculateSHA256(const String& string) {
+  void calculateSHA256(const String& string)
+  {
     SHA256 checksum;
-    checksum.push(Cast::pointer<const uint8*>(string.getElements()), string.getLength());
+    checksum.push(string.getBytes(), string.getLength());
     checksum.pushEnd();
 
     fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
@@ -86,9 +89,10 @@ public:
          << ENDL;
   }
 
-  void calculateSHA384(const String& string) {
+  void calculateSHA384(const String& string)
+  {
     SHA384 checksum;
-    checksum.push(Cast::pointer<const uint8*>(string.getElements()), string.getLength());
+    checksum.push(string.getBytes(), string.getLength());
     checksum.pushEnd();
 
     fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
@@ -97,9 +101,10 @@ public:
          << ENDL;
   }
   
-  void calculateSHA512(const String& string) {
+  void calculateSHA512(const String& string)
+  {
     SHA512 checksum;
-    checksum.push(Cast::pointer<const uint8*>(string.getElements()), string.getLength());
+    checksum.push(string.getBytes(), string.getLength());
     checksum.pushEnd();
 
     fout << "Total number of bytes: " << checksum.getTotalSize() << EOL
@@ -108,7 +113,8 @@ public:
          << ENDL;
   }
 
-  void calculateChecksums() {
+  void calculateChecksums()
+  {
     calculateMD5Sum("");
     calculateMD5Sum("a");
     calculateMD5Sum("abc");
@@ -133,7 +139,8 @@ public:
     calculateSHA512("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu"); // 8e959b75dae313da 8cf4f72814fc143f 8f7779c6eb9f7fa1 7299aeadb6889018 501d289e4900f7e4 331b99dec4b5433a c7d329eeb6dd2654 5e96e55b874be909
   }
 
-  void jobMD5Sum(const String& filePath) {
+  void jobMD5Sum(const String& filePath)
+  {
     fout << "Calculating MD5 checksum";
     FileInputStream file(filePath, 0);
 
@@ -152,7 +159,8 @@ public:
          << "Message digest (Base64): " << sum.getBase64() << ENDL;
   }
 
-  void jobSHA1(const String& filePath) {
+  void jobSHA1(const String& filePath)
+  {
     fout << "Calculating SHA-1 message digest...";
     FileInputStream file(filePath, 0);
 
@@ -171,7 +179,8 @@ public:
          << "Message digest (Base64): " << sum.getBase64() << ENDL;
   }
   
-  void jobSHA256(const String& filePath) {
+  void jobSHA256(const String& filePath)
+  {
     fout << "Calculating SHA-256 message digest...";
     FileInputStream file(filePath, 0);
 
@@ -190,7 +199,8 @@ public:
          << "Message digest (Base64): " << sum.getBase64() << ENDL;
   }
   
-  void jobSHA384(const String& filePath) {
+  void jobSHA384(const String& filePath)
+  {
     fout << "Calculating SHA-384 message digest...";
     FileInputStream file(filePath, 0);
 
@@ -209,7 +219,8 @@ public:
          << "Message digest (Base64): " << sum.getBase64() << ENDL;
   }
 
-  void jobSHA512(const String& filePath) {
+  void jobSHA512(const String& filePath)
+  {
     fout << "Calculating SHA-512 message digest...";
     FileInputStream file(filePath, 0);
 
@@ -228,7 +239,8 @@ public:
          << "Message digest (Base64): " << sum.getBase64() << ENDL;
   }
   
-  void jobDump(const String& filePath) {
+  void jobDump(const String& filePath)
+  {
     fout << "Dumping contents of file" << ENDL;
     FileInputStream file(filePath, 0);
     FormatInputStream stream(file);
@@ -242,7 +254,8 @@ public:
     // TAG: does not work!
   }
 
-  void entry(unsigned int job, const String& filePath) {
+  void entry(unsigned int job, const String& filePath)
+  {
     switch (job) {
     case Job::TEST:
       calculateChecksums();
@@ -268,12 +281,14 @@ public:
     }
   }
 
-  void usage() {
+  void usage()
+  {
     fout << "Usage: " << getFormalName()
          << " MD5SUM|SHA1|SHA256|SHA384|SHA512|DUMP file" << ENDL;
   }
   
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL

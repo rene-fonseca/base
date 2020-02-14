@@ -17,6 +17,8 @@
 
 #if defined(__doxygen__)
 #  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_DOXYGEN
+#elif defined(__CLING__)
+#  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_CLING
 #elif defined(__clang__)
 #  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_LLVM
 #elif defined(_MSC_VER)
@@ -39,8 +41,12 @@
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__WXP
 #elif defined(__APPLE__)
+#if _COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_CLING
 #if __is_target_os(ios)
 #  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__IOS
+#else
+#  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__MACOS
+#endif
 #else
 #  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__MACOS
 #endif

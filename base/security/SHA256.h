@@ -35,7 +35,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @code
   String message = "abcdefghijklmnopqrstuvwxyz";
   SHA256 checksum;
-  checksum.push(Cast::pointer<const uint8*>(message.getElements()), message.getLength());
+  checksum.push(message.getBytes(), message.getLength());
   checksum.pushEnd();
   fout << "message digest: " << checksum.getValue() << ENDL;
   @endcode

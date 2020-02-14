@@ -48,7 +48,7 @@ unsigned int StringInputStream::read(uint8* buffer, unsigned int size, bool nonb
   if (size >= string.getLength() - index) {
     size = static_cast<unsigned int>(string.getLength() - index);
   }
-  base::copy<uint8>(buffer, Cast::pointer<const uint8*>(string.getBytes()), size);
+  base::copy<uint8>(buffer, string.getBytes(), size);
   return size;
 }
 

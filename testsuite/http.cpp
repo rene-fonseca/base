@@ -519,7 +519,8 @@ protected:
   }
 
   // See chapter 6 in RFC
-  void getResponse(PushInterface* push) {
+  void getResponse(PushInterface* push)
+  {
     controlConnection.wait();
     
     FormatInputStream instream(controlConnection);
@@ -592,7 +593,7 @@ protected:
         }
         bassert(
           (i < end) && ASCIITraits::isHexDigit(*i),
-          InvalidResponse("Chunk size invalid")
+          InvalidResponse("Chunk size invalid.")
         );
         unsigned int chunkSize = 0;
         while ((i < end) && ASCIITraits::isHexDigit(*i)) { // read chunk size

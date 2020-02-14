@@ -111,7 +111,7 @@ public:
     Huffman huffman;
     huffman.encode(
       fos,
-      Cast::pointer<const uint8*>(message.getElements()),
+      message.getBytes(),
       message.getLength()
     );
   }

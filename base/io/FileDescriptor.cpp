@@ -30,6 +30,7 @@
 #    define SSIZE_MAX (1024*1024)
 #  endif
 #endif // flavor
+#include <stdlib.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -87,23 +88,51 @@ void enableANSITerminal() noexcept
 }
 #endif
 
+namespace {
+  
+  Map<String, String> getTerminalEnvironment()
+  {
+    Map<String, String> e;
+    if (const char* value = getenv("CLICOLOR_FORCE")) {
+      e.add("CLICOLOR_FORCE", value);
+    }
+    if (const char* value = getenv("CLICOLOR")) {
+      e.add("CLICOLOR", value);
+    }
+    if (const char* value = getenv("TERM")) {
+      e.add("TERM", value);
+    }
+    return e;
+  }
+}
+
 bool FileDescriptor::isANSITerminal() const noexcept
 {
+  // application might crash during app initialization in which case app is nullptr
   auto app = Application::getApplication();
+#if 0
   // TAG: make environment static so we can get it without application
   if (!app) {
     return false;
   }
-
+#endif
+  
+  const Map<String, String>* terminalEnvironment = nullptr;
+  if (!app) {
+    // get external environment instead
+    static Map<String, String> _terminalEnvironment = getTerminalEnvironment();
+    terminalEnvironment = &_terminalEnvironment;
+  }
+  
   // https://bixense.com/clicolors/
-  const auto& env = app->getEnvironment();
+  const Map<String, String>& env = app ? app->getEnvironment() : *terminalEnvironment;
   if (auto value = env.find("CLICOLOR_FORCE")) { // defaults to disabled
     if (*value != "0") {
       return true;
     }
   }
 
-  bool atty = /*FileDescriptor::getStandardOutput().*/isTerminal();
+  bool atty = isTerminal();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   {
     DWORD mode = 0;

@@ -187,8 +187,8 @@ namespace win32 {
 
 Daemon::Daemon(Runnable* runnable)
 {
-  static unsigned int singleton = 0;
-  bassert(singleton == 0, SingletonException("Daemon has been instantiated."));
+  static PreferredAtomicCounter singleton;
+  bassert(!singleton, SingletonException("Daemon has been instantiated."));
   ++singleton;
   if (!runnable) {
     _throw NullPointer("Daemon missing runnable.");
@@ -298,8 +298,8 @@ void Daemon::install()
 
 Daemon::Daemon(Runnable* runnable)
 {
-  static unsigned int singleton = 0;
-  bassert(singleton == 0, SingletonException("Daemon has been instantiated."));
+  static PreferredAtomicCounter singleton;
+  bassert(!singleton, SingletonException("Daemon has been instantiated."));
   ++singleton;
   if (!runnable) {
     _throw NullPointer("Daemon missing runnable.");

@@ -511,7 +511,7 @@ WideString& WideString::operator=(const char* assign)
 #if defined(_COM_AZURE_DEV__BASE__CPP_CHAR8_T)
 WideString& WideString::operator=(const char8_t* assign)
 {
-  initialize(assign, getNullTerminatedLength(assign));
+  initialize(reinterpret_cast<const char*>(assign), getNullTerminatedLength(assign));
   return *this;
 }
 #endif

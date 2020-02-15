@@ -49,7 +49,7 @@ void Trace::message(const char* message) noexcept
   }
   
   if (Runtime::getRuntimeEnvironment()) {
-    printf("Trace: %s\n", message);
+    GlobalPrint::printf("Trace: %s\n", message);
     return;
   }
   
@@ -60,9 +60,8 @@ void Trace::message(const char* message) noexcept
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  printf("Trace: %s\n", message);
+  GlobalPrint::printf("Trace: %s\n", message);
 #else // unix
-  // const char* ident = nullptr;
   openlog("TRACE", LOG_PID, 0); // TAG: fixme - do not reopen
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, message, "");
@@ -71,56 +70,6 @@ void Trace::message(const char* message) noexcept
 #endif
   closelog();
 #endif // flavor
-}
-
-void Trace::member(const void* pointer, const char* message) noexcept
-{
-  if (!message) {
-    BASSERT(!"Calling Trace::message() with nullptr.");
-    return;
-  }
-  
-  const MemorySize length = getNullTerminatedLength(message);
-  PrimitiveStackArray<char> buffer(22 + length + 1);
-  // TAG: remove sprintf dependency
-  sprintf(buffer, "%p >> %s", pointer, message); // sprintf must be MT-safe
-#if (_COM_AZURE_DEV__BASE__INT_SIZE > 8)
-#  error pointer type not supported
-#endif
-  
-  if (Runtime::getRuntimeEnvironment()) {
-    printf("Trace: %s\n", static_cast<const char*>(buffer));
-    return;
-  }
-  
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  ::OutputDebugString(ToWCharString(buffer));
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case
-  win32::OutputDebugString(buffer);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
-      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
-      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  printf("Trace: %s\n", static_cast<const char*>(buffer));
-#else // unix
-  openlog("TRACE", LOG_PID, 0); // TAG: fixme - do not reopen
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, buffer, "");
-#else
-  syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, buffer, ""); // TAG: use vsyslog() instead
-#endif
-  closelog();
-#endif // flavor
-}
-
-Trace::Trace(const char* _msg) noexcept
-  : msg(_msg)
-{
-  Trace::member(this, msg);
-}
-
-Trace::~Trace() noexcept
-{
-  Trace::member(this, msg);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

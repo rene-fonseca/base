@@ -24,19 +24,11 @@
 #  define _COM_AZURE_DEV__BASE__EXCEPTION_V3MV
 #endif
 
-#if !defined(TRACE) && !defined(TRACE_MEMBER) // allow macros to be overridden
+#if !defined(TRACE) // allow macros to be overridden
 #if defined(_COM_AZURE_DEV__BASE__TRACE)
 #  include <base/Trace.h>
- 
 #  define TRACE(text) {Trace::message(text);}
-
-#  if defined(_COM_AZURE_DEV__BASE__COMPILER_FUNCTION)
-#    define TRACE_MEMBER() {Trace::member(this, _COM_AZURE_DEV__BASE__COMPILER_FUNCTION);}
-#  else
-#    define TRACE_MEMBER() {Trace::member(this, __func__);} // __func__ is ISO C99
-#  endif
 #else
 #  define TRACE(text)
-#  define TRACE_MEMBER()
 #endif
 #endif

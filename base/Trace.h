@@ -31,31 +31,12 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 class _COM_AZURE_DEV__BASE__API Trace {
-private:
-
-  /** The message to be written. */
-  const char* msg = nullptr;
 public:
 
   /**
     Write message to standard error.
   */
   static void message(const char* message) noexcept;
-
-  /**
-    Write pointer and message to standard error.
-  */
-  static void member(const void* ptr, const char* message) noexcept;
-
-  /**
-    Writes the message.
-  */
-  Trace(const char* message) noexcept;
-
-  /**
-    Writes the message.
-  */
-  ~Trace() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -406,11 +406,15 @@ inline const EXCEPTION& operator*(ThrowException&& t, const EXCEPTION& exception
 #  define _rethrow Exception::rethrow() // fake keyword
 #endif
 
+#if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_CLING)
 #define _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE() \
-  Type getThisType() const noexcept override \
+  inline Type getThisType() const noexcept override \
   { \
     return Type::getType(*this); \
   }
+#else
+#define _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
+#endif
 
 /**
   Helper class for detecting unwinding during destruction.

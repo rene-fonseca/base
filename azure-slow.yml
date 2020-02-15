@@ -393,6 +393,108 @@ jobs:
       testRunTitle: 'Test results for CTest'
       searchFolder: '$(Build.BinariesDirectory)'
 
+- job: gcc9_cpp14
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: gcc
+  steps:
+  - script: CXXFLAGS=-std=c++14 cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: cmake --build . --config Debug --target install -- -j 4
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: |
+      ./testsuite/unittesting --junit junit.xml
+      ctest -T Test
+    displayName: 'Run tests'
+    continueOnError: true
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+- job: gcc9_cpp17
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: gcc
+  steps:
+  - script: CXXFLAGS=-std=c++17 cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: cmake --build . --config Debug --target install -- -j 4
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: |
+      ./testsuite/unittesting --junit junit.xml
+      ctest -T Test
+    displayName: 'Run tests'
+    continueOnError: true
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+- job: gcc9_cpp2a
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: gcc
+  steps:
+  - script: CXXFLAGS=-std=c++2a cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: cmake --build . --config Debug --target install -- -j 4
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: |
+      ./testsuite/unittesting --junit junit.xml
+      ctest -T Test
+    displayName: 'Run tests'
+    continueOnError: true
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+      searchFolder: '$(Build.BinariesDirectory)'
+
 - job: freebsd_x64
   pool:
     vmImage: 'ubuntu-18.04'

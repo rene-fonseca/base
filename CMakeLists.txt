@@ -65,11 +65,11 @@ else ()
   endif ()
 
   if (WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14") # required for compiling WINSDK headers due to auto use
+    set(CMAKE_CXX_FLAGS "-std=c++14 ${CMAKE_CXX_FLAGS}") # required for compiling WINSDK headers due to auto use
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated") # e.g. GetVersionExW
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=deprecated-declarations") # e.g. GetVersionExW
   else ()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
   endif()
 
   if (EMSCRIPTEN)

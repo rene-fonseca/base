@@ -50,7 +50,6 @@
 #include <base/NotSupported.h>
 #include <base/UnexpectedFailure.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

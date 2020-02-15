@@ -138,14 +138,6 @@ DEPENDENCY(YAML);
 #endif
 
 #if 0
-class Print {
-public:
-  
-  Print(const char* text)
-  {
-    puts(text);
-  }
-};
 Print _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(print)("PRINT: HERE " __FILE__ ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));
 #endif
 
@@ -211,12 +203,12 @@ public:
   {
     ++count;
     level = count;
-    printf("TRACK: %s [%d]\n", text, level);
+    GlobalPrint::printf("TRACK: %s [%d]\n", text, level);
   }
 
   ~TrackProgress() noexcept
   {
-    printf("TRACK: %s [%d]\n", text, level);
+    GlobalPrint::printf("TRACK: %s [%d]\n", text, level);
   }
 };
 

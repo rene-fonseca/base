@@ -270,6 +270,22 @@ public:
   virtual ~Application() noexcept;
 };
 
+#if 0
+template<typename... ARGS>
+int start(ARGS&&... args)
+{
+  using namespace com::azure::dev::base;
+  const String strings[] = { "cling", std::forward<ARGS>(args)... };
+  static constexpr MemorySize SIZE = getArraySize(strings);
+  const char* argv[SIZE];
+  for (MemorySize i = 0; i < SIZE; ++i) {
+    argv[i] = strings.native();
+  }
+  Application::Stub stub;
+  return Application::stub<Application>(SIZE, argv, nullptr);
+}
+#endif
+
 /** Make stub for exe entry point. */
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
@@ -285,11 +301,10 @@ int main(int argc, const char* argv[]) noexcept \
   com::azure::dev::base::Application::Stub stub; \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, nullptr); \
 } \
-int start() noexcept \
+template<typename... ARGS> int start(ARGS&&... args) noexcept \
 { \
-  com::azure::dev::base::Application::Stub stub; \
-  const char* args[] = {"cling"}; \
-  return com::azure::dev::base::Application::stub<APPLICATION>(getArraySize(args), args, nullptr); \
+  const char* argv[] = { __FILE__, std::forward<ARGS>(args)... }; \
+  return main(getArraySize(argv), argv); \
 }
 #else
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
@@ -303,6 +318,18 @@ int main(int argc, const char* argv[], const char* env[]) noexcept \
 #if (!defined(APPLICATION_STUB))
 /** Make stub for exe entry point. */
 #  define APPLICATION_STUB(APPLICATION) _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION)
+#endif
+
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+#  define _COM_AZURE_DEV__BASE__CLING_ENTRY(NAME) \
+int NAME() noexcept \
+{ \
+  com::azure::dev::base::Application::Stub stub; \
+  const char* args[] = {"cling"}; \
+  return com::azure::dev::base::Application::stub<APPLICATION>(getArraySize(args), args, nullptr); \
+}
+#else
+#  define _COM_AZURE_DEV__BASE__CLING_ENTRY() namespace {}
 #endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -1662,7 +1662,7 @@ String String::operator()(ARGS&&... args)
   return substImpl(*this, strings, getArraySize(strings));
 }
 
-/** Return String that is using printf-style formatting. */
+/** Return String that is using printf-style formatting. FormatOutputStream is recommended. */
 _COM_AZURE_DEV__BASE__API String stringf(const char* text, ...);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

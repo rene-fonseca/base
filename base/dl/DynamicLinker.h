@@ -51,11 +51,15 @@ public:
     GLOBAL = 2 /**< Include symbols of the module in the global symbol pool. */
   };
 
+  /** Returns address of symbol. */
   template<class TYPE>
   static inline TYPE getGlobalSymbol(const String& symbol)
   {
     return (TYPE)getGlobalSymbolImpl(symbol);
   }
+
+  /** Returns address of symbol. */
+  static void* getGlobalSymbol(const char* symbol) noexcept;
 
   /**
     Opens a Dynamic Shared Object (DSO) with the specified options. LACY
@@ -66,8 +70,7 @@ public:
     @param module The path of the module to open.
     @param options The linking options. Default is LAZY.
   */
-  DynamicLinker(
-    const String& module, unsigned int options = LAZY);
+  DynamicLinker(const String& module, unsigned int options = LAZY);
 
   /**
     Returns the address of the specified symbol.

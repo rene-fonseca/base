@@ -116,6 +116,33 @@ namespace {
 
 #endif
 
+void* DynamicLinker::getGlobalSymbol(const char* symbol) noexcept
+{
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  // GetModuleHandle does not increment reference count
+  void* result = (void*)(::GetProcAddress(::GetModuleHandle(0), symbol));
+  return result;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return nullptr;
+#else // unix
+  #if defined(RTLD_LAZY)
+    void* handle = ::dlopen(nullptr, RTLD_LAZY);
+  #else
+    void* handle = ::dlopen(nullptr, 0); // use unspecified linking
+  #endif
+  if (handle == 0) {
+    return nullptr;
+  }
+  void* result = ::dlsym(handle, symbol);
+  if (dlerror() != 0) {
+  }
+  ::dlclose(handle); // is this required
+  return result;
+#endif // flavor
+}
+
 void* DynamicLinker::getGlobalSymbolImpl(const String& symbol)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

@@ -24,41 +24,22 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+extern String vstringf(const char* text, va_list);
+
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
 class DOMImplementationImpl {
 public:
   
-  static void error(void* context, const char* message, ...) noexcept
+  static void error(void* _context, const char* text, ...) noexcept
   {
-    va_list arg;
-    char buffer[4096]; // TAG: possible buffer overrun
-    va_start(arg, message);
-    vsprintf(buffer, message, arg);
-    va_end(arg);
-
-    // TAG: detect when the warning/error begins and ends
-    // and filter important information
-    
-//     if (compare(message, "error:" ...) == 0) {
-//     }
-//     if (compare(message, "warning:" ...) == 0) {
-//     }
-//     if (compare(message, "validaty error:", ...) == 0) {
-//     }
-//     if (compare(message, "%s:%d" ...) == 0) {
-//     }
-//     if (compare(message, "%s", sizeof("%s")) == 0) {
-//     }
-//     else throw UnexpectedFailure();
-    
-    // fout << "123: " << message << ENDL;
-    
-//     const char* end = find(buffer, sizeof(buffer), '\n');
-//     if (end) {
-//       buffer[end - buffer] = 0; // terminate
-//     }
-    
-    ((String*)context)->append(buffer);
+    String* context = reinterpret_cast<String*>(_context);
+    if (INLINE_ASSERT(context)) {
+      va_list arg;
+      va_start(arg, text);
+      String buffer = vstringf(text, arg);
+      va_end(arg);
+      context->append(buffer);
+    }
   }
 };
 #endif

@@ -226,11 +226,16 @@ private:
   const char* text = nullptr;
 public:
 
-  /** Print to stdout. */
+  /** Print to stdout. May be redirected for runtime. */
+  static void print(const char* text) noexcept;
+
+  /** Print to stdout. May be redirected for runtime. */
   static void printf(const char* text, ...) noexcept;
 
+  /** Initializes global print with prefix. */
   GlobalPrint(const char* text) noexcept;
 
+  /** Destructs global print. */
   ~GlobalPrint() noexcept;
 };
 

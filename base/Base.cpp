@@ -47,10 +47,39 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+String vstringf(const char* text, va_list arg)
+{
+  String r;
+  PrimitiveStackArray<char> buffer(4096);
+  while (true) {
+    int n = vsnprintf(buffer, buffer.size(), text, arg);
+    if (n < 0) {
+      va_end(arg);
+      BASSERT(!"Failed to format string.");
+      return String();
+    }
+    if (n < (buffer.size() - 1)) {
+      r = String(buffer, n);
+      break;
+    }
+    buffer.resize(buffer.size() * 2);
+  }
+  return r;
+}
+
+String stringf(const char* text, ...)
+{
+  va_list arg;
+  va_start(arg, text);
+  String r = vstringf(text, arg);
+  va_end(arg);
+  return r;
+}
+
 void GlobalPrint::printf(const char* text, ...) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  puts(text);
+  GlobalPrint::print(text);
   return;
 #endif
 
@@ -66,6 +95,7 @@ void GlobalPrint::printf(const char* text, ...) noexcept
   if (INLINE_ASSERT(result >= 0)) {
     return;
   }
+  
   if (result < getArraySize(buffer)) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     _write(1, buffer, result);

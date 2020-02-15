@@ -28,6 +28,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+extern String vstringf(const char* text, va_list);
+
 /** Wrapper class for the callback interface. */
 class XMLDefaultReaderImpl {
 public:
@@ -419,23 +421,26 @@ public:
     }
   }
 
-  static void warning(void* parser, const char* fmt, ...) noexcept
+  static void warning(void* parser, const char* text, ...) noexcept
   {
+    UserData* p = static_cast<UserData*>(parser);
+    if (!INLINE_ASSERT(p)) {
+      return;
+    }
+    
     va_list arg;
-    char buffer[4096]; // TAG: possible buffer overrun
-    va_start(arg, fmt);
-    vsprintf(buffer, fmt, arg);
+    va_start(arg, text);
+    String buffer = vstringf(text, arg);
     va_end(arg);
     
-    UserData* p = static_cast<UserData*>(parser);
     if (p->reader->errorHandler) {
-      const char* end = find(buffer, sizeof(buffer), '\n');
-      if (end) {
-        buffer[end - buffer] = 0; // terminate
+      const MemoryDiff index = buffer.indexOf('\n');
+      if (index >= 0) {
+        buffer = buffer.substring(0, index);
       }
       p->reader->errorHandler->warning(
         SAXParseException(
-          buffer,
+          "SAX parser warning.", // TAG: we need to copy string to use buffer,
           Type::getType<XMLDefaultReader>(),
           NativeString(Cast::pointer<const char*>(getPublicId(p->context))),
           NativeString(Cast::pointer<const char*>(getSystemId(p->context))),

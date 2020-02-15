@@ -122,16 +122,12 @@ _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-
 void dumpMemory(size_t offset, size_t size)
 {
   const auto end = offset + size;
   char* src = 0;
   for (auto i = offset/64; i < end/64; ++i) {
-    printf("%6lx: ", i * 64);
+    GlobalPrint::printf("%6lx: ", i * 64);
     for (unsigned int j = 0; j < 64; ++j) {
       char ch = src[i * 64 + j];
       if (ch < 0x20) {
@@ -139,9 +135,9 @@ void dumpMemory(size_t offset, size_t size)
       } else if (ch >= 0x7f) {
         ch = '.';
       }
-      printf("%c", ch);
+      GlobalPrint::printf("%c", ch);
     }
-    printf("\n");
+    GlobalPrint::printf("\n");
   }
 }
 
@@ -153,10 +149,10 @@ void recurse(unsigned int count)
   unsigned int a = (count & 1) ? 0x32323232 : 0x42424242;
   //void* p = (void*)&recurse;
   unsigned int q = (count & 1) ? 0x31313131 : 0x41414141;
-  printf("recurse(): stack=%p count=%d func=%p\n", (void*)&recurse, count, (void*)&recurse);
+  GlobalPrint::printf("recurse(): stack=%p count=%d func=%p\n", (void*)&recurse, count, (void*)&recurse);
   unsigned int* src = (unsigned int*)&a;
   for (unsigned int i = 0; i < 16; ++i) {
-    printf("  frame %2d = %08x = %d\n", i, ((unsigned int*)&a)[i], ((unsigned int*)&a)[i]);
+    GlobalPrint::printf("  frame %2d = %08x = %d\n", i, ((unsigned int*)&a)[i], ((unsigned int*)&a)[i]);
   }
   recurse(count - 1);
 }
@@ -174,7 +170,7 @@ extern "C" void __cxa_free_exception(void* thrown_exception) noexcept
 
 extern "C" void __cxa_throw(void* thrown_exception, void* /*struct std::type_info **/ tinfo, void (*dest)(void*))
 {
-  puts("UNSUPPORTED throw: __cxa_throw() - program will halt!");
+  GlobalPrint::print("UNSUPPORTED throw: __cxa_throw() - program will halt!");
   abort();
   while (1);
 }
@@ -186,11 +182,11 @@ extern "C" void __cxa_rethrow()
 #if 0
   std::type_info* type = __cxa_current_exception_type();
   if (type) {
-    printf("__cxa_rethrow: type=%s", type->name());
+    GlobalPrint::printf("__cxa_rethrow: type=%s", type->name());
   }
 #endif
 
-  puts("UNSUPPORTED throw: __cxa_rethrow() - program will halt!");
+  GlobalPrint::print("UNSUPPORTED throw: __cxa_rethrow() - program will halt!");
   abort();
   while (1);
 }

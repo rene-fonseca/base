@@ -1183,9 +1183,13 @@ public:
   TEST_PRIORITY(40);
   TEST_PROJECT("base/string");
 
+#if !defined(__has_cpp_attribute) || !__has_cpp_attribute(__cpp_char8_t)
+  typedef char char8_t;
+#endif
+
   void run() override
   {
-    const char /*char8_t*/* s8 = u8"abc 123 æøå ! ÆØÅ ! âêîôû";
+    const char8_t* s8 = u8"abc 123 æøå ! ÆØÅ ! âêîôû";
     TEST_ASSERT(Unicode::UTF8ToUCS4(nullptr, reinterpret_cast<const uint8*>(s8), getNullTerminatedLength(s8)) == 25);
     const char16_t* s16 = u"abc 123 æøå ! ÆØÅ ! âêîôû";
     TEST_ASSERT(Unicode::UTF16ToUCS4(nullptr, s16, getNullTerminatedLength(s16)) == 25);

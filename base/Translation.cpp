@@ -135,10 +135,10 @@ String operator "" _translate(const wchar* _text, size_t _length)
   return text;
 }
 
-#if 0
+#if defined(__has_cpp_attribute) && __has_cpp_attribute(__cpp_char8_t)
 String operator "" _translate(const char8_t* _text, size_t _length)
 {
-  String text(_text, _length); // TAG: what about null terminator - bad anyway to include for translated texts
+  String text(reinterpret_cast<const char*>(_text), _length); // TAG: what about null terminator - bad anyway to include for translated texts
   R<Translation> t = current;
   if (current) {
     const String* translated = t->get(text);

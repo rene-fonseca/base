@@ -76,4 +76,9 @@ _COM_AZURE_DEV__BASE__API String operator "" _translate(const char* text, size_t
 /** Returns translation. Null-terminator should not be used for translations. */
 _COM_AZURE_DEV__BASE__API String operator "" _translate(const wchar* text, size_t length);
 
+#if defined(__has_cpp_attribute) && __has_cpp_attribute(__cpp_char8_t)
+/** Returns translation. Null-terminator should not be used for translations. */
+_COM_AZURE_DEV__BASE__API String operator "" _translate(const char8_t* _text, size_t _length);
+#endif
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

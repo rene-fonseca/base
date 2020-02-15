@@ -378,6 +378,18 @@ WideString::WideString(const char* src, MemorySize length)
   initialize(src, length);
 }
 
+#if defined(__has_cpp_attribute) && __has_cpp_attribute(__cpp_char8_t)
+WideString::WideString(const char8_t* src)
+{
+  initialize(reinterpret_cast<const char*>(src), getNullTerminatedLength(src));
+}
+
+WideString::WideString(const char8_t* src, MemorySize length)
+{
+  initialize(reinterpret_cast<const char*>(src), length);
+}
+#endif
+
 WideString::WideString(const char16_t* src)
 {
   initialize(src, getNullTerminatedLength(src));
@@ -495,6 +507,14 @@ WideString& WideString::operator=(const char* assign)
   initialize(assign, getNullTerminatedLength(assign));
   return *this;
 }
+
+#if defined(__has_cpp_attribute) && __has_cpp_attribute(__cpp_char8_t)
+WideString& WideString::operator=(const char8_t* assign)
+{
+  initialize(assign, getNullTerminatedLength(assign));
+  return *this;
+}
+#endif
 
 WideString& WideString::operator=(const wchar* assign)
 {

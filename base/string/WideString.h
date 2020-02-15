@@ -443,6 +443,25 @@ public:
   */
   WideString(const char* string, MemorySize length);
 
+#if defined(__has_cpp_attribute) && __has_cpp_attribute(__cpp_char8_t)
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+  */
+  WideString(const char8_t* string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+    @param length The length of the string.
+  */
+  WideString(const char8_t* string, MemorySize length);
+#endif
+
   /**
     Initializes the string from a string literal. The string literal is not
     copied into internal buffer. Implicit initialization is allowed.
@@ -627,6 +646,13 @@ public:
     Assignment of string to string.
   */
   WideString& operator=(const wchar* assign);
+
+#if defined(__has_cpp_attribute) && __has_cpp_attribute(__cpp_char8_t)
+  /**
+    Assignment of string to string.
+  */
+  WideString& operator=(const char8_t* assign);
+#endif
 
   /**
     Assignment of string to string.
@@ -930,6 +956,18 @@ public:
   {
     return insert(getLength(), string);
   }
+
+#if defined(__has_cpp_attribute) && __has_cpp_attribute(__cpp_char8_t)
+  /**
+    Appends the native string to this string.
+
+    @param string The native string to be appended.
+  */
+  inline WideString& append(const char8_t* string)
+  {
+    return insert(getLength(), reinterpret_cast<const char*>(string));
+  }
+#endif
 
   /**
     Appends the native string to this string.

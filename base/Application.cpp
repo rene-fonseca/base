@@ -773,7 +773,7 @@ void Application::setArgumentsAndEnvironment(int _numberOfArguments, const char*
     if (e == 0) {
 /*
       for (size_t i = 0; i < count; ++i) {
-        printf("ENVIRONMENT VARIABLE: %s\n", environ[i]);    
+        fout << "ENVIRONMENT VARIABLE: " << environ[i] << ENDL;
       }
 */
       if (!internal::environment) {

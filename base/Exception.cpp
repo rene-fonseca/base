@@ -346,7 +346,7 @@ void ThrowException::onException(const char* who, const char* file, unsigned int
   
   file = Debug::getRelativePath(file);
 #if 0 && (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  printf("THROW in %s at %s:%d\n", who, file, line);
+  GlobalPrint::printf("THROW in %s at %s:%d\n", who, file, line);
 #else
   auto& stream = fout;
 

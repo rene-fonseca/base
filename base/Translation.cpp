@@ -135,7 +135,7 @@ String operator "" _translate(const wchar* _text, size_t _length)
   return text;
 }
 
-#if defined(__has_cpp_attribute) && __has_cpp_attribute(__cpp_char8_t)
+#if defined(_COM_AZURE_DEV__BASE__CPP_CHAR8_T)
 String operator "" _translate(const char8_t* _text, size_t _length)
 {
   String text(reinterpret_cast<const char*>(_text), _length); // TAG: what about null terminator - bad anyway to include for translated texts

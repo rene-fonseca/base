@@ -443,7 +443,7 @@ public:
   */
   WideString(const char* string, MemorySize length);
 
-#if defined(__has_cpp_attribute) && __has_cpp_attribute(__cpp_char8_t)
+#if defined(_COM_AZURE_DEV__BASE__CPP_CHAR8_T)
   /**
     Initializes the string from a string literal. The string literal is not
     copied into internal buffer. Implicit initialization is allowed.
@@ -647,7 +647,7 @@ public:
   */
   WideString& operator=(const wchar* assign);
 
-#if defined(__has_cpp_attribute) && __has_cpp_attribute(__cpp_char8_t)
+#if defined(_COM_AZURE_DEV__BASE__CPP_CHAR8_T)
   /**
     Assignment of string to string.
   */
@@ -957,7 +957,7 @@ public:
     return insert(getLength(), string);
   }
 
-#if defined(__has_cpp_attribute) && __has_cpp_attribute(__cpp_char8_t)
+#if defined(_COM_AZURE_DEV__BASE__CPP_CHAR8_T)
   /**
     Appends the native string to this string.
 

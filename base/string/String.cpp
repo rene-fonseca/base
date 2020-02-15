@@ -131,6 +131,18 @@ String::String(const char* src, MemorySize length)
   initialize(src, length);
 }
 
+#if defined(_COM_AZURE_DEV__BASE__CPP_CHAR8_T)
+String::String(const char8_t* string)
+{
+  initialize(reinterpret_cast<const char*>(src), getNullTerminatedLength(src));
+}
+
+String::String(const char8_t* string, MemorySize length)
+{
+  initialize(reinterpret_cast<const char*>(src), length);
+}
+#endif
+
 String::String(const wchar* src)
 {
   initialize(src, getNullTerminatedLength(src));

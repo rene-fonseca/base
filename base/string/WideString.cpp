@@ -378,7 +378,7 @@ WideString::WideString(const char* src, MemorySize length)
   initialize(src, length);
 }
 
-#if defined(__has_cpp_attribute) && __has_cpp_attribute(__cpp_char8_t)
+#if defined(_COM_AZURE_DEV__BASE__CPP_CHAR8_T)
 WideString::WideString(const char8_t* src)
 {
   initialize(reinterpret_cast<const char*>(src), getNullTerminatedLength(src));
@@ -508,7 +508,7 @@ WideString& WideString::operator=(const char* assign)
   return *this;
 }
 
-#if defined(__has_cpp_attribute) && __has_cpp_attribute(__cpp_char8_t)
+#if defined(_COM_AZURE_DEV__BASE__CPP_CHAR8_T)
 WideString& WideString::operator=(const char8_t* assign)
 {
   initialize(assign, getNullTerminatedLength(assign));

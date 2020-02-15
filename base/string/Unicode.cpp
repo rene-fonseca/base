@@ -1183,7 +1183,7 @@ public:
   TEST_PRIORITY(40);
   TEST_PROJECT("base/string");
 
-#if !defined(__has_cpp_attribute) || !__has_cpp_attribute(__cpp_char8_t)
+#if !defined(_COM_AZURE_DEV__BASE__CPP_CHAR8_T)
   typedef char char8_t;
 #endif
 

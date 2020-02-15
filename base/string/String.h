@@ -310,6 +310,25 @@ public:
   */
   String(const wchar* string, MemorySize length);
 
+#if defined(_COM_AZURE_DEV__BASE__CPP_CHAR8_T)
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+  */
+  String(const char8_t* string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+    @param length The length of the string.
+  */
+  String(const char8_t* string, MemorySize length);
+#endif
+
   /**
     Initializes the string from a string literal. The string literal is not
     copied into internal buffer. Implicit initialization is allowed.
@@ -1508,6 +1527,17 @@ public:
     const char* result = elements->getElements();
     return result;
   }
+
+#if defined(_COM_AZURE_DEV__BASE__CPP_CHAR8_T)
+  /**
+    Returns the characters of the string for non-modifying access.
+  */
+  inline const char8_t* native8() const noexcept
+  {
+    const char* result = elements->getElements();
+    return reinterpret_cast<const char8_t*>(result);
+  }
+#endif
 
   /**
     Simple string substitution.

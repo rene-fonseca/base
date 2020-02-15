@@ -397,3 +397,11 @@
 #else
 #  define _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT
 #endif
+
+#if !defined(__has_cpp_attribute)
+#  define __has_cpp_attribute(name) 0
+#endif
+
+#if defined(__cpp_char8_t) && (__cpp_char8_t >= 201811)
+#  define _COM_AZURE_DEV__BASE__CPP_CHAR8_T
+#endif

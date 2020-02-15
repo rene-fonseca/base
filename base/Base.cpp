@@ -47,14 +47,17 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String vstringf(const char* text, va_list arg)
+String vstringf(const char* text, va_list args)
 {
   String r;
   PrimitiveStackArray<char> buffer(4096);
   while (true) {
-    int n = vsnprintf(buffer, buffer.size(), text, arg);
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wformat-security"
+    int n = vsnprintf(buffer, buffer.size(), text, args);
+    #pragma GCC diagnostic pop
     if (n < 0) {
-      va_end(arg);
+      va_end(args);
       BASSERT(!"Failed to format string.");
       return String();
     }
@@ -69,10 +72,10 @@ String vstringf(const char* text, va_list arg)
 
 String stringf(const char* text, ...)
 {
-  va_list arg;
-  va_start(arg, text);
-  String r = vstringf(text, arg);
-  va_end(arg);
+  va_list args;
+  va_start(args, text);
+  String r = vstringf(text, args);
+  va_end(args);
   return r;
 }
 
@@ -83,24 +86,35 @@ void GlobalPrint::printf(const char* text, ...) noexcept
   return;
 #endif
 
+  // do NOT add any dependencies on BASE classes
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32)
-  char buffer[1024+1];
+  PrimitiveStackArray<char> buffer(4096);
+  int n = 0;
   va_list args;
   va_start(args, text);
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-security"
-  int result = vsnprintf(buffer, getArraySize(buffer), text, args);
-#pragma GCC diagnostic pop
-  va_end (args);
-  if (INLINE_ASSERT(result >= 0)) {
-    return;
+  while (true) {
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wformat-security"
+    n = vsnprintf(buffer, buffer.size(), text, args);
+    #pragma GCC diagnostic pop
+    if (n < 0) {
+      va_end(args);
+      BASSERT(!"Failed to format string.");
+      return;
+    }
+    if (n < (buffer.size() - 1)) {
+      break;
+    }
+    buffer.resize(buffer.size() * 2);
   }
-  
-  if (result < getArraySize(buffer)) {
+  va_end (args);
+
+  if (n <= buffer.size()) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    _write(1, buffer, result);
+    _write(1, buffer, n);
 #else
-    write(1, buffer, result);
+    write(1, buffer, n);
 #endif
   }
 #endif

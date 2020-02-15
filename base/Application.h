@@ -322,14 +322,17 @@ int main(int argc, const char* argv[], const char* env[]) noexcept \
 
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
 #  define _COM_AZURE_DEV__BASE__CLING_ENTRY(NAME) \
+int NAME() noexcept {return 1;}
+#if 0
+#  define _COM_AZURE_DEV__BASE__CLING_ENTRY(NAME) \
 int NAME() noexcept \
 { \
-  com::azure::dev::base::Application::Stub stub; \
-  const char* args[] = {"cling"}; \
-  return com::azure::dev::base::Application::stub<APPLICATION>(getArraySize(args), args, nullptr); \
+  const char* argv[] = { __FILE__}; \
+  return main(getArraySize(argv), argv); \
 }
+#endif
 #else
-#  define _COM_AZURE_DEV__BASE__CLING_ENTRY() namespace {}
+#  define _COM_AZURE_DEV__BASE__CLING_ENTRY(NAME) namespace {}
 #endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

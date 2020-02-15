@@ -396,3 +396,4 @@ public:
 };
 
 APPLICATION_STUB(TestApplication);
+_COM_AZURE_DEV__BASE__CLING_ENTRY(unittesting);

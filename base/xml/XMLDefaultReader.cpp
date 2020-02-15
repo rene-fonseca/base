@@ -428,16 +428,20 @@ public:
       return;
     }
     
+#if 0
     va_list arg;
     va_start(arg, text);
     String buffer = vstringf(text, arg);
     va_end(arg);
-    
+#endif
+
     if (p->reader->errorHandler) {
+#if 0
       const MemoryDiff index = buffer.indexOf('\n');
       if (index >= 0) {
         buffer = buffer.substring(0, index);
       }
+#endif
       p->reader->errorHandler->warning(
         SAXParseException(
           "SAX parser warning.", // TAG: we need to copy string to use buffer,
@@ -451,23 +455,30 @@ public:
     }
   }
 
-  static void error(void* parser, const char* fmt, ...) noexcept
+  static void error(void* parser, const char* text, ...) noexcept
   {
-    va_list arg;
-    char buffer[4096]; // TAG: possible buffer overrun
-    va_start(arg, fmt);
-    vsprintf(buffer, fmt, arg);
-    va_end(arg);
-    
     UserData* p = static_cast<UserData*>(parser);
+    if (!p) {
+      return;
+    }
+    
+#if 0
+    va_list arg;
+    va_start(arg, text);
+    String buffer = vstringf(text, arg);
+    va_end(arg);
+#endif
+    
     if (p->reader->errorHandler) {
-      const char* end = find(buffer, sizeof(buffer), '\n');
-      if (end) {
-        buffer[end - buffer] = 0; // terminate
+#if 0
+      const MemoryDiff index = buffer.indexOf('\n');
+      if (index >= 0) {
+        buffer = buffer.substring(0, index);
       }
+#endif
       p->reader->errorHandler->error(
         SAXParseException(
-          buffer,
+          "SAX parser error.", // TAG: we need to copy string to use buffer,
           Type::getType<XMLDefaultReader>(),
           NativeString(Cast::pointer<const char*>(getPublicId(p->context))),
           NativeString(Cast::pointer<const char*>(getSystemId(p->context))),
@@ -480,21 +491,25 @@ public:
   
   static void fatalError(void* parser, const char* fmt, ...) noexcept
   {
+#if 0
     va_list arg;
-    char buffer[4096]; // TAG: possible buffer overrun
-    va_start(arg, fmt);
-    vsprintf(buffer, fmt, arg);
+    va_start(arg, text);
+    String buffer = vstringf(text, arg);
     va_end(arg);
-
+#endif
+    
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->errorHandler) {
-      const char* end = find(buffer, sizeof(buffer), '\n');
-      if (end) {
-        buffer[end - buffer] = 0; // terminate
+#if 0
+      const MemoryDiff index = buffer.indexOf('\n');
+      if (index >= 0) {
+        buffer = buffer.substring(0, index);
       }
+#endif
+      
       p->reader->errorHandler->fatalError(
         SAXParseException(
-          buffer,
+          "SAX parser fatal error.", // TAG: we need to copy string to use buffer,
           Type::getType<XMLDefaultReader>(),
           NativeString(Cast::pointer<const char*>(getPublicId(p->context))),
           NativeString(Cast::pointer<const char*>(getSystemId(p->context))),

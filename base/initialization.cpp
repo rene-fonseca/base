@@ -467,9 +467,6 @@ Application::Stub::Stub()
 {
   BASSERT(_impl::initializing && !_impl::destructing);
   _impl::initializing = false;
-  if (isRunningXeusCling()) {
-    Runtime::setRuntimeEnvironment("cling");
-  }
 }
 
 Application::Stub::~Stub()
@@ -527,6 +524,19 @@ void Runtime::internalError(const char* who, const char* message)
   // TAG: add InternalError exception
   _throw UnexpectedFailure(message ? message : who);
 }
+
+class InitializeXeusCling {
+public:
+  
+  InitializeXeusCling() noexcept
+  {
+    if (isRunningXeusCling()) {
+      Runtime::setRuntimeEnvironment("xeus/cling");
+    }
+  }
+};
+
+InitializeXeusCling initializeXeusCling;
 
 void moduleEntry()
 {

@@ -49,6 +49,7 @@
 #include <base/NotImplemented.h>
 #include <base/NotSupported.h>
 #include <base/UnexpectedFailure.h>
+#include <iostream>
 #include <stdlib.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -386,6 +387,58 @@ const Locale Locale::POSIX;
 
 const FormatOutputStream::Context FormatOutputStream::DEFAULT_CONTEXT = FormatOutputStream::Context();
 
+extern bool isRunningXeusCling();
+
+class OutputStream2OStream : public OutputStream {
+private:
+
+  std::ostream* os = nullptr;
+public:
+  
+  OutputStream2OStream(std::ostream* _os) noexcept
+    : os(_os)
+  {
+  }
+
+  void close()
+  {
+    // never close
+  }
+
+  void flush()
+  {
+    os->flush();
+  }
+
+  unsigned int write(const uint8* _buffer, unsigned int _size, bool _nonblocking)
+  {
+#if 0
+    *os << reinterpret_cast<const char*>(_buffer);
+    os->flush();
+#endif
+#if 0
+    for (unsigned int i = 0; i < _size; ++i) {
+      os->put(_buffer[i]);
+    }
+#endif
+#if 1
+    if (std::streambuf* buffer = os->rdbuf()) {
+      /*
+      for (unsigned int i = 0; i < _size; ++i) {
+        buffer->sputc(_buffer[i]);
+      }
+      */
+      return buffer->sputn(reinterpret_cast<const char*>(buffer), _size);
+    }
+#endif
+    return _size;
+  }
+};
+
+// used for xeus/cling to redirect output to browser
+OutputStream2OStream coutOutputStream(&std::cout);
+OutputStream2OStream cerrOutputStream(&std::cerr);
+
 FileDescriptorInputStream standardInputStream(
   FileDescriptor::getStandardInput()
 );
@@ -394,12 +447,16 @@ FormatInputStream _COM_AZURE_DEV__BASE__API fin(standardInputStream);
 FileDescriptorOutputStream standardOutputStream(
   FileDescriptor::getStandardOutput()
 );
-FormatOutputStream _COM_AZURE_DEV__BASE__API fout(standardOutputStream);
+FormatOutputStream _COM_AZURE_DEV__BASE__API fout(
+  isRunningXeusCling() ? static_cast<OutputStream&>(coutOutputStream) : standardOutputStream
+);
 
 FileDescriptorOutputStream standardErrorStream(
   FileDescriptor::getStandardError()
 );
-FormatOutputStream _COM_AZURE_DEV__BASE__API ferr(standardErrorStream);
+FormatOutputStream _COM_AZURE_DEV__BASE__API ferr(
+  isRunningXeusCling() ? static_cast<OutputStream&>(cerrOutputStream) : standardErrorStream
+);
 
 SoundDevice SoundDevice::soundDevice;
 
@@ -410,6 +467,9 @@ Application::Stub::Stub()
 {
   BASSERT(_impl::initializing && !_impl::destructing);
   _impl::initializing = false;
+  if (isRunningXeusCling()) {
+    Runtime::setRuntimeEnvironment("cling");
+  }
 }
 
 Application::Stub::~Stub()

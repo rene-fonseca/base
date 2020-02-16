@@ -102,6 +102,9 @@ namespace {
     if (const char* value = getenv("TERM")) {
       e.add("TERM", value);
     }
+    if (const char* value = getenv("JPY_PARENT_PID")) {
+      e.add("JPY_PARENT_PID", value);
+    }
     return e;
   }
 }
@@ -132,6 +135,11 @@ bool FileDescriptor::isANSITerminal() const noexcept
     }
   }
 
+  // JUPYTER should set CLICOLOR=1 instead
+  if (auto value = env.find("JPY_PARENT_PID")) {
+    return true;
+  }
+
   bool atty = isTerminal();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   {
@@ -142,7 +150,7 @@ bool FileDescriptor::isANSITerminal() const noexcept
     }
   }
 #endif
-  
+
   if (!atty) {
     return false;
   }

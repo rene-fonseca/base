@@ -114,6 +114,8 @@
 #endif
 #endif
 
+#include <stdlib.h>
+
 _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE

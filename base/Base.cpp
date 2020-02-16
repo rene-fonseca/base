@@ -70,7 +70,7 @@ String vstringf(const char* text, va_list args)
       BASSERT(!"Failed to format string.");
       return String();
     }
-    if (static_cast<MemoryDiff>(n) < (buffer.size() - 1)) {
+    if (static_cast<MemorySize>(n) < (buffer.size() - 1)) {
       r = String(buffer, n);
       break;
     }

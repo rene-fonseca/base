@@ -15,8 +15,10 @@
 #include <base/concurrency/AtomicCounter.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/ANSIEscapeSequence.h>
+#include <base/dl/DynamicLinker.h>
 #include <base/StackFrame.h>
 #include <base/UnitTest.h>
+#include <iostream>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -79,10 +81,77 @@ String stringf(const char* text, ...)
   return r;
 }
 
+// TAG: need a way to detect xeus/cling
+bool isRunningXeusCling()
+{
+  static int state = -1;
+  if (state > 0) {
+    return state != 0;
+  }
+
+#if 0
+  // use this to debug hooking
+  std::cerr << text << " " << (void*)&std::cout << " " << (void*)std::cout.rdbuf() << std::endl;
+  std::cerr << text << " " << (void*)&std::cerr << " " << (void*)std::cerr.rdbuf() << std::endl;
+#endif
+  
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  void* handle = DynamicLinker::getModule("libxeus.1.0.0.dll");
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  void* handle = DynamicLinker::getModule("libxeus.1.0.0.dylib");
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  void* handle = DynamicLinker::getModule("libxeus.1.0.0.so");
+#endif
+
+#if 0
+  // TAG: need a way to detect xcpp app and redirect
+  state = 1;
+  return true;
+#endif
+  
+#if 0
+  void* addr = DynamicLinker::getGlobalSymbol("__ZN4xeus15get_current_pidEv");
+  if (addr) {
+    state = 1;
+    return true;
+  }
+  // xeus::get_interpreter()
+#endif
+  
+  // std::streambuf* buffer = std::cout.rdbuf();
+  // libcxx has internal __stdoutbuf class
+  state = 0;
+  return false;
+}
+
+void GlobalPrint::print(const char* text) noexcept
+{
+  if (!text) {
+    return;
+  }
+  const MemorySize n = getNullTerminatedLength(text);
+  if (isRunningXeusCling()) {
+    // use fout/ferr redirection to avoid redundant implementation
+    fout.write(reinterpret_cast<const uint8*>(text), n, false);
+    fout.flush();
+#if 0
+    if (std::streambuf* stdbuffer = std::cout.rdbuf()) {
+      stdbuffer->sputn(text, n);
+    }
+#endif
+  } else {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    _write(1, text, n); // 1 is handle for stdout
+#else
+    write(1, text, n); // 1 is handle for stdout
+#endif
+  }
+}
+
 void GlobalPrint::printf(const char* text, ...) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  GlobalPrint::print(text);
+  print(text);
   return;
 #endif
 
@@ -111,11 +180,7 @@ void GlobalPrint::printf(const char* text, ...) noexcept
   va_end (args);
 
   if (n <= buffer.size()) {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    _write(1, buffer, n);
-#else
-    write(1, buffer, n);
-#endif
+    print(buffer);
   }
 #endif
 }

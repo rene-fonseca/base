@@ -118,8 +118,6 @@ _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
-
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 
 void dumpMemory(size_t offset, size_t size)
@@ -141,6 +139,12 @@ void dumpMemory(size_t offset, size_t size)
   }
 }
 
+#endif
+
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+
 void recurse(unsigned int count)
 {
   if (count == 0) {
@@ -149,10 +153,10 @@ void recurse(unsigned int count)
   unsigned int a = (count & 1) ? 0x32323232 : 0x42424242;
   //void* p = (void*)&recurse;
   unsigned int q = (count & 1) ? 0x31313131 : 0x41414141;
-  GlobalPrint::printf("recurse(): stack=%p count=%d func=%p\n", (void*)&recurse, count, (void*)&recurse);
+  base::GlobalPrint::printf("recurse(): stack=%p count=%d func=%p\n", (void*)&recurse, count, (void*)&recurse);
   unsigned int* src = (unsigned int*)&a;
   for (unsigned int i = 0; i < 16; ++i) {
-    GlobalPrint::printf("  frame %2d = %08x = %d\n", i, ((unsigned int*)&a)[i], ((unsigned int*)&a)[i]);
+    base::GlobalPrint::printf("  frame %2d = %08x = %d\n", i, ((unsigned int*)&a)[i], ((unsigned int*)&a)[i]);
   }
   recurse(count - 1);
 }
@@ -170,7 +174,7 @@ extern "C" void __cxa_free_exception(void* thrown_exception) noexcept
 
 extern "C" void __cxa_throw(void* thrown_exception, void* /*struct std::type_info **/ tinfo, void (*dest)(void*))
 {
-  GlobalPrint::print("UNSUPPORTED throw: __cxa_throw() - program will halt!");
+  base::GlobalPrint::print("UNSUPPORTED throw: __cxa_throw() - program will halt!");
   abort();
   while (1);
 }
@@ -182,11 +186,11 @@ extern "C" void __cxa_rethrow()
 #if 0
   std::type_info* type = __cxa_current_exception_type();
   if (type) {
-    GlobalPrint::printf("__cxa_rethrow: type=%s", type->name());
+    base::GlobalPrint::printf("__cxa_rethrow: type=%s", type->name());
   }
 #endif
 
-  GlobalPrint::print("UNSUPPORTED throw: __cxa_rethrow() - program will halt!");
+  base::GlobalPrint::print("UNSUPPORTED throw: __cxa_rethrow() - program will halt!");
   abort();
   while (1);
 }

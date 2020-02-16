@@ -55,10 +55,16 @@ String vstringf(const char* text, va_list args)
   String r;
   PrimitiveStackArray<char> buffer(4096);
   while (true) {
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC) || \
+    (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wformat-security"
+#endif
     int n = vsnprintf(buffer, buffer.size(), text, args);
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC) || \
+    (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM)
     #pragma GCC diagnostic pop
+#endif
     if (n < 0) {
       va_end(args);
       BASSERT(!"Failed to format string.");

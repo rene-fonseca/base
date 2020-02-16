@@ -24,6 +24,12 @@ String Format::substImpl(const UTF8Stringify& text, const UTF8Stringify* args, M
   return s.format();
 }
 
+void Format::printImpl(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs)
+{
+  Subst s(text, args, numberOfArgs);
+  fout << s.format() << ENDL;
+}
+
 Format::Subst::Subst(const UTF8Stringify& _text, const UTF8Stringify* _args, MemorySize _numberOfArgs)
   : text(_text),
     args(_args),

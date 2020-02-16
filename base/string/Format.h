@@ -51,6 +51,11 @@ public:
   static String substImpl(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs);
 
   /**
+    Print string substitution.
+  */
+  static void printImpl(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs);
+
+  /**
     Simple string substitution.
 
     String text = Format::subst(MESSAGE("My name is %1 and my last name is %2."), "John", "Doe");
@@ -141,5 +146,17 @@ public:
 
 /** Substitutes text using % style. */
 _COM_AZURE_DEV__BASE__API String operator%(const UTF8Stringify& text, const Subst& subst);
+
+/**
+  Print to stdout with substitution. EOL and flush is added automatically.
+
+  print("My name is %1 and my last name is %2.", "John", "Doe");
+*/
+template<typename... ARGS>
+static void print(const UTF8Stringify& text, ARGS&&... args)
+{
+  const UTF8Stringify strings[] = { UTF8Stringify(std::forward<ARGS>(args))... }; // has use-local on buffer
+  Format::printImpl(text, strings, getArraySize(strings));
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

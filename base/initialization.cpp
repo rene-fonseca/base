@@ -412,23 +412,23 @@ public:
 
   unsigned int write(const uint8* _buffer, unsigned int _size, bool _nonblocking)
   {
-#if 0
+#if 0 // old data is cached somewhere and output again
     *os << reinterpret_cast<const char*>(_buffer);
     os->flush();
 #endif
-#if 0
+#if 0 // works
     for (unsigned int i = 0; i < _size; ++i) {
       os->put(_buffer[i]);
     }
 #endif
-#if 1
+#if 1 // works
     if (std::streambuf* buffer = os->rdbuf()) {
-      /*
-      for (unsigned int i = 0; i < _size; ++i) {
-        buffer->sputc(_buffer[i]);
+      const uint8* src = _buffer;
+      const uint8* end = _buffer + _size;
+      while (src != end) {
+        buffer->sputc(*src++);
       }
-      */
-      return buffer->sputn(reinterpret_cast<const char*>(buffer), _size);
+      // return buffer->sputn(reinterpret_cast<const char*>(buffer), _size); // not working
     }
 #endif
     return _size;

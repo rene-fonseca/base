@@ -153,7 +153,7 @@ void* DynamicLinker::getModule(const char* path) noexcept
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return nullptr;
 #else // unix
-  void* handle = ::dlopen(nullptr, RTLD_NOLOAD);
+  void* handle = ::dlopen(path, RTLD_NOLOAD);
   return handle;
 #endif // flavor
 }

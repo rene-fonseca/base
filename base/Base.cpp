@@ -37,6 +37,7 @@
 #  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #    include <sys/sysctl.h>
 #    include <unistd.h>
+//#   include <crt_externs.h>
 #  endif
 #endif // flavor
 #include <stdio.h>
@@ -81,7 +82,7 @@ String stringf(const char* text, ...)
   return r;
 }
 
-// TAG: need a way to detect xeus/cling
+/** Detect if running under xeus/cling. */
 bool isRunningXeusCling()
 {
   static int state = -1;
@@ -90,38 +91,48 @@ bool isRunningXeusCling()
   }
 
 #if 0
-  // use this to debug hooking
+  // TAG: can we detect redirection of buffer? would need to compare to original value std::cout.rdbuf();
+  // std::streambuf* buffer = std::cout.rdbuf();
+  // libcxx has internal __stdoutbuf class
   std::cerr << text << " " << (void*)&std::cout << " " << (void*)std::cout.rdbuf() << std::endl;
   std::cerr << text << " " << (void*)&std::cerr << " " << (void*)std::cerr.rdbuf() << std::endl;
 #endif
-  
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  void* handle = DynamicLinker::getModule("libxeus.1.0.0.dll");
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  void* handle = DynamicLinker::getModule("libxeus.1.0.0.dylib");
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  void* handle = DynamicLinker::getModule("libxeus.1.0.0.so");
+
+#if 0
+  const String path = Process::getProcess().getName();
+#if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32)
+  state = path.endsWith("\\cling\\bin\\xcpp") ? 1 : 0; // not a good way to detect xeus
+#else
+  state = path.endsWith("/cling/bin/xcpp") ? 1 : 0; // not a good way to detect xeus
+#endif
+#endif
+
+  if (const char* value = getenv("JPY_PARENT_PID")) {
+    // std::cerr << "VARIABLE=" << value << std::endl;
+    state = 1;
+  }
+#if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32)
+  if (state == 0) {
+    if (const char* value = getenv("_")) {
+      // std::cerr << "VARIABLE=" << value << std::endl;
+      state = String(value).endsWith("/jupyter") ? 1 : 0;
+    }
+  }
 #endif
 
 #if 0
-  // TAG: need a way to detect xcpp app and redirect
-  state = 1;
-  return true;
-#endif
-  
-#if 0
-  void* addr = DynamicLinker::getGlobalSymbol("__ZN4xeus15get_current_pidEv");
-  if (addr) {
-    state = 1;
-    return true;
+  char*** e = _NSGetEnviron();
+  if (e) {
+    for (size_t i = 0; ; ++i) {
+      if (!(*e)[i]) {
+        break;
+      }
+      std::cerr << "ENVIRONMENT VARIABLE: " << (*e)[i] << std::endl;
+    }
   }
-  // xeus::get_interpreter()
 #endif
   
-  // std::streambuf* buffer = std::cout.rdbuf();
-  // libcxx has internal __stdoutbuf class
-  state = 0;
-  return false;
+  return state != 0;
 }
 
 void GlobalPrint::print(const char* text) noexcept

@@ -25,6 +25,11 @@ UTF8Stringify::UTF8Stringify()
 {
 }
 
+UTF8Stringify::UTF8Stringify(NullPtr)
+{
+  span = ConstSpan<char>("nullptr", 7);
+}
+
 UTF8Stringify::UTF8Stringify(bool src)
 {
   span = src ? ConstSpan<char>("true", 4) : ConstSpan<char>("false", 5);

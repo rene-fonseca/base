@@ -48,6 +48,9 @@ public:
   UTF8Stringify();
 
   /** Initialize buffer. */
+  UTF8Stringify(NullPtr);
+
+  /** Initialize buffer. */
   UTF8Stringify(bool src);
 
   /** Initialize buffer. */

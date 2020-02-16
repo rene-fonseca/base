@@ -61,6 +61,9 @@ public:
   /** Returns address of symbol. */
   static void* getGlobalSymbol(const char* symbol) noexcept;
 
+  /** Returns the module handle if already loaded. */
+  static void* getModule(const char* path) noexcept;
+
   /**
     Opens a Dynamic Shared Object (DSO) with the specified options. LACY
     relocations may not be supported the particular platform in which case all

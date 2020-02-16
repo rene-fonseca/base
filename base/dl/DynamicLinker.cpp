@@ -143,6 +143,21 @@ void* DynamicLinker::getGlobalSymbol(const char* symbol) noexcept
 #endif // flavor
 }
 
+void* DynamicLinker::getModule(const char* path) noexcept
+{
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  void* handle = ::GetModuleHandleW(ToWCharString(path));
+  return handle;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return nullptr;
+#else // unix
+  void* handle = ::dlopen(nullptr, RTLD_NOLOAD);
+  return handle;
+#endif // flavor
+}
+
 void* DynamicLinker::getGlobalSymbolImpl(const String& symbol)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

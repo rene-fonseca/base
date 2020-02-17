@@ -1674,35 +1674,101 @@ String toString(const TYPE& v)
   return String(span.begin(), span.getSize());
 }
 
+// /** Returns Base64 decoding. */
+// _COM_AZURE_DEV__BASE__API String base64decode(const String& text);
+
+/** Returns Base64 encoding. */
+_COM_AZURE_DEV__BASE__API String base64encode(const String& bytes);
+
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+
+/** Cling mime bundle. */
+class _COM_AZURE_DEV__BASE__API ClingBundleHandle {
+private:
+  
+  ClingBundle bundle;
+public:
+  
+  inline ClingBundleHandle()
+    : bundle(ClingBundle::object())
+  {
+  }
+
+  inline ClingBundleHandle& setMimeType(const char* mimetype, const String& text)
+  {
+    bundle[mimetype] = text.native();
+    return *this;
+  }
+
+  inline ClingBundleHandle& setOctetStream(const String& bytes)
+  {
+    return setMimeType("application/octet-stream", base64encode(bytes));
+  }
+
+  inline ClingBundleHandle& setPlainText(const String& text)
+  {
+    return setMimeType("text/plain", text);
+  }
+
+  inline ClingBundleHandle& setHTMLText(const String& html)
+  {
+    return setMimeType("text/html", html);
+  }
+  
+  inline ClingBundleHandle& setImageGIF(const String& bytes)
+  {
+    return setMimeType("image/gif", base64encode(bytes));
+  }
+
+  inline ClingBundleHandle& setImagePNG(const String& bytes)
+  {
+    return setMimeType("image/png", base64encode(bytes));
+  }
+
+  inline ClingBundleHandle& setImageJPEG(const String& bytes)
+  {
+    return setMimeType("image/jpeg", base64encode(bytes));
+  }
+
+  inline ClingBundleHandle& setVideoMP4(const String& bytes)
+  {
+    return setMimeType("video/mp4", base64encode(bytes));
+  }
+
+  inline ClingBundleHandle& setAudioMPEG(const String& bytes)
+  {
+    return setMimeType("audio/mpeg", base64encode(bytes));
+  }
+
+  inline ClingBundleHandle& setImageSVG(const String& svg)
+  {
+    return setMimeType("image/svg+xml", svg);
+  }
+
+  inline operator const ClingBundle&() noexcept
+  {
+    return bundle;
+  }
+};
+
 inline ClingBundle cling_getMimeBundle(const String& plain)
 {
-  auto bundle = ClingBundle::object();
-  bundle["text/plain"] = plain.native();
-  return bundle;
+  return ClingBundleHandle().setPlainText(plain);
 }
 
 inline ClingBundle cling_getHTMLMimeBundle(const String& html)
 {
-  auto bundle = ClingBundle::object();
-  bundle["text/html"] = html.native();
-  return bundle;
+  return ClingBundleHandle().setHTMLText(html);
 }
 
 inline ClingBundle cling_getHTMLMimeBundle(const String& plain, const String& html)
 {
-  auto bundle = ClingBundle::object();
-  bundle["text/plain"] = plain.native();
-  bundle["text/html"] = html.native();
-  return bundle;
+  return ClingBundleHandle().setPlainText(plain).setHTMLText(html);
 }
 
 inline ClingBundle mime_bundle_repr(const String& v)
 {
-  auto bundle = ClingBundle::object();
-  // String temp = format() << escape(v) << " LENGTH=" << v.getLength();
-  bundle["text/plain"] = escape(v).native();
-  return bundle;
+  return ClingBundleHandle().setPlainText(escape(v));
 }
 #endif
 

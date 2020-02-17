@@ -18,6 +18,7 @@
 #include <base/Functor.h>
 #include <base/collection/Array.h>
 #include <base/UnitTest.h>
+#include <base/security/Base64.h>
 #include <string.h>
 
 // C++: nice if we can get header with only forward declaration of basic_string/string/wstring/...
@@ -1152,6 +1153,18 @@ String escape(const String& s)
   }
   stream << '"';
   return stream;
+}
+
+#if 0
+String base64decode(const String& text)
+{
+  return Base64::decode(bytes.getBytes(), bytes.getLength());
+}
+#endif
+
+String base64encode(const String& bytes)
+{
+  return Base64::encode(bytes.getBytes(), bytes.getLength());
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

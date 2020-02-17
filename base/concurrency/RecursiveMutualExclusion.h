@@ -96,6 +96,6 @@ public:
   ~RecursiveMutualExclusion();
 };
 
-_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(RecursiveMutualExclusion)
+// _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(RecursiveMutualExclusion)
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

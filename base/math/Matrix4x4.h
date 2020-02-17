@@ -800,4 +800,7 @@ template<class TYPE>
 class IsUninitializeable<Matrix4x4<TYPE> > : public IsUninitializeable<TYPE> {
 };
 
+// TAG: add HTML
+// _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_TEMPLATE(Matrix4x4)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

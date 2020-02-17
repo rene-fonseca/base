@@ -432,4 +432,6 @@ typedef Vector2D<float> fvector2;
 typedef Vector2D<double> dvector2;
 typedef Vector2D<long double> ldvector2;
 
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_TEMPLATE(Vector2D)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

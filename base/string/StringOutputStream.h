@@ -13,10 +13,9 @@
 
 #pragma once
 
-#include <base/Object.h>
-#include <base/string/String.h>
 #include <base/io/OutputStream.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/TypeInfo.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -184,13 +183,14 @@ String getContainerAsHTML(const TYPE& value)
   StringOutputStream stream;
   typename TYPE::ReadEnumerator enu = value.getReadEnumerator();
   stream << "<table>";
-  stream << "<tr>" << "<th colspan=\"2\" align=\"center\">" << Type::getType<TYPE>().getLocalName()
-    << " SIZE=" << value.getSize() << "<th>" << "</tr>";
-  stream << "<tr>" << "<th>" << "Index" << "</th>" << "<th align=\"left\">" << "Value" << "</th>" << "</tr>";
+  stream << "<tr>" << "<th colspan=\"2\" style=\"text-align: center\">" << TypeInfo::getTypename(Type::getType<TYPE>())
+    << " [SIZE=" << value.getSize() << "]<th>" << "</tr>";
+  stream << "<tr>" << "<th style=\"text-align: right\">" << "Index" << "</th>"
+    << "<th style=\"text-align: left\">" << "Value" << "</th>" << "</tr>";
   MemorySize index = 0;
   while (enu.hasNext()) { // TAG: what happens if nested
     const auto& value = enu.next();
-    stream << "<tr>" << "<td>" << index++ << "</td>" << "<td align=\"left\">"
+    stream << "<tr>" << "<td style=\"text-align: right\">" << index++ << "</td>" << "<td style=\"text-align: left\">"
       << HTMLEncode<decltype(value)>::map(value) << "</td>" << "</tr>";
   }
   stream << "<table>";

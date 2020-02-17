@@ -761,4 +761,6 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const HashSet<TYPE>& 
   return stream;
 }
 
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_CONTAINER(HashSet)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

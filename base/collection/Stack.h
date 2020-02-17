@@ -497,4 +497,6 @@ FormatOutputStream& operator<<(
   return stream;
 }
 
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_CONTAINER(Stack)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

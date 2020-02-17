@@ -492,4 +492,6 @@ typedef Vector3D<float> fvector3;
 typedef Vector3D<double> dvector3;
 typedef Vector3D<long double> ldvector3;
 
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_TEMPLATE(Vector3D)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -870,4 +870,6 @@ template<typename TYPE>
 class IsUninitializeable<Complex<TYPE> > : public IsUninitializeable<TYPE> {
 };
 
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_TEMPLATE(Complex)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

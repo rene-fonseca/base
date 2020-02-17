@@ -438,4 +438,6 @@ TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) noexcept;
 template<class TYPE>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value);
 
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_TEMPLATE(Vector)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

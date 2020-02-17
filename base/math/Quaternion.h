@@ -443,4 +443,6 @@ typedef Quaternion<float> fquaternion;
 typedef Quaternion<double> dquaternion;
 typedef Quaternion<long double> ldquaternion;
 
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_TEMPLATE(Quaternion)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

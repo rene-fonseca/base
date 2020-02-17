@@ -201,4 +201,6 @@ template<>
 class IsUninitializeable<Dimension> : public IsUninitializeable<unsigned int> {
 };
 
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(Dimension)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

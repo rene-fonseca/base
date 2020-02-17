@@ -581,4 +581,6 @@ public:
 */
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value);
 
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(AnyValue)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

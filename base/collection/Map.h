@@ -540,4 +540,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>
   return stream;
 }
 
+// TAG: show key instead of index
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_CONTAINER(Map)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

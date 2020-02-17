@@ -574,6 +574,11 @@ public:
     Sets the value as a reference.
   */
   void setReference(const AnyReference& value) noexcept;
+  
+  /**
+    Returns the literal for for given representation.
+  */
+  static const char* getTypeAsId(Representation representation);
 };
 
 /**
@@ -581,6 +586,20 @@ public:
 */
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value);
 
-_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(AnyValue)
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+inline ClingMimeBundle mime_bundle_repr(const AnyValue& v)
+{
+  const char* id = AnyValue::getTypeAsId(v.getRepresentation();
+  switch (v.getRepresentation) {
+  case AnyValue::CHARACTER:
+  case AnyValue::WIDE_CHARACTER:
+  case AnyValue::STRING:
+  case AnyValue::WIDE_STRING:
+    return ClingMimeBundleHandle().setPlainText(escape(v) + " [TYPE=" + id + "]");
+  default:
+    return ClingMimeBundleHandle().setPlainText(v + " [TYPE=" + id + "]");
+  }
+}
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

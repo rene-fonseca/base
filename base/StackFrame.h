@@ -266,9 +266,9 @@ _COM_AZURE_DEV__BASE__API String getContainerAsHTML(const StackTrace& stackTrace
 
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
 
-inline ClingBundle mime_bundle_repr(const StackTrace& stackTrace)
+inline ClingMimeBundle mime_bundle_repr(const StackTrace& stackTrace)
 {
-  return ClingBundleHandle().setHTMLText(getContainerAsHTML(stackTrace));
+  return ClingMimeBundleHandle().setHTMLText(getContainerAsHTML(stackTrace));
 }
 #endif
 

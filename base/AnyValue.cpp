@@ -1500,6 +1500,53 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value
   return stream;
 }
 
+const char* AnyValue::getTypeAsId(AnyValue::Representation representation)
+{
+  switch (representation) {
+  case AnyValue::TYPE:
+    return "Type";
+  case AnyValue::POINTER:
+    return "void*";
+  case AnyValue::CHARACTER:
+    return "char";
+  case AnyValue::WIDE_CHARACTER:
+    return "wchar";
+  case AnyValue::BOOLEAN:
+    return "bool";
+  case AnyValue::SHORT_INTEGER:
+    return "short";
+  case AnyValue::UNSIGNED_SHORT_INTEGER:
+    return "unsigned short";
+  case AnyValue::INTEGER:
+    return "int";
+  case AnyValue::UNSIGNED_INTEGER:
+    return "unsigned int";
+  case AnyValue::LONG_INTEGER:
+    return "long";
+  case AnyValue::UNSIGNED_LONG_INTEGER:
+    return "unsigned long";
+  case AnyValue::LONG_LONG_INTEGER:
+    return "long long";
+  case AnyValue::UNSIGNED_LONG_LONG_INTEGER:
+    return "unsigned long long";
+  case AnyValue::FLOAT:
+    return "float";
+  case AnyValue::DOUBLE:
+    return "double";
+  case AnyValue::LONG_DOUBLE:
+    return "long double";
+  case AnyValue::STRING:
+    return "String";
+  case AnyValue::WIDE_STRING:
+    return "WideString";
+  case AnyValue::REFERENCE:
+    return "Reference";
+  default:
+    INVALID_CONTROL_FLOW();
+  }
+  return "";
+}
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(AnyValue) : public UnitTest {

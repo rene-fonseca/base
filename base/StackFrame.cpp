@@ -799,8 +799,8 @@ String getContainerAsHTML(const StackTrace& stackTrace)
   stream << "<table>";
   stream << "<tr>" << "<th colspan=\"2\" style=\"text-align: center\">"
     << "Stack Trace" << "</th>" << "</tr>";
-  stream << "<tr>" << "<th style=\"text-align: right\">" << "Key" << "</th>"
-    << "<th style=\"text-align: left\">" << "Value" << "</th>" << "</tr>";
+  stream << "<tr>" << "<th style=\"text-align: right\">" << "Address" << "</th>"
+    << "<th style=\"text-align: left\">" << "Frame" << "</th>" << "</tr>";
 
   unsigned int field1 = 1;
   if (trace.getSize() >= 100) {
@@ -860,15 +860,22 @@ String getContainerAsHTML(const StackTrace& stackTrace)
         // TAG: we can add a register of namespace macro like register of test to support stripping of any namespace
       }
       
+      auto index = demangled.indexOf('(');
+      if (index >= 0) {
+        demangled = "<b>" + demangled.substring(0, index) + "</b>" + "<i>" + demangled.substring(index) + "</i>";
+      } else {
+        demangled = "<b>" + HTML::encode(demangled) + "</b>";
+      }
+      demangled = "<font color=\"blue\">" + demangled + "</font>";
+
       String symbol = demangled;
       if (imagePath) {
-        symbol = imagePath << "!" << demangled;
+        symbol = "<font color=\"green\">" + HTML::encode(imagePath) + "</font>!" + demangled;
       }
 
       stream << "<tr>" << "<td style=\"text-align: right\">"
-        << index << "</td>" << "<td style=\"text-align: right\">"
         << address << "</td>" << "<td style=\"text-align: left\">"
-        << HTML::encode(symbol) << "</td>" << "</tr>";
+        << symbol << "</td>" << "</tr>";
       ++index;
     }
   }

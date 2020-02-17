@@ -546,19 +546,17 @@ template<class KEY, class VALUE>
 String getContainerAsHTML(const Map<KEY, VALUE>& value)
 {
   StringOutputStream stream;
-  typename Map<KEY, VALUE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << "<table>";
   stream << "<tr>" << "<th colspan=\"2\" style=\"text-align: center\">"
     << TypeInfo::getTypename(Type::getType<Map<KEY, VALUE> >())
     << " [SIZE=" << value.getSize() << "]<th>" << "</tr>";
-  stream << "<tr>" << "<th style=\"text-align: right\">" << "Index" << "</th>"
+  stream << "<tr>" << "<th style=\"text-align: right\">" << "Key" << "</th>"
     << "<th style=\"text-align: left\">" << "Value" << "</th>" << "</tr>";
   MemorySize index = 0;
-  while (enu.hasNext()) { // TAG: what happens if nested
-    const auto& kv = enu.next();
+  for (const auto& kv : value) { // TAG: what happens if nested
     stream << "<tr>" << "<td style=\"text-align: right\">"
-      << HTMLEncode<decltype(value)>::map(kv.getKey()) << "</td>" << "<td style=\"text-align: left\">"
-      << HTMLEncode<decltype(value)>::map(kv.getValue()) << "</td>" << "</tr>";
+      << HTMLEncode<KEY>::map(kv.getKey()) << "</td>" << "<td style=\"text-align: left\">"
+      << HTMLEncode<VALUE>::map(kv.getValue()) << "</td>" << "</tr>";
   }
   stream << "<table>";
   return stream.getString();

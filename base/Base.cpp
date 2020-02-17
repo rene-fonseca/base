@@ -138,6 +138,9 @@ bool isRunningXeusCling()
   }
 #endif
   
+  if (state < 0) {
+    state = 0;
+  }
   return state != 0;
 }
 
@@ -158,10 +161,11 @@ void GlobalPrint::print(const char* text) noexcept
 #endif
   } else {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    _write(1, text, n); // 1 is handle for stdout
+    auto written = _write(1, text, n); // 1 is handle for stdout
 #else
-    write(1, text, n); // 1 is handle for stdout
+    auto written = write(1, text, n); // 1 is handle for stdout
 #endif
+    (void)written;
   }
 }
 

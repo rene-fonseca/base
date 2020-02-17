@@ -19,7 +19,7 @@
 #include <base/collection/InvalidNode.h>
 #include <base/collection/EmptyContainer.h>
 #include <base/mem/Reference.h>
-#include <base/string/FormatOutputStream.h>
+#include <base/string/StringOutputStream.h>
 #include <base/collection/Algorithm.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE

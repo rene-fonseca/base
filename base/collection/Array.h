@@ -20,7 +20,7 @@
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/mem/Reference.h>
 #include <base/OutOfRange.h>
-#include <base/string/FormatOutputStream.h>
+#include <base/string/StringOutputStream.h>
 #include <base/Functor.h>
 #include <base/collection/Algorithm.h>
 

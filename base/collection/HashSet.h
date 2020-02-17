@@ -19,7 +19,7 @@
 #include <base/MemoryException.h>
 #include <base/math/Math.h>
 #include <base/mem/Reference.h>
-#include <base/string/FormatOutputStream.h>
+#include <base/string/StringOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

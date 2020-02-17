@@ -285,8 +285,16 @@ inline ClingBundle mime_bundle_repr(const NAME<TYPE>& v) \
 { \
   return cling_getHTMLMimeBundle(getContainerAsHTML(v)); \
 }
+
+#  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_KEY_CONTAINER(NAME) \
+template<class KEY, class VALUE> \
+inline ClingBundle mime_bundle_repr(const NAME<KEY, VALUE>& v) \
+{ \
+  return cling_getHTMLMimeBundle(getContainerAsHTML(v)); \
+}
 #else
 #  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(TYPE)
 #  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_TEMPLATE(TYPE)
 #  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_CONTAINER(TYPE)
+#  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_KEY_CONTAINER(TYPE)
 #endif

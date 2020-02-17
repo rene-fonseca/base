@@ -17,7 +17,8 @@
 #include <base/collection/Association.h>
 #include <base/MemoryException.h>
 #include <base/collection/InvalidKey.h>
-#include <base/string/FormatOutputStream.h>
+#include <base/string/StringOutputStream.h>
+#include <base/TypeInfo.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -540,7 +541,29 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>
   return stream;
 }
 
-// TAG: show key instead of index
-_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_CONTAINER(Map)
+/** Returns container as HTML. */
+template<class KEY, class VALUE>
+String getContainerAsHTML(const Map<KEY, VALUE>& value)
+{
+  StringOutputStream stream;
+  typename Map<KEY, VALUE>::ReadEnumerator enu = value.getReadEnumerator();
+  stream << "<table>";
+  stream << "<tr>" << "<th colspan=\"2\" style=\"text-align: center\">"
+    << TypeInfo::getTypename(Type::getType<Map<KEY, VALUE> >())
+    << " [SIZE=" << value.getSize() << "]<th>" << "</tr>";
+  stream << "<tr>" << "<th style=\"text-align: right\">" << "Index" << "</th>"
+    << "<th style=\"text-align: left\">" << "Value" << "</th>" << "</tr>";
+  MemorySize index = 0;
+  while (enu.hasNext()) { // TAG: what happens if nested
+    const auto& kv = enu.next();
+    stream << "<tr>" << "<td style=\"text-align: right\">"
+      << HTMLEncode<decltype(value)>::map(kv.getKey()) << "</td>" << "<td style=\"text-align: left\">"
+      << HTMLEncode<decltype(value)>::map(kv.getValue()) << "</td>" << "</tr>";
+  }
+  stream << "<table>";
+  return stream.getString();
+}
+
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_KEY_CONTAINER(Map)
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

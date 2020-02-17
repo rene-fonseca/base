@@ -440,6 +440,4 @@ public:
   ~DumpStackOnException() noexcept;
 };
 
-_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(Exception)
-
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

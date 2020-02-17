@@ -980,4 +980,12 @@ inline GetString getString() noexcept
 /** Converts FormatOutputStream to String. Stream is flushed automatically. */
 _COM_AZURE_DEV__BASE__API String operator<<(FormatOutputStream& stream, const GetString& getString);
 
+template<class TYPE>
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const AtomicCounter<TYPE>& value)
+{
+  return stream << value.getValue();
+}
+
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(Exception)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

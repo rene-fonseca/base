@@ -258,3 +258,35 @@ public:
   Runtime::notSupported(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION)
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+
+// handle integration with cling
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+#include <nlohmann/json.hpp>
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+typedef nlohmann::json ClingBundle;
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+
+#  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(TYPE) \
+inline ClingBundle mime_bundle_repr(const TYPE& v) \
+{ \
+  return cling_getMimeBundle(toString(v)); \
+}
+
+#  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_TEMPLATE(NAME) \
+template<class TYPE> \
+inline ClingBundle mime_bundle_repr(const NAME<TYPE>& v) \
+{ \
+  return cling_getMimeBundle(toString(v)); \
+}
+
+#  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_CONTAINER(NAME) \
+template<class TYPE> \
+inline ClingBundle mime_bundle_repr(const NAME<TYPE>& v) \
+{ \
+  return cling_getHTMLMimeBundle(getContainerAsHTML(v)); \
+}
+#else
+#  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(TYPE)
+#  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_TEMPLATE(TYPE)
+#  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_CONTAINER(TYPE)
+#endif

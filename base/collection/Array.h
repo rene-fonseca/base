@@ -945,4 +945,6 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Array<TYPE>& va
   return stream;
 }
 
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_CONTAINER(Array)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

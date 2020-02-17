@@ -1665,4 +1665,45 @@ String String::operator()(ARGS&&... args)
 /** Return String that is using printf-style formatting. FormatOutputStream is recommended. */
 _COM_AZURE_DEV__BASE__API String stringf(const char* text, ...);
 
+/** Converts value to String. */
+template<class TYPE>
+String toString(const TYPE& v)
+{
+  UTF8Stringify stringify(v);
+  ConstSpan<char> span = stringify.getSpan();
+  return String(span.begin(), span.getSize());
+}
+
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+inline ClingBundle cling_getMimeBundle(const String& plain)
+{
+  auto bundle = ClingBundle::object();
+  bundle["text/plain"] = plain.native();
+  return bundle;
+}
+
+inline ClingBundle cling_getHTMLMimeBundle(const String& html)
+{
+  auto bundle = ClingBundle::object();
+  bundle["text/html"] = html.native();
+  return bundle;
+}
+
+inline ClingBundle cling_getHTMLMimeBundle(const String& plain, const String& html)
+{
+  auto bundle = ClingBundle::object();
+  bundle["text/plain"] = plain.native();
+  bundle["text/html"] = html.native();
+  return bundle;
+}
+
+inline ClingBundle mime_bundle_repr(const String& v)
+{
+  auto bundle = ClingBundle::object();
+  // String temp = format() << escape(v) << " LENGTH=" << v.getLength();
+  bundle["text/plain"] = escape(v).native();
+  return bundle;
+}
+#endif
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

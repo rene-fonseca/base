@@ -972,4 +972,6 @@ void List<TYPE>::shuffle()
   elements->shuffle();
 }
 
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_CONTAINER(List)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

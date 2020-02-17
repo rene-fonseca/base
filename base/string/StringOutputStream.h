@@ -139,4 +139,62 @@ inline UTF8Stringify::UTF8Stringify(const TYPE& src)
   setString(sos);
 }
 
+/** HTML. */
+class _COM_AZURE_DEV__BASE__API HTML {
+public:
+
+  /** Encode string for HTML. */
+  static String encode(const String& text);
+};
+
+template<class TYPE>
+class HTMLEncode {
+public:
+  
+  static inline const TYPE& map(const TYPE& value) noexcept
+  {
+    return value;
+  }
+};
+
+template<>
+class HTMLEncode<String> {
+public:
+  
+  static inline String map(const String& value) noexcept
+  {
+    return HTML::encode(value);
+  }
+};
+
+template<>
+class HTMLEncode<WideString> {
+public:
+  
+  static inline String map(const WideString& value) noexcept
+  {
+    return HTML::encode(value);
+  }
+};
+
+/** Returns container as HTML. */
+template<class TYPE>
+String getContainerAsHTML(const TYPE& value)
+{
+  StringOutputStream stream;
+  typename TYPE::ReadEnumerator enu = value.getReadEnumerator();
+  stream << "<table>";
+  stream << "<tr>" << "<th colspan=\"2\" align=\"center\">" << Type::getType<TYPE>().getLocalName()
+    << " SIZE=" << value.getSize() << "<th>" << "</tr>";
+  stream << "<tr>" << "<th>" << "Index" << "</th>" << "<th align=\"left\">" << "Value" << "</th>" << "</tr>";
+  MemorySize index = 0;
+  while (enu.hasNext()) { // TAG: what happens if nested
+    const auto& value = enu.next();
+    stream << "<tr>" << "<td>" << index++ << "</td>" << "<td align=\"left\">"
+      << HTMLEncode<decltype(value)>::map(value) << "</td>" << "</tr>";
+  }
+  stream << "<table>";
+  return stream.getString();
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

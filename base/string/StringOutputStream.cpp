@@ -134,4 +134,35 @@ StringOutputStream::~StringOutputStream()
 {
 }
 
+String HTML::encode(const String& text)
+{
+  String result;
+  result.ensureCapacity(text.getLength() * 2);
+  const uint8* src = text.getBytes();
+  const uint8* end = src + text.getLength();
+  while (src != end) {
+    const char ch = *src++;
+    switch (ch) {
+    case '&':
+      result += MESSAGE("&amp;");
+      break;
+    case '>':
+      result += MESSAGE("&gt;");
+      break;
+    case '<':
+      result += MESSAGE("&lt;");
+      break;
+    case '"':
+      result += MESSAGE("&quot;");
+      break;
+    case '\'':
+      result += MESSAGE("&apos;");
+      break;
+    default:
+      result += ch;
+    }
+  }
+  return result;
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

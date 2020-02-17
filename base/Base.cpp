@@ -138,6 +138,15 @@ bool isRunningXeusCling()
   }
 #endif
   
+#if 0 // we can look for filenames and symbols
+  StackTrace trace = StackFrame::getStack(1, 24);
+  if (trace) {
+    // libxeus-cling.0.8.1.dylib!cling::Interpreter::process
+    // libxeus.1.0.0.dylib!xeus::xkernel::start()
+    // xcpp!main
+  }
+#endif
+  
   if (state < 0) {
     state = 0;
   }

@@ -184,7 +184,7 @@ String getContainerAsHTML(const TYPE& value)
   typename TYPE::ReadEnumerator enu = value.getReadEnumerator();
   stream << "<table>";
   stream << "<tr>" << "<th colspan=\"2\" style=\"text-align: center\">" << TypeInfo::getTypename(Type::getType<TYPE>())
-    << " [SIZE=" << value.getSize() << "]<th>" << "</tr>";
+    << " [SIZE=" << value.getSize() << "]</th>" << "</tr>";
   stream << "<tr>" << "<th style=\"text-align: right\">" << "Index" << "</th>"
     << "<th style=\"text-align: left\">" << "Value" << "</th>" << "</tr>";
   MemorySize index = 0;

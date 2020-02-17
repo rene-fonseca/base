@@ -1107,7 +1107,7 @@ String getContainerAsHTML(const HashTable<KEY, VALUE>& value)
   stream << "<table>";
   stream << "<tr>" << "<th colspan=\"2\" style=\"text-align: center\">"
     << TypeInfo::getTypename(Type::getType<HashTable<KEY, VALUE> >())
-    << " [SIZE=" << value.getSize() << "]<th>" << "</tr>";
+    << " [SIZE=" << value.getSize() << "]</th>" << "</tr>";
   stream << "<tr>" << "<th style=\"text-align: right\">" << "Key" << "</th>"
     << "<th style=\"text-align: left\">" << "Value" << "</th>" << "</tr>";
   MemorySize index = 0;

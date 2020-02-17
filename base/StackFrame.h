@@ -261,4 +261,15 @@ inline FormatOutputStream& operator<<(FormatOutputStream& stream, const Formatte
   return StackTrace::toStream(stream, static_cast<const StackTrace&>(stackTrace).getTrace(), stackTrace.getFlags());
 }
 
+/** Returns container as HTML. */
+_COM_AZURE_DEV__BASE__API String getContainerAsHTML(const StackTrace& stackTrace);
+
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+
+inline ClingBundle mime_bundle_repr(const StackTrace& stackTrace)
+{
+  return ClingBundleHandle().setHTMLText(getContainerAsHTML(stackTrace));
+}
+#endif
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

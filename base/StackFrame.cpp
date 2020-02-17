@@ -792,4 +792,88 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const StackFrame& val
   return stream;
 }
 
+String getContainerAsHTML(const StackTrace& stackTrace)
+{
+  StringOutputStream stream;
+  ConstSpan<const void*> trace = stackTrace.getTrace();
+  stream << "<table>";
+  stream << "<tr>" << "<th colspan=\"2\" style=\"text-align: center\">"
+    << "Stack Trace" << "</th>" << "</tr>";
+  stream << "<tr>" << "<th style=\"text-align: right\">" << "Key" << "</th>"
+    << "<th style=\"text-align: left\">" << "Value" << "</th>" << "</tr>";
+
+  unsigned int field1 = 1;
+  if (trace.getSize() >= 100) {
+    field1 = 3;
+  } else if (trace.getSize() >= 10) {
+    field1 = 2;
+  }
+
+  unsigned int field2 = 8; // never less than 8
+  if (sizeof(MemorySize) > 4) {
+    MemorySize bits = 0;
+    for (MemorySize i = 0; i < trace.getSize(); ++i) {
+      MemorySize ip = reinterpret_cast<MemorySize>(trace[i]); // technically we should resolve symbol - but not hard done
+      bits |= ip;
+    }
+    unsigned int digits = 0;
+    while (bits) {
+      bits >>= 4;
+      ++digits;
+    }
+    field2 = maximum(digits, field2);
+  }
+  field2 += 2; // prefix
+
+  String lastAddress;
+  MemorySize count = 0;
+  void* imageAddress = nullptr;
+  String imagePath;
+
+  MemorySize index = 0;
+  for (MemorySize i = 0; i < trace.getSize(); ++i) {
+    const void* ip = trace.begin()[i];
+    const DynamicLinker::SymbolInfo info = DynamicLinker::getSymbolInfo(ip);
+
+    if (info.imageAddress != imageAddress) {
+      imageAddress = info.imageAddress;
+      imagePath = DynamicLinker::getImagePath(info.imageAddress);
+      // if ((flags & FLAG_FULL_PATH) == 0) {
+        imagePath = FileSystem::getComponent(imagePath, FileSystem::FILENAME);
+      // }
+    }
+
+    if (!info) {
+      continue;
+    }
+
+    auto displacement = (reinterpret_cast<const uint8*>(ip) - reinterpret_cast<const uint8*>(info.address));
+    StringOutputStream sos;
+    sos << setWidth(field2) << info.address << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement;
+    const String address = sos.toString();
+    
+    if (info.name) {
+      String demangled = TypeInfo::demangleName(info.name.native());
+      const bool stripNamespace = true; // flags & FLAG_STRIP_NAMESPACE; // this will compact output quite a bit
+      if (stripNamespace) {
+        demangled.replaceAll("base::", String()); // or std:: // TAG: we should check char just before to make sure this is a namespace
+        // TAG: we can add a register of namespace macro like register of test to support stripping of any namespace
+      }
+      
+      String symbol = demangled;
+      if (imagePath) {
+        symbol = imagePath << "!" << demangled;
+      }
+
+      stream << "<tr>" << "<td style=\"text-align: right\">"
+        << index << "</td>" << "<td style=\"text-align: right\">"
+        << address << "</td>" << "<td style=\"text-align: left\">"
+        << HTML::encode(symbol) << "</td>" << "</tr>";
+      ++index;
+    }
+  }
+  stream << "<table>";
+  return stream.getString();
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

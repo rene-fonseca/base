@@ -590,14 +590,14 @@ _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& str
 inline ClingMimeBundle mime_bundle_repr(const AnyValue& v)
 {
   const char* id = AnyValue::getTypeAsId(v.getRepresentation());
-  switch (v.getRepresentation) {
+  switch (v.getRepresentation()) {
   case AnyValue::CHARACTER:
   case AnyValue::WIDE_CHARACTER:
   case AnyValue::STRING:
   case AnyValue::WIDE_STRING:
-    return ClingMimeBundleHandle().setPlainText(escape(v) + " [TYPE=" + id + "]");
+    return ClingMimeBundleHandle().setPlainText(escape(v.getString()) + " [TYPE=" + id + "]");
   default:
-    return ClingMimeBundleHandle().setPlainText(v + " [TYPE=" + id + "]");
+    return ClingMimeBundleHandle().setPlainText(v.getString() + " [TYPE=" + id + "]");
   }
 }
 #endif

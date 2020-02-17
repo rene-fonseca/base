@@ -270,6 +270,15 @@ public:
   */
   static StackTrace getStackTrace();
 
+  enum DumpOnThrow {
+    DUMP_ON_THROW_NO = 0,
+    DUMP_ON_THROW_EXCEPTION,
+    DUMP_ON_THROW_STACK
+  };
+  
+  /** Sets whether or not to dump expection on throw. */
+  static void setDumpOnThrow(DumpOnThrow dumpOnThrow) noexcept;
+  
   /**
     Destroys exception object.
   */

@@ -175,6 +175,16 @@ Exception::StackTrace Exception::getStackTrace()
   return result;
 }
 
+namespace {
+
+  Exception::DumpOnThrow dumpOnThrow = Exception::DUMP_ON_THROW_NO;
+}
+
+void Exception::setDumpOnThrow(DumpOnThrow _dumpOnThrow) noexcept
+{
+  dumpOnThrow = _dumpOnThrow;
+}
+
 // TAG: can we hook and detect throw of non-base exception: void __cxa_throw (void *thrown_exception, std::type_info *tinfo, void (*dest) (void *));
 
 // C++: it would be preferred to have handler for throw like std::set_terminate() but not a full handler just a hook
@@ -185,14 +195,12 @@ Exception::StackTrace Exception::getStackTrace()
 // throw_handler* std::get_throw_handler() noexcept;
 void Exception::onThrow(const Exception& exception) noexcept
 {
-  if (Runtime::getRuntimeEnvironment()) {
+  if ((dumpOnThrow >= Exception::DUMP_ON_THROW_EXCEPTION) ||
+      !SUPPORTS_EXCEPTIONS) { // we could allow this to be an option
     fout << "Throwing: " << exception << ENDL; // print until supported
-    StackFrame::dump();
-  }
-  
-  if (!SUPPORTS_EXCEPTIONS) { // we could allow this to be an option
-    fout << "Throwing: " << exception << ENDL; // print until supported
-    // StackFrame::dump();
+    if (dumpOnThrow >= Exception::DUMP_ON_THROW_STACK) {
+      StackFrame::dump();
+    }
   }
   if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
     exceptionHandler(&exception);

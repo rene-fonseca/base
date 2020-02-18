@@ -461,6 +461,7 @@ bool ModuleManager::traverseModules(FormatOutputStream& stream, const String& pa
 
   stream << EOL << "===============================================================================" << EOL;
   // stream << Format::subst("TOTAL RECALLED: %1/%2", recalled, count) << ENDL;
+  stream << FLUSH;
 
   return true; // !recalled;
 }

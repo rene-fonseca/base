@@ -182,6 +182,9 @@ void Version::printSystem()
        << "Endianess: " << getEndianness(Architecture::NATIVE) << EOL
        << "Float endianess: " << getEndianness(Architecture::FLOAT_NATIVE) << EOL
        << "Memory: " << (sizeof(void*) * 8) << " bit" << EOL
+       << "char size: " << sizeof(char) << " bytes" << EOL
+       << "wchar size: " << sizeof(wchar) << " bytes" << EOL
+       << "short size: " << sizeof(short) << " bytes" << EOL
        << "int size: " << sizeof(int) << " bytes" << EOL
        << "long size: " << sizeof(long) << " bytes" << EOL
        << "long long size: " << sizeof(long long) << " bytes" << EOL

@@ -1,5 +1,7 @@
 # The Base Framework
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rene-fonseca/base/master?urlpath=lab)
+
 A framework for developing platform independent applications in C++.
 
 Copyright (C) 2000-2020 by René Møller Fonseca <rene.m.fonseca+base@gmail.com>

@@ -14,6 +14,9 @@
 #include <base/platforms/features.h>
 #include <base/Version.h>
 #include <base/config.h>
+#include <base/string/FormatOutputStream.h>
+#include <base/SystemInformation.h>
+#include <base/Architecture.h>
 
 #define _COM_AZURE_DEV__BASE__RELEASE ""
 
@@ -125,6 +128,70 @@ bool Version::getDefine_DEBUG() noexcept
 #else
   return false;
 #endif
+}
+
+String getEndianness(unsigned int endianness)
+{
+  switch (endianness) {
+  case Architecture::BE:
+    return "Big-endian";
+  case Architecture::LE:
+    return "Little-endian";
+  default:
+    return "UNKNOWN";
+  }
+}
+
+String getFloatType(unsigned int type)
+{
+  switch (type) {
+  case _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION:
+    return "IEEE 754 single precision";
+  case _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION:
+    return "IEEE 754 double precision";
+  case _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96:
+    return "IEEE extended double precision 96 bits";
+  case _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16:
+    return "IEEE extended double precision 96 bits with 16 bytes alignment";
+  case _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128:
+    return "IEEE extended double precision 128 bits";
+  case _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION:
+    return "IEEE quadruple precision";
+  case _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION:
+    return "IEEE extended precision";
+  default:
+    return "UNKNOWN";
+  }
+}
+
+void Version::printSystem()
+{
+  Version v;
+  fout << "BASE framework " << v.getVersion() << " r" << v.getRevision() << " " << v.getCommitShort() << EOL
+       << EOL
+
+       << "OS: " << SystemInformation::getOS() << EOL
+       << "OS Vendor: " << SystemInformation::getVendor() << EOL
+       << "OS System: " << SystemInformation::getSystem() << EOL
+       << "OS Release: " << SystemInformation::getRelease() << EOL
+       << "OS Version: " << SystemInformation::getVersion() << EOL
+       << "OS Machine: " << SystemInformation::getMachine() << EOL
+       << "OS Architecture: " << Architecture::getArchitectureAsString() << EOL
+       << EOL
+
+       << "Endianess: " << getEndianness(Architecture::NATIVE) << EOL
+       << "Float endianess: " << getEndianness(Architecture::FLOAT_NATIVE) << EOL
+       << "Memory: " << (sizeof(void*) * 8) << " bit" << EOL
+       << "int size: " << sizeof(int) << " bytes" << EOL
+       << "long size: " << sizeof(long) << " bytes" << EOL
+       << "long long size: " << sizeof(long long) << " bytes" << EOL
+       << EOL
+
+       << "float: " << getFloatType(_COM_AZURE_DEV__BASE__FLOAT) << " bytes" << EOL
+       << "double: " << getFloatType(_COM_AZURE_DEV__BASE__DOUBLE) << " bytes" << EOL
+       << "long double: " << getFloatType(_COM_AZURE_DEV__BASE__LONG_DOUBLE) << " bytes" << EOL
+       << "float128: " << getFloatType(_COM_AZURE_DEV__BASE__FLOAT128) << " bytes" << EOL
+       << ENDL;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

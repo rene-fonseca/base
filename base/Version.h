@@ -96,6 +96,9 @@ public:
   */
   virtual String getBanner() const noexcept;
 
+  /** Print system info. */
+  static void printSystem();
+
   /** Returns the size of DynamicObject. */
   static MemorySize getDynamicObjectSize() noexcept;
 

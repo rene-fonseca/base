@@ -16,6 +16,63 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+namespace {
+
+  const String& getB()
+  {
+    static String id("b");
+    return id;
+  }
+
+  const String& getI()
+  {
+    static String id("i");
+    return id;
+  }
+
+  const String& getStrong()
+  {
+    static String id("strong");
+    return id;
+  }
+}
+
+const String& HTML::getId()
+{
+  static String id("id");
+  return id;
+}
+
+const String& HTML::getStyle()
+{
+  static String id("style");
+  return id;
+}
+
+const String& HTML::getTable()
+{
+  static String id("table");
+  return id;
+}
+
+const String& HTML::getTR()
+{
+  static String id("tr");
+  return id;
+}
+
+const String& HTML::getTH()
+{
+  static String id("th");
+  return id;
+}
+
+const String& HTML::getTD()
+{
+  static String id("td");
+  return id;
+}
+
 String HTML::encode(const String& text)
 {
   String result;
@@ -132,14 +189,24 @@ HTMLElement& HTMLElement::addChild(const R<HTMLItem>& e)
 
 R<HTMLItem> HTMLElement::getChild(unsigned int index)
 {
+  if (!(index < children.getSize())) {
+    _throw OutOfRange();
+  }
   return children.begin()[index];
 }
 
-R<HTMLElement> HTMLElement::getFirstChild(const char* name)
+R<HTMLText> HTMLElement::addText(const String& text)
+{
+  R<HTMLText> i = new HTMLText(text);
+  addChild(i);
+  return i;
+}
+
+R<HTMLElement> HTMLElement::getFirstChild(const char* name) noexcept
 {
   for (auto _child : children) {
     if (R<HTMLElement> child = _child.cast<HTMLElement>()) {
-      if (child->name) {
+      if (child->name == NativeString(name)) {
         return child;
       }
     }
@@ -147,14 +214,36 @@ R<HTMLElement> HTMLElement::getFirstChild(const char* name)
   return nullptr;
 }
 
-R<HTMLAttribute> HTMLElement::getAttribute(const String& name)
+R<HTMLElement> HTMLElement::getFirstChild(const String& name) noexcept
+{
+  for (auto _child : children) {
+    if (R<HTMLElement> child = _child.cast<HTMLElement>()) {
+      if (child->name == name) {
+        return child;
+      }
+    }
+  }
+  return nullptr;
+}
+
+R<HTMLAttribute> HTMLElement::getAttribute(const String& name) noexcept
 {
   for (auto attribute : attributes) {
-    if (attribute->name) {
+    if (attribute->name == name) {
       return attribute;
     }
   }
   return nullptr;
+}
+
+String HTMLElement::getAttributeValue(const String& name) const noexcept
+{
+  for (auto attribute : attributes) {
+    if (attribute->name == name) {
+      return attribute->value;
+    }
+  }
+  return String();
 }
 
 void HTMLElement::setAttribute(const String& name, const String& value)
@@ -180,173 +269,201 @@ void HTMLElement::toCode(StringOutputStream& code)
   code << "</" << name << ">";
 }
 
+namespace html {
 
-
-
-/** Table element. */
-class _COM_AZURE_DEV__BASE__API TableElement {
-public:
-
-  R<HTMLElement> e;
-
-  TableElement(const char* id)
+  TableElement::TableElement(const char* id)
   {
     e = new HTMLElement(id);
   }
 
-  inline const String& getName() const noexcept
+  TableElement::TableElement(const String& id)
+  {
+    e = new HTMLElement(id);
+  }
+
+  const String& TableElement::getName() const noexcept
   {
     return e->name;
   }
 
-  void setId(const String& id)
+  void TableElement::setAttribute(const String& name, const String& value)
+  {
+    e->setAttribute(name, value);
+  }
+
+  void TableElement::setId(const String& id)
   {
     e->setAttribute("id", id);
   }
 
-  void setStyle(const String& style)
+  void TableElement::setStyle(const String& style)
   {
     e->setAttribute("style", style);
   }
 
-  R<HTMLItem> getChild(unsigned int index)
+  R<HTMLItem> TableElement::getChild(unsigned int index)
   {
     return e->getChild(index);
   }
 
-  R<HTMLItem> getFirstChild(const char* name)
+  R<HTMLItem> TableElement::getFirstChild(const char* name)
   {
     return e->getFirstChild(name);
   }
-};
 
-/** Make an HTML table. */
-class _COM_AZURE_DEV__BASE__API Table : public TableElement {
-private:
+  R<HTMLItem> TableElement::getFirstChild(const String& name)
+  {
+    return e->getFirstChild(name);
+  }
 
-  R<HTMLElement> table;
-public:
-
-  // TAG: reuse element keywords
-
-  Table()
-    : TableElement("table")
+  Table::Table()
+    : TableElement(HTML::getTable())
   {
   }
 
-  /** TH element. */
-  class _COM_AZURE_DEV__BASE__API Header : public TableElement {
-  public:
-
-    Header()
-      : TableElement("tr")
-    {
-    }
-
-    Header& addText(const String& text)
-    {
-      e->addChild(new HTMLText(text));
-      return *this;
-    }
-
-    Header& setText(const String& text)
-    {
-      e->children.setSize(0);
-      addText(text);
-      return *this;
-    }
-  };
-
-  /** TD element. */
-  class _COM_AZURE_DEV__BASE__API Column : public TableElement {
-  public:
-
-    Column()
-      : TableElement("td")
-    {
-    }
-
-    Column& add(R<HTMLElement> _e)
-    {
-      e->addChild(_e);
-      return *this;
-    }
-
-    R<HTMLElement> add(const char* name)
-    {
-      R<HTMLElement> _e = new HTMLElement(name);
-      e->addChild(_e);
-      return _e;
-    }
-
-    R<HTMLElement> bold()
-    {
-      return add("b");
-    }
-
-    R<HTMLElement> italic()
-    {
-      return add("i");
-    }
-
-    R<HTMLElement> strong()
-    {
-      return add("strong");
-    }
-
-    Column& addText(const String& text)
-    {
-      e->addChild(new HTMLText(text));
-      return *this;
-    }
-
-    Column& setText(const String& text)
-    {
-      e->children.setSize(0);
-      addText(text);
-      return *this;
-    }
-  };
-
-  /** TR element. */
-  class _COM_AZURE_DEV__BASE__API Row : public TableElement {
-  public:
-
-    Row()
-      : TableElement("tr")
-    {
-    }
-
-    Row& addHeader(const String& text)
-    {
-      Header r;
-      e->addChild(r.e);
-      return *this;
-    }
-
-    Row& addColumn(const String& text)
-    {
-      Column r;
-      e->addChild(r.e);
-      return *this;
-    }
-  };
-
-  Row addRow()
+  Table::Header::Header()
+    : TableElement(HTML::getTH())
   {
-    return Row();
   }
 
-  String getHTML();
-};
+  Table::Header& Table::Header::add(R<HTMLItem> _i)
+  {
+    e->addChild(_i);
+    return *this;
+  }
 
-String Table::getHTML()
-{
-  StringOutputStream sos;
-  table->toCode(sos);
-  return sos;
-}
+  R<HTMLElement> Table::Header::add(const String& name)
+  {
+    R<HTMLElement> _e = new HTMLElement(name);
+    e->addChild(_e);
+    return _e;
+  }
 
+  R<HTMLElement> Table::Header::bold()
+  {
+    return add(getB());
+  }
+
+  R<HTMLElement> Table::Header::italic()
+  {
+    return add(getI());
+  }
+
+  R<HTMLElement> Table::Header::strong()
+  {
+    return add(getStrong());
+  }
+
+  Table::Header& Table::Header::addText(const String& text)
+  {
+    e->addChild(new HTMLText(text));
+    return *this;
+  }
+
+  Table::Header& Table::Header::setText(const String& text)
+  {
+    e->children.setSize(0);
+    addText(text);
+    return *this;
+  }
+
+  Table::Column::Column()
+    : TableElement(HTML::getTD())
+  {
+  }
+
+  Table::Column& Table::Column::add(R<HTMLItem> _i)
+  {
+    e->addChild(_i);
+    return *this;
+  }
+
+  R<HTMLElement> Table::Column::add(const String& name)
+  {
+    R<HTMLElement> _e = new HTMLElement(name);
+    e->addChild(_e);
+    return _e;
+  }
+
+  R<HTMLElement> Table::Column::bold()
+  {
+    return add("b");
+  }
+
+  R<HTMLElement> Table::Column::italic()
+  {
+    return add("i");
+  }
+
+  R<HTMLElement> Table::Column::strong()
+  {
+    return add("strong");
+  }
+
+  Table::Column& Table::Column::addText(const String& text)
+  {
+    e->addChild(new HTMLText(text));
+    return *this;
+  }
+
+  Table::Column& Table::Column::setText(const String& text)
+  {
+    e->children.setSize(0);
+    addText(text);
+    return *this;
+  }
+
+  Table::Row::Row()
+    : TableElement(HTML::getTR())
+  {
+  }
+
+  Table::Header Table::Row::addHeader()
+  {
+    Header h;
+    e->addChild(h.e);
+    return h;
+  }
+
+  Table::Header Table::Row::addHeader(const String& text)
+  {
+    Header h;
+    h.addText(text);
+    e->addChild(h.e);
+    return h;
+  }
+
+  Table::Column Table::Row::addColumn()
+  {
+    Column c;
+    e->addChild(c.e);
+    return c;
+  }
+
+  Table::Column Table::Row::addColumn(const String& text)
+  {
+    Column c;
+    c.addText(text);
+    e->addChild(c.e);
+    return c;
+  }
+
+  Table::Row Table::addRow()
+  {
+    Row row;
+    e->addChild(row.e);
+    return row;
+  }
+
+  String Table::getHTML() {
+    if (!e) {
+      return String();
+    }
+    StringOutputStream sos;
+    e->toCode(sos);
+    return sos;
+  }
+} // html namespace
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
@@ -358,17 +475,37 @@ public:
 
   void run() override
   {
+    using namespace html;
     Table t;
-    auto r = t.addRow().addHeader("Index").addHeader("Description");
+    t.setId("thistable");
+    auto r = t.addRow();
+    auto title = r.addHeader("Title");
+    title.setStyle("text-align: center");
+    title.setAttribute("colspan", "2"); // TAG: add support for automatic value to string conversion
 
+    r = t.addRow();
+    auto h1 = r.addHeader("Index");
+    h1.setStyle("text-align: right");
+    auto h2 = r.addHeader("Description");
+    h2.setStyle("text-align: left");
+    // TAG: add support for parsing style and updating it
+    // <span style="color: #ff0000;">
     for (unsigned int i = 0; i < 5; ++i) {
       auto r = t.addRow();
       auto ci = r.addColumn(format() << i);
-      auto cd = r.addColumn(format() << "descrip<tion>" << i);
+      ci.setStyle("text-align: right");
+      auto cd = r.addColumn();
+      cd.setStyle("text-align: left");
+      // TAG: add support for simple markdown R<HTMLItem> makeMDItem("*123* __123 `123` ## 123")
+      R<HTMLText> t = new HTMLText("descrip<tion>");
+      cd.add(t);
+      R<HTMLElement> e = new HTMLElement("b");
+      e->addText(format() << i);
+      cd.add(e);
     }
     String html = t.getHTML();
 
-    if (1 || TEST_IS_DEFINED("writeResults")) {
+    if (TEST_IS_DEFINED("writeResults")) {
       fout << html << ENDL;
     }
     TEST_ASSERT(html);

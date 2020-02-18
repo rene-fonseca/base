@@ -19,8 +19,8 @@
 
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
 #  include <libxml/tree.h>
-#  include <stdarg.h>
 #endif
+#include <stdarg.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

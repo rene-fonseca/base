@@ -15,6 +15,7 @@
 
 #include <base/io/OutputStream.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/string/HTML.h>
 #include <base/TypeInfo.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -137,44 +138,6 @@ inline UTF8Stringify::UTF8Stringify(const TYPE& src)
   sos << src;
   setString(sos);
 }
-
-/** HTML. */
-class _COM_AZURE_DEV__BASE__API HTML {
-public:
-
-  /** Encode string for HTML. */
-  static String encode(const String& text);
-};
-
-template<class TYPE>
-class HTMLEncode {
-public:
-  
-  static inline const TYPE& map(const TYPE& value) noexcept
-  {
-    return value;
-  }
-};
-
-template<>
-class HTMLEncode<String> {
-public:
-  
-  static inline String map(const String& value) noexcept
-  {
-    return HTML::encode(value);
-  }
-};
-
-template<>
-class HTMLEncode<WideString> {
-public:
-  
-  static inline String map(const WideString& value) noexcept
-  {
-    return HTML::encode(value);
-  }
-};
 
 /** Returns container as HTML. */
 template<class TYPE>

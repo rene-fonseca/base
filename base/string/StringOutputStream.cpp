@@ -13,6 +13,7 @@
 
 #include <base/string/StringOutputStream.h>
 #include <base/concurrency/ThreadLocalContext.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -134,35 +135,33 @@ StringOutputStream::~StringOutputStream()
 {
 }
 
-String HTML::encode(const String& text)
-{
-  String result;
-  result.ensureCapacity(text.getLength() * 2);
-  const uint8* src = text.getBytes();
-  const uint8* end = src + text.getLength();
-  while (src != end) {
-    const char ch = *src++;
-    switch (ch) {
-    case '&':
-      result += MESSAGE("&amp;");
-      break;
-    case '>':
-      result += MESSAGE("&gt;");
-      break;
-    case '<':
-      result += MESSAGE("&lt;");
-      break;
-    case '"':
-      result += MESSAGE("&quot;");
-      break;
-    case '\'':
-      result += MESSAGE("&apos;");
-      break;
-    default:
-      result += ch;
-    }
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(StringOutputStream) : public UnitTest {
+public:
+
+  TEST_PRIORITY(40);
+  TEST_PROJECT("base/string");
+
+  void run() override
+  {
+    StringOutputStream sos;
+    sos << "Hello, World!";
+    String s = sos; // restarts stream
+    TEST_ASSERT(s == "Hello, World!");
+    TEST_ASSERT(!sos.getString());
+
+    sos << 123;
+    sos << 123U;
+    sos << 123.123;
+    sos << L"Hello, World!";
+    sos << true;
+    sos << false;
   }
-  return result;
-}
+};
+
+TEST_REGISTER(StringOutputStream);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

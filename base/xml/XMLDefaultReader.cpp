@@ -23,8 +23,8 @@
 #  include <libxml/SAX.h>
 #  include <libxml/parser.h>
 #  include <libxml/parserInternals.h>
-#  include <stdarg.h>
 #endif
+#include <stdarg.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

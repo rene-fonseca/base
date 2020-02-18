@@ -20,6 +20,10 @@ namespace {
   R<Translation> current;
 }
 
+Translation::Translation()
+{
+}
+
 R<Translation> Translation::getCurrent()
 {
   return current;
@@ -79,6 +83,16 @@ String Translation::translate(const String& text, const String& context) const
   // TAG: add support for context
   const String* translated = get(text);
   return translated ? *translated : text;
+}
+
+String translate(const char* text)
+{
+  R<Translation> t = current;
+  if (current) {
+    const String* translated = t->get(text);
+    return translated ? *translated : text;
+  }
+  return text;
 }
 
 String translate(const Literal& text)

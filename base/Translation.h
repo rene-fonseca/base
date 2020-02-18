@@ -33,6 +33,12 @@ public:
   /** Makes the given translation current. */ 
   static void makeCurrent(R<Translation> translation);
 
+  /** Removes the current translation. */
+  static inline void unsetTranslation()
+  {
+    makeCurrent(nullptr);
+  }
+
   Translation();
 
   // TAG: add support for meta info - version, date, vendor
@@ -63,6 +69,8 @@ public:
   String translate(const String& text, const String& context) const;
 };
 
+/** Returns translation. Null-terminator should not be used for translations. */
+_COM_AZURE_DEV__BASE__API String translate(const char* text);
 /** Returns translation. Null-terminator should not be used for translations. */
 _COM_AZURE_DEV__BASE__API String translate(const Literal& text);
 /** Returns translation. Null-terminator should not be used for translations. */

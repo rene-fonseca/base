@@ -38,7 +38,10 @@ Reference API documentation is hosted at https://rene-fonseca.github.io/base-api
 [![Ubuntu PA-RISC](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_hppa32&label=Ubuntu%20PA-RISC)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![openSUSE](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=opensuse_x64&label=openSUSE)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
 [![Amazon Linux](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=amazonlinux_x64&label=Amazon%20Linux)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
-[![GCC 9](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=gcc9&label=GCC%209)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
+[![GCC 9](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=gcc9&label=GCC%209%20C%2B%2B11)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
+[![GCC 9](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=gcc9_cpp14&label=GCC%209%20C%2B%2B14)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
+[![GCC 9](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=gcc9_cpp17&label=GCC%209%20C%2B%2B17)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
+[![GCC 9](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=gcc9_cpp2a&label=GCC%209%20C%2B%2B2a)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
 [![FreeBSD x64](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=freebsd_x64&label=FreeBSD%2012.1)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
 [![Emscripten](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=emcc&label=Emscripten)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
 [![wasm32](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=wasm32&label=WebAssembly%2032)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
@@ -138,7 +141,10 @@ Ubuntu 19.10       | x86_64   | GCC     | Ok         | Runs daily on pipeline
 Ubuntu 19.04       | x86_64   | GCC     | Ok         | Runs daily on pipeline
 openSUSE           | x86_64   | GCC     | Ok         | Runs daily on pipeline
 Amazon Linux 2     | x86_64   | GCC     | Ok         | Runs daily on pipeline - using newer cmake build
-GCC 9              | x86_64   | GCC     | Ok         | Runs daily on pipeline
+GCC 9 C++11        | x86_64   | GCC     | Ok         | Runs daily on pipeline
+GCC 9 C++14        | x86_64   | GCC     | Ok         | Runs daily on pipeline
+GCC 9 C++17        | x86_64   | GCC     | Ok         | Runs daily on pipeline
+GCC 9 C++2a        | x86_64   | GCC     | Ok         | Runs daily on pipeline
 Emscripten         | WASM32   | LLVM    | Ok         | Runs daily on pipeline but no testing
 FreeBSD 12.1       | x86_64   | GCC     | Ok         | Runs daily on pipeline but no testing
 RedHat 8.1         | x86_64   | GCC     | Ok         | Tested on 7 Dec 2019

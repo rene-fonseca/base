@@ -295,18 +295,29 @@ int main(int argc, const char* argv[]) noexcept \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, nullptr); \
 }
 #elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
-#define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
-int main(int argc, const char* argv[]) noexcept \
+#define _COM_AZURE_DEV__BASE__APPLICATION_STUB_IMPL(APPLICATION, MAIN, START) \
+int MAIN(int argc, const char* argv[]) noexcept \
 { \
   com::azure::dev::base::Application::Stub stub; \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, nullptr); \
 } \
-template<typename... ARGS> int start(ARGS&&... args) noexcept \
+template<typename... ARGS> int START(ARGS&&... args) noexcept \
 { \
   const char* argv[] = { __FILE__, std::forward<ARGS>(args)... }; \
   com::azure::dev::base::Application::Stub stub; \
   return com::azure::dev::base::Application::stub<APPLICATION>(getArraySize(argv), argv, nullptr); \
 }
+#define _COM_AZURE_DEV__BASE__APPLICATION_ENTRY(APPLICATION, ENTRY) \
+template<typename... ARGS> int ENTRY(ARGS&&... args) noexcept \
+{ \
+  const char* argv[] = { __FILE__, std::forward<ARGS>(args)... }; \
+  com::azure::dev::base::Application::Stub stub; \
+  return com::azure::dev::base::Application::stub<APPLICATION>(getArraySize(argv), argv, nullptr); \
+}
+#if !defined(_COM_AZURE_DEV__BASE__APPLICATION_STUB)
+#  define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
+  _COM_AZURE_DEV__BASE__APPLICATION_STUB_IMPL(APPLICATION, main, start)
+#endif
 #else
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
 int main(int argc, const char* argv[], const char* env[]) noexcept \

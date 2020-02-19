@@ -458,6 +458,17 @@ FormatOutputStream _COM_AZURE_DEV__BASE__API ferr(
   isRunningXeusCling() ? static_cast<OutputStream&>(cerrOutputStream) : standardErrorStream
 );
 
+bool isANSITerminal(OutputStream& os)
+{
+  if (FileDescriptorOutputStream* fdos = dynamic_cast<FileDescriptorOutputStream*>(&os)) {
+    const FileDescriptor& fd = *fdos;
+    return fd.isANSITerminal();
+  } else if (OutputStream2OStream* fdos = dynamic_cast<OutputStream2OStream*>(&os)) {
+    return true; // Jupyter xeus/cling supports ANSI colors
+  }
+  return false;
+}
+
 SoundDevice SoundDevice::soundDevice;
 
 bool Profiler::enabled = 0;

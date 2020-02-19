@@ -35,14 +35,12 @@ namespace {
   PreferredAtomicCounter sourceCodeLocationCounter;
 }
 
+extern bool isANSITerminal(OutputStream& os);
+
 bool FormatOutputStream::isANSITerminal()
 {
   OutputStream& os = getOutputStream();
-  if (FileDescriptorOutputStream* fdos = dynamic_cast<FileDescriptorOutputStream*>(&os)) {
-    const FileDescriptor& fd = *fdos;
-    return fd.isANSITerminal();
-  }
-  return false;
+  return base::isANSITerminal(os);
 }
 
 unsigned int FormatOutputStream::SourceCodeLocation::allocateCount() noexcept

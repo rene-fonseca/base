@@ -304,7 +304,8 @@ int main(int argc, const char* argv[]) noexcept \
 template<typename... ARGS> int start(ARGS&&... args) noexcept \
 { \
   const char* argv[] = { __FILE__, std::forward<ARGS>(args)... }; \
-  return main(getArraySize(argv), argv); \
+  com::azure::dev::base::Application::Stub stub; \
+  return com::azure::dev::base::Application::stub<APPLICATION>(getArraySize(argv), argv, nullptr); \
 }
 #else
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \

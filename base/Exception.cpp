@@ -397,6 +397,72 @@ void ThrowException::onException(const char* who, const char* file, unsigned int
 #endif
 }
 
+OwnedNativeString Exception::getHTML() const
+{
+  StringOutputStream s;
+  s << "<table>";
+  s << "<tr>";
+  s << "<th>";
+  s << "<b>" << "Exception" << "</b>";
+  s << "</th>";
+  s << "<td style=\"text-align: left\">";
+  s << TypeInfo::getTypename(this->getThisType());
+  s << "</td>";
+  s << "</tr>";
+
+  s << "<tr>";
+  s << "<th>";
+  s << "<b>" << "Message" << "</b>";
+  s << "</th>";
+  s << "<td style=\"text-align: left\">";
+  s << (getMessage() ? getMessage() : "No message.");
+  s << "</td>";
+  s << "</tr>";
+
+  if (type.isInitialized()) {
+    s << "<tr>";
+    s << "<th>";
+    s << "<b>" << "Type" << "</b>";
+    s << "</th>";
+    s << "<td style=\"text-align: left\">";
+    s << TypeInfo::getTypename(type);
+    s << "</td>";
+    s << "</tr>";
+  }
+
+  if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
+    s << "<tr>";
+    s << "<th>";
+    s << "<b>" << "Cause" << "</b>";
+    s << "</th>";
+    s << "<td style=\"text-align: left\">";
+    s << cause;
+    s << "</td>";
+    s << "</tr>";
+  }
+
+  if (getError() != 0) {
+    s << "<tr>";
+    s << "<th>";
+    s << "<b>" << "System error" << "</b>";
+    s << "</th>";
+    s << "<td style=\"text-align: left\">";
+    unsigned int error = OperatingSystem::getErrorCode(getError());
+    if (error != OperatingSystem::UNSPECIFIED_ERROR) {
+      s << OperatingSystem::getErrorMessage(error);
+    } else {
+      s << error;
+    }
+    s << "</td>";
+    s << "</tr>";
+  }
+  
+  // TAG: stack - add reference counted stack
+  
+  s << "</table>";
+  return s.getString().native();
+}
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class MyExceptionContext {};
@@ -416,6 +482,8 @@ public:
     Exception e1;
     Exception e2("123");
     Exception e3("123", Type::getType<Exception>());
+    TEST_ASSERT(String(e1.getMessage()) == "");
+    TEST_ASSERT(String(e2.getMessage()) == "123");
 
 #if (!defined(_COM_AZURE_DEV__BASE__NO_EXCEPTIONS)) && \
     (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__SPARC64) && \
@@ -429,7 +497,7 @@ public:
       TEST_NOT_HERE(B);
     } catch (MyException& e) {
       const char* text = "My message.";
-      TEST_ASSERT(e.getMessage() == text); // compare pointers!
+      TEST_ASSERT(String(e.getMessage()) == String(text)); // compare pointers!
       TEST_ASSERT(e.getCause() == 1);
       TEST_ASSERT(e.getType() == Type::getType<MyExceptionContext>());
       TEST_HERE(A);

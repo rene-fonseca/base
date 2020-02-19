@@ -15,6 +15,7 @@
 
 #include <base/Base.h>
 #include <base/Type.h>
+#include <base/string/OwnedNativeString.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -54,7 +55,7 @@ private:
   static ExceptionHandler exceptionHandler;
 
   /** The message associated with the exception (ASCII format). This may not be available. */
-  const char* message = nullptr;
+  OwnedNativeString message;
   /** The identity of the type which raised the exception (may not be available). */
   Type type;
   /** The associated cause (0 by default). */
@@ -139,6 +140,20 @@ public:
     @param message An NULL-terminated string (ASCII).
   */
   Exception(const char* message) noexcept;
+  
+#if 0
+  /**
+    Initializes the exception object.
+
+    @param message An NULL-terminated string (ASCII).
+  */
+  template<decltype(sizeof(void*)) SIZE>
+  inline Exception(const char (_message)[SIZE]) noexcept
+    : message(_message),
+      cause(PrimitiveTraits<unsigned int>::MAXIMUM)
+  {
+  }
+#endif
   
   /**
     Initializes the exception object without an associated message.
@@ -229,6 +244,15 @@ public:
     this->message = message;
   }
 
+  /**
+    Associates the exception with the specified message.
+  */
+  template<decltype(sizeof(void*)) SIZE>
+  inline void setMessage(const char (&_message)[SIZE]) noexcept
+  {
+    message = OwnedNativeString(_message);
+  }
+
   /** Returns the type of the exception. */
   virtual Type getThisType() const noexcept;
   
@@ -278,6 +302,9 @@ public:
   
   /** Sets whether or not to dump expection on throw. */
   static void setDumpOnThrow(DumpOnThrow dumpOnThrow) noexcept;
+    
+  /** Returns HTML information. */
+  OwnedNativeString getHTML() const;
   
   /**
     Destroys exception object.

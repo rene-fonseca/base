@@ -1770,6 +1770,12 @@ inline ClingMimeBundle mime_bundle_repr(const String& v)
 {
   return ClingMimeBundleHandle().setPlainText(escape(v));
 }
+
+inline ClingMimeBundle mime_bundle_repr(const Exception& v)
+{
+  return ClingMimeBundleHandle().setHTMLText(static_cast<const char*>(v.getHTML()));
+}
+
 #endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -28,8 +28,8 @@ OwnedNativeString::OwnedNativeString(const char* text)
     MemorySize length = getNullTerminatedLength(text);
     ReferenceCountedAllocator<char>* buffer = new ReferenceCountedAllocator<char>(length + 1);
     ReferenceCountedObject::ReferenceImpl(*buffer).addReference();
+    copy(buffer->getElements(), text, length + 1);
     this->text = buffer->getElements();
-    copy(this->text, text, length + 1);
     this->buffer = buffer;
   } else {
     static char EMPTY[1] = {'\0'};

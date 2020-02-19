@@ -116,7 +116,7 @@ public:
         }
         const unsigned int cause = e.getCause();
         const unsigned int nativeError = e.getError();
-        const char* message = e.getMessage();
+        String message = e.getMessage();
         if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
           stream << " with";
         }

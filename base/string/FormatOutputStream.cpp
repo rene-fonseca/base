@@ -1710,12 +1710,12 @@ FormatOutputStream& FormatOutputStream::operator<<(const Exception& e)
   }
   const unsigned int cause = e.getCause();
   const unsigned int nativeError = e.getError();
-  const char* message = e.getMessage();
+  String message = e.getMessage();
   if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
     s << " with";
   }
   if (message) {
-    s << " message '" << NativeString(message) << '\'';
+    s << " message '" << message << '\'';
   }
   if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
     s << " and";

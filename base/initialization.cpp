@@ -305,13 +305,13 @@ namespace internal {
       if (e.getType().isInitialized()) {
         stream << " by '" << TypeInfo::getTypename(e.getType()) << '\'';
       }
-      const char* message = e.getMessage();
+      String message = e.getMessage();
       unsigned int cause = e.getCause();
       if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
         stream << " with";
       }
       if (message) {
-        stream << " message '" << NativeString(message) << '\'';
+        stream << " message '" << message << '\'';
       }
       if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
         stream << " and";

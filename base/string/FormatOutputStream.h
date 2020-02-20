@@ -380,6 +380,9 @@ public:
   
   FormatOutputStream(const FormatOutputStream& copy) = delete;
 
+  /** Resets context flags. */
+  void reset() noexcept;
+  
   /** Returns true if the stream is connected to an ANSI terminal. */
   bool isANSITerminal();
 

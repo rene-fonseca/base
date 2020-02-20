@@ -23,9 +23,6 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 ThreadStringOutputStream::ThreadStringOutputStream()
 {
-  //sos = new StringOutputStream();
-  //return;
-  
   if (auto tlc = Thread::getLocalContext()) {
     if (tlc->stringOutputStreamUsage != 0) {
       _throw ResourceException("Thread local string output stream is already in use.");
@@ -33,6 +30,7 @@ ThreadStringOutputStream::ThreadStringOutputStream()
     tlc->stringOutputStreamUsage++;
     sos = &tlc->stringOutputStream;
     sos->restart();
+    sos->FormatOutputStream::reset();
   } else {
     _throw ResourceException("Thread has no thread local context.");
   }
@@ -50,7 +48,6 @@ const String& ThreadStringOutputStream::getString() const
 
 ThreadStringOutputStream::~ThreadStringOutputStream()
 {
-  //return;
   if (auto tlc = Thread::getLocalContext()) {
     sos->restart();
     BASSERT(tlc->stringOutputStreamUsage > 0);

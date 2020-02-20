@@ -60,6 +60,12 @@ FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size)
 {
 }
 
+void FormatOutputStream::reset() noexcept
+{
+  defaultContext = DEFAULT_CONTEXT;
+  context = DEFAULT_CONTEXT;
+}
+
 FormatOutputStream& FormatOutputStream::setRadixPosition(unsigned int position) noexcept
 {
   ExclusiveSynchronize<Guard> _guard(guard);
@@ -664,7 +670,7 @@ void FormatOutputStream::addDateField(const Date& date)
   // const bool posix = ((context.flags & Symbols::POSIX) != 0);
   // const Locale* locale = posix ? &Locale::POSIX : &locale; // FIXME
   const Locale* locale = &Locale::POSIX;
-  String format;
+  String format; // TAG: avoid copy for assigns below
   switch (context.majorDateFormat) {
   case Symbols::DATETIME:
     switch (context.namedDateFormat) {

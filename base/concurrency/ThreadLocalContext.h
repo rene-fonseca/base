@@ -41,12 +41,16 @@ public:
     Allocator<Profiler::Event> events; // stack for task events
   } profiling;
   
+  // ATTENTION: watch out for recursions which might use the same thread local resource!
+  
   /** Counter for storage usage. */
   FixedResourceManager<STORAGE_BUFFERS> storageManager;
   /** The thread local storage. */
   Allocator<uint8> storage[STORAGE_BUFFERS];
-  /** String output stream - reused buffer. */
-  String stringOutputStream;
+  /** String output stream. */
+  StringOutputStream stringOutputStream;
+  /** String output stream. */
+  unsigned int stringOutputStreamUsage = 0;
   /** Random generator. */
   RandomInputStream randomInputStream;
   /** Last known stack trace for exception. */

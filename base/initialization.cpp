@@ -343,6 +343,9 @@ namespace internal {
   ExceptionHandlers excepionHandlers;
 }; // end of namespace - internal
 
+// before thread local context since it has StringOutputStream
+const FormatOutputStream::Context FormatOutputStream::DEFAULT_CONTEXT = FormatOutputStream::Context();
+
 namespace internal {
 
   void initializeTimer();
@@ -384,8 +387,6 @@ public:
 
 Initialization initialization;
 const Locale Locale::POSIX;
-
-const FormatOutputStream::Context FormatOutputStream::DEFAULT_CONTEXT = FormatOutputStream::Context();
 
 extern bool isRunningXeusCling();
 

@@ -70,7 +70,8 @@ bool Element::hasAttribute(const char* name) const noexcept
 #endif
 }
 
-String Element::getAttribute(const char* name) const {
+String Element::getAttribute(const char* name) const
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNode* node = (xmlNode*)getContext();
   char* value = (char*)xmlGetProp(node, (const xmlChar*)name);
@@ -83,8 +84,8 @@ String Element::getAttribute(const char* name) const {
 #endif
 }
 
-void Element::setAttribute(
-  const char* name, const char* value) {
+void Element::setAttribute(const char* name, const char* value)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNode* node = (xmlNode*)getContext();
   xmlAttr* attribute = xmlSetProp(
@@ -98,7 +99,8 @@ void Element::setAttribute(
 #endif
 }
 
-void Element::removeAttribute(const char* name) {
+void Element::removeAttribute(const char* name)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNode* node = (xmlNode*)getContext();
   int result = xmlUnsetProp(
@@ -111,21 +113,25 @@ void Element::removeAttribute(const char* name) {
 #endif
 }
 
-Attribute Element::getAttributeNode(const char* name) {
+Attribute Element::getAttributeNode(const char* name)
+{
   _throw DOMException(this);
 }
 
-Attribute Element::setAttributeNode(Attribute attribute) {
+Attribute Element::setAttributeNode(Attribute attribute)
+{
   _throw DOMException(this);
 }
 
-Attribute Element::removeAttributeNode(Attribute attribute) {
+Attribute Element::removeAttributeNode(Attribute attribute)
+{
   _throw DOMException(this);
 }
 
 Attribute Element::getAttributeNodeNS(
   const char* namespaceURI,
-  const char* localName) {
+  const char* localName)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   _throw DOMException(this);
 //   xmlNode* node = (xmlNode*)getContext();
@@ -144,7 +150,8 @@ Attribute Element::getAttributeNodeNS(
 }
 
 String Element::getAttributeNS(
-  const char* namespaceURI, const char* localName) {
+  const char* namespaceURI, const char* localName)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNode* node = (xmlNode*)getContext();
   return NativeString(
@@ -162,12 +169,14 @@ String Element::getAttributeNS(
 void Element::setAttributeNS(
   const char* namespaceURI,
   const char* qualifiedName,
-  const char* value) {
+  const char* value)
+{
 }
 
 void Element::removeAttributeNS(
   const char* namespaceURI,
-  const char* localName) {
+  const char* localName)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNode* node = (xmlNode*)getContext();
   int result = xmlUnsetNsProp(

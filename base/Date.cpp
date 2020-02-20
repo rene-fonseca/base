@@ -1143,6 +1143,7 @@ public:
 
     // fout << "NOW=" << now << ENDL;
     TEST_ASSERT(now);
+    TEST_ASSERT(toString(now) == toString(now));
 
     Date d1 = Date::getTime(0, 0, 0);
     TEST_ASSERT(!d1);

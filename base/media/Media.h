@@ -17,7 +17,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-/** Media type. */
+/** Media object. */
 class _COM_AZURE_DEV__BASE__API Media {
 private:
 
@@ -55,6 +55,9 @@ class _COM_AZURE_DEV__BASE__API Audio : public Media {
 public:
 
   using Media::Media;
+  
+  /** Returns HTML audio control. */
+  static String getAudioControl(const String& bytes, const String& mimetype);
 };
 
 /** Video. */
@@ -67,7 +70,7 @@ public:
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
 
 #  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_MEDIA(TYPE) \
-inline ClingMimeBundle mime_bundle_repr(const TYPE& media) \
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const TYPE& media) \
 { \
   return cling_getAnyMimeBundle(media.getMimeType(), Base64::encode(media.getBytes())); \
 }
@@ -76,9 +79,16 @@ inline ClingMimeBundle mime_bundle_repr(const TYPE& media) \
 #  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_MEDIA(TYPE)
 #endif
 
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const Audio& audio)
+{
+  return ClingMimeBundleHandle().setHTMLText(Audio::getAudioControl(audio.getBytes(), audio.getMimeType()));
+}
+#endif
+
 _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_MEDIA(Media)
 _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_MEDIA(Image)
-_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_MEDIA(Audio)
 _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_MEDIA(Video)
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

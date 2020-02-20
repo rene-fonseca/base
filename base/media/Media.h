@@ -67,6 +67,38 @@ public:
   using Media::Media;
 };
 
+/** Display object. */
+class _COM_AZURE_DEV__BASE__API DisplayObject {
+private:
+
+  String mimetype;
+  String text;
+public:
+
+  inline DisplayObject(const String& _mimetype, const String& _text)
+    : mimetype(_mimetype), text(_text)
+  {
+  }
+  
+  /** Returns the MIME type. */
+  inline const String& getMimeType() const noexcept
+  {
+    return mimetype;
+  }
+
+  /** Returns the text. */
+  inline const String& getText() const noexcept
+  {
+    return text;
+  }
+};
+
+/** Display data in Jupyter. */
+inline DisplayObject display(const String& text, const String& mimetype = "text/html")
+{
+  return DisplayObject(mimetype, text);
+}
+
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
 
 #  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_MEDIA(TYPE) \
@@ -75,8 +107,15 @@ inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const TYPE
   return cling_getAnyMimeBundle(media.getMimeType(), Base64::encode(media.getBytes())); \
 }
 
+#  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_DISPLAY(TYPE) \
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const TYPE& object) \
+{ \
+  return cling_getAnyMimeBundle(object.getMimeType(), object.getText()); \
+}
+
 #else
 #  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_MEDIA(TYPE)
+#  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_DISPLAY(TYPE)
 #endif
 
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
@@ -90,5 +129,6 @@ inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const Audi
 _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_MEDIA(Media)
 _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_MEDIA(Image)
 _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_MEDIA(Video)
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_DISPLAY(DisplayObject)
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

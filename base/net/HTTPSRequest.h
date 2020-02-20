@@ -17,6 +17,7 @@
 #include <base/io/OutputStream.h>
 #include <base/io/PushInterface.h>
 #include <base/Resource.h>
+#include <base/collection/Pair.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -139,6 +140,9 @@ public:
   /** Returns the response. */
   void getResponse(PushInterface* pi);
 
+  /** Simple HTTPS request. Return MIME type and bytes. */
+  static StringPair load(const String& url, const String& method = METHOD_GET, const String& body = String());
+  
   ~HTTPSRequest();
 };
 

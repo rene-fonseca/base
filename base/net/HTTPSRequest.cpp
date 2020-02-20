@@ -1194,6 +1194,16 @@ public:
   }
 };
 
+StringPair HTTPSRequest::load(const String& url, const String& method, const String& body)
+{
+  HTTPSRequest request;
+  request.open(method, url);
+  request.send(body);
+  String response = request.getResponse();
+  String mimetype = request.getResponseHeader("Content-Type");
+  return StringPair(response, mimetype);
+}
+
 TEST_REGISTER(HTTPSRequest);
 
 #endif

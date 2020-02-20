@@ -1785,7 +1785,7 @@ inline WideString operator "" _ws(const wchar* text, size_t length)
 }
 
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
-inline ClingMimeBundle mime_bundle_repr(const WideString& v)
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const WideString& v)
 {
   return ClingMimeBundleHandle().setPlainText(v);
 }

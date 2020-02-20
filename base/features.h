@@ -266,29 +266,31 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 typedef nlohmann::json ClingMimeBundle;
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
+#define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID mime_bundle_repr
+
 #  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(TYPE) \
-inline ClingMimeBundle mime_bundle_repr(const TYPE& v) \
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const TYPE& v) \
 { \
   return cling_getMimeBundle(toString(v)); \
 }
 
 #  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_TEMPLATE(NAME) \
 template<class TYPE> \
-inline ClingMimeBundle mime_bundle_repr(const NAME<TYPE>& v) \
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const NAME<TYPE>& v) \
 { \
   return cling_getMimeBundle(toString(v)); \
 }
 
 #  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_CONTAINER(NAME) \
 template<class TYPE> \
-inline ClingMimeBundle mime_bundle_repr(const NAME<TYPE>& v) \
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const NAME<TYPE>& v) \
 { \
   return cling_getHTMLMimeBundle(getContainerAsHTML(v)); \
 }
 
 #  define _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_KEY_CONTAINER(NAME) \
 template<class KEY, class VALUE> \
-inline ClingMimeBundle mime_bundle_repr(const NAME<KEY, VALUE>& v) \
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const NAME<KEY, VALUE>& v) \
 { \
   return cling_getHTMLMimeBundle(getContainerAsHTML(v)); \
 }

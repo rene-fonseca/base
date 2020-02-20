@@ -1789,12 +1789,12 @@ inline ClingMimeBundle cling_getHTMLMimeBundle(const String& plain, const String
   return ClingMimeBundleHandle().setPlainText(plain).setHTMLText(html);
 }
 
-inline ClingMimeBundle mime_bundle_repr(const String& v)
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const String& v)
 {
   return ClingMimeBundleHandle().setPlainText(escape(v));
 }
 
-inline ClingMimeBundle mime_bundle_repr(const Exception& v)
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const Exception& v)
 {
   return ClingMimeBundleHandle().setHTMLText(static_cast<const char*>(v.getHTML()));
 }

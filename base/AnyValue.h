@@ -587,7 +587,7 @@ public:
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value);
 
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
-inline ClingMimeBundle mime_bundle_repr(const AnyValue& v)
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const AnyValue& v)
 {
   const char* id = AnyValue::getTypeAsId(v.getRepresentation());
   switch (v.getRepresentation()) {

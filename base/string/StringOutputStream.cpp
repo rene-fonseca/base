@@ -55,6 +55,7 @@ void StringOutputStreamWrapper::flush()
 
 void StringOutputStreamWrapper::restart()
 {
+  flush(); // we must empty buffered data
   closed = false;
   string.forceToLength(0); // clear() switches to default empty string!
 }
@@ -113,22 +114,38 @@ void StringOutputStream::ensureCapacity(MemorySize capacity)
   stream.ensureCapacity(capacity);
 }
 
+void StringOutputStream::flush()
+{
+  FormatOutputStream::flush(); // must be first
+  stream.flush();
+}
+
 const String& StringOutputStream::getString() const
 {
   // flush() should be considered cache so constness could still be ok here - yet ugly
   // what is the alternative - mutable all the way through?
-  (const_cast<StringOutputStream*>(this))->flush();
-  // flush();
+  StringOutputStream* sos = const_cast<StringOutputStream*>(this);
+  sos->FormatOutputStream::flush(); // must be first
+  sos->stream.flush();
+  
   return stream.getString();
 }
 
 String StringOutputStream::toString()
 {
-  flush();
+  FormatOutputStream::flush(); // must be first
+  stream.flush();
+  
   // does NOT copy capacity
   String result = stream.getString().copy(); // we want to preserve ownership in stream
   stream.restart();
   return result;
+}
+
+void StringOutputStream::restart()
+{
+  flush();
+  stream.restart();
 }
 
 StringOutputStream::~StringOutputStream()

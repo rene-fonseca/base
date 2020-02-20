@@ -108,6 +108,11 @@ public:
   void ensureCapacity(MemorySize capacity);
 
   /**
+    Flushes stream.
+  */
+  void flush();
+
+  /**
     Returns the string associated with the stream. Same as toString() but does NOT restart stream.
   */
   const String& getString() const;
@@ -116,7 +121,12 @@ public:
     Returns the string associated with the stream and restarts the stream.
   */
   String toString();
-  
+
+  /**
+    Restarts the stream.
+  */
+  void restart();
+
   /**
     Returns the string associated with the stream. Same as toString() but does NOT restart stream.
   */
@@ -130,14 +140,6 @@ public:
   */
   ~StringOutputStream();
 };
-
-template<class TYPE>
-inline UTF8Stringify::UTF8Stringify(const TYPE& src)
-{
-  StringOutputStream sos;
-  sos << src;
-  setString(sos);
-}
 
 /** Returns container as HTML. */
 template<class TYPE>

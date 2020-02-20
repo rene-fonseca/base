@@ -27,6 +27,33 @@ class AnyValue;
 class FormatOutputStream;
 class StringOutputStream;
 
+/** Opaque string output stream which reuses StringOutputStream. */
+class ThreadStringOutputStream {
+private:
+  
+  StringOutputStream* sos = nullptr;
+public:
+
+  /** Initalizes format output stream. */
+  ThreadStringOutputStream();
+
+  /** Returns the stream. */
+  FormatOutputStream& getStream();
+  
+  /** Write to stream. */
+  template<class TYPE>
+  inline FormatOutputStream& operator<<(const TYPE& v)
+  {
+    return getStream() << v;
+  }
+  
+  /** Returns the string. */
+  const String& getString() const;
+  
+  /** Destructs format output stream. */
+  ~ThreadStringOutputStream();
+};
+
 /** Avoid common copying to temporary buffer. */
 class _COM_AZURE_DEV__BASE__API UTF8Stringify {
 private:
@@ -35,6 +62,10 @@ private:
   Reference<ReferenceCountedAllocator<char> > buffer; // container for String
   char tiny[3 * 8] = {0}; // TAG: disable clear for release build
   
+  /** Set from string. */
+  void setString(const String& src);
+
+  /** Set from stream. */
   void setString(const StringOutputStream& src);
 
   /** Returns true if the tiny buffer is used. */
@@ -101,9 +132,14 @@ public:
   /** Initialize buffer. */
   UTF8Stringify(FormatOutputStream& src);
 
-  /** Initialize buffer. Include StringOutputStream to get implementation. */
+  /** Initialize buffer. TYPE must have FormatOutputStream << operator implementation. */
   template<class TYPE>
-  UTF8Stringify(const TYPE& src);
+  inline UTF8Stringify(const TYPE& src)
+  {
+    ThreadStringOutputStream stream;
+    stream << src;
+    setString(stream.getString());
+  }
 
   /** Initialize buffer. */
   UTF8Stringify(UTF8Stringify&& move);
@@ -119,6 +155,9 @@ public:
   {
     return span;
   }
+  
+  /** Gets string buffer. May avoid allocation. */
+  Reference<ReferenceCountedAllocator<char> > getStringBuffer() const;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

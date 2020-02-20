@@ -259,7 +259,10 @@ public:
   
   /** Forces a non-null empty string. Avoid this. */
   String(Default d);
-
+  
+  /** Initializes string. */
+  String(const UTF8Stringify& stringify);
+  
   /**
     Initializes the string from a string literal. The string literal is not
     copied into internal buffer. Implicit initialization is allowed.
@@ -1665,13 +1668,17 @@ String String::operator()(ARGS&&... args)
 /** Return String that is using printf-style formatting. FormatOutputStream is recommended. */
 _COM_AZURE_DEV__BASE__API String stringf(const char* text, ...);
 
-/** Converts value to String. */
+/** Converts value to String using FormatOutputStream. */
 template<class TYPE>
-String toString(const TYPE& v)
+String toString(const TYPE& value)
 {
-  UTF8Stringify stringify(v);
-  ConstSpan<char> span = stringify.getSpan();
-  return String(span.begin(), span.getSize());
+  return UTF8Stringify(value);
+}
+
+template<>
+inline String toString<String>(const String& value)
+{
+  return value;
 }
 
 // /** Returns Base64 decoding. */

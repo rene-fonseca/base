@@ -104,6 +104,11 @@ String::String(Default d)
   elements = e;
 }
 
+String::String(const UTF8Stringify& stringify)
+{
+  elements = stringify.getStringBuffer();
+}
+
 String::String(MemorySize capacity)
 {
   if (capacity == 0) {

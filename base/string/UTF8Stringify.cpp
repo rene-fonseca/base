@@ -14,12 +14,49 @@
 #include <base/string/UTF8Stringify.h>
 #include <base/Literal.h>
 #include <base/WideLiteral.h>
-#include <base/string/String.h>
 #include <base/string/Unicode.h>
 #include <base/string/StringOutputStream.h>
 #include <base/AnyValue.h>
+#include <base/concurrency/ThreadLocalContext.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+ThreadStringOutputStream::ThreadStringOutputStream()
+{
+  //sos = new StringOutputStream();
+  //return;
+  
+  if (auto tlc = Thread::getLocalContext()) {
+    if (tlc->stringOutputStreamUsage != 0) {
+      _throw ResourceException("Thread local string output stream is already in use.");
+    }
+    tlc->stringOutputStreamUsage++;
+    sos = &tlc->stringOutputStream;
+    sos->restart();
+  } else {
+    _throw ResourceException("Thread has no thread local context.");
+  }
+}
+
+FormatOutputStream& ThreadStringOutputStream::getStream()
+{
+  return *sos;
+}
+
+const String& ThreadStringOutputStream::getString() const
+{
+  return sos->getString();
+}
+
+ThreadStringOutputStream::~ThreadStringOutputStream()
+{
+  //return;
+  if (auto tlc = Thread::getLocalContext()) {
+    sos->restart();
+    BASSERT(tlc->stringOutputStreamUsage > 0);
+    tlc->stringOutputStreamUsage--;
+  }
+}
 
 UTF8Stringify::UTF8Stringify()
 {
@@ -240,6 +277,26 @@ void UTF8Stringify::setString(const StringOutputStream& src)
   const String& s = src.getString();
   buffer = s.getContainer();
   span = s.getSpan();
+}
+
+void UTF8Stringify::setString(const String& src)
+{
+  buffer = src.getContainer();
+  span = src.getSpan();
+}
+
+Reference<ReferenceCountedAllocator<char> > UTF8Stringify::getStringBuffer() const
+{
+  if (buffer) {
+    return buffer;
+  } else {
+    // we could update stringify here also if not const
+    Reference<ReferenceCountedAllocator<char> > result = new ReferenceCountedAllocator<char>(span.getSize() + 1);
+    char* dest = result->getElements();
+    copy(dest, span.begin(), span.getSize());
+    dest[span.getSize()] = '\0';
+    return result;
+  }
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

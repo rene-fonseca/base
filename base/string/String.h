@@ -1706,6 +1706,12 @@ public:
     bundle[mimetype] = text.native();
     return *this;
   }
+  
+  inline ClingMimeBundleHandle& setMimeType(const String& mimetype, const String& text)
+  {
+    bundle[mimetype.native()] = text.native();
+    return *this;
+  }
 
   inline ClingMimeBundleHandle& setOctetStream(const String& bytes)
   {
@@ -1756,7 +1762,17 @@ public:
   {
     return bundle;
   }
+  
+  inline const ClingMimeBundle& present() noexcept
+  {
+    return bundle;
+  }
 };
+
+inline ClingMimeBundle cling_getAnyMimeBundle(const String& mimetype, const String& bytes)
+{
+  return ClingMimeBundleHandle().setMimeType(mimetype, bytes);
+}
 
 inline ClingMimeBundle cling_getMimeBundle(const String& plain)
 {

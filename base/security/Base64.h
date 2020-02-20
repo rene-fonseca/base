@@ -105,6 +105,16 @@ public:
     @param size The number of octets in the buffer.
   */
   static String encode(const uint8* buffer, MemorySize size) noexcept;
+
+  /**
+    Returns the Base64 encoded data.
+
+    @param bytes Buffer holding the data.
+  */
+  static inline String encode(const String& bytes) noexcept
+  {
+    return encode(bytes.getBytes(), bytes.getLength());
+  }
 };
 
 inline Base64::Descriptor::Descriptor(const char* _buffer, MemorySize _size) noexcept

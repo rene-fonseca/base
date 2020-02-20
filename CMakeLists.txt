@@ -229,6 +229,8 @@ file(GLOB base_SRC
   "base/iterator/*.cpp"
   "base/math/*.h"
   "base/math/*.cpp"
+  "base/media/*.h"
+  "base/media/*.cpp"
   "base/mem/*.h"
   "base/mem/*.cpp"
   "base/net/*.h"

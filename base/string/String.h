@@ -1743,16 +1743,6 @@ public:
     return setMimeType("image/jpeg", base64encode(bytes));
   }
 
-  inline ClingMimeBundleHandle& setVideoMP4(const String& bytes)
-  {
-    return setMimeType("video/mp4", base64encode(bytes));
-  }
-
-  inline ClingMimeBundleHandle& setAudioMPEG(const String& bytes)
-  {
-    return setMimeType("audio/mpeg", base64encode(bytes));
-  }
-
   inline ClingMimeBundleHandle& setImageSVG(const String& svg)
   {
     return setMimeType("image/svg+xml", svg);

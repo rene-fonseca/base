@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <base/string/FormatOutputStream.h>
+#include <base/string/StringOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -329,5 +329,47 @@ FormatOutputStream& operator<<(
 {
   return stream << '[' << value.getKey() << ']' << '=' << value.getValue();
 }
+
+// TAG: move to proper place
+namespace association {
+
+/** Returns HTML <tr> header. */
+inline FormatOutputStream& getHeaderAsTR(FormatOutputStream& stream, const String& text)
+{
+  return stream << "<tr>" << "<th colspan=\"2\" style=\"text-align: center\">"
+    << text << "</th>" << "</tr>";
+}
+
+/** Returns Type and Value as HTML <tr>. */
+template<class TYPE>
+FormatOutputStream& getTypeValueAsTR(FormatOutputStream& stream, const TYPE& value)
+{
+  return stream << "<tr>" << "<td style=\"text-align: right\">"
+    << TypeInfo::getTypename(Type::getType<TYPE>()) << "</td>" << "<td style=\"text-align: left\">"
+    << HTMLEncode<TYPE>::map(value) << "</td>" << "</tr>";
+}
+
+}
+
+/** Returns Association as HTML. */
+template<class KEY, class VALUE>
+String getAssociationAsHTML(const Association<KEY, VALUE>& value)
+{
+  StringOutputStream stream;
+  stream << "<table>";
+  association::getHeaderAsTR(stream, TypeInfo::getTypename(value));
+  association::getTypeValueAsTR(stream, value.getKey());
+  association::getTypeValueAsTR(stream, value.getValue());
+  stream << "<table>";
+  return stream.getString();
+}
+
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+template<class KEY, class VALUE> \
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const Association<KEY, VALUE>& v) \
+{ \
+  return cling_getHTMLMimeBundle(getAssociationAsHTML(v)); \
+}
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

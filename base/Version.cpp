@@ -195,6 +195,8 @@ void Version::printSystem()
        << "long double: " << getFloatType(_COM_AZURE_DEV__BASE__LONG_DOUBLE) << " bytes" << EOL
        << "float128: " << getFloatType(_COM_AZURE_DEV__BASE__FLOAT128) << " bytes" << EOL
        << ENDL;
+
+  // TAG: add memory and CPU info
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

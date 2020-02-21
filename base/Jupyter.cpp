@@ -17,7 +17,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-DisplayObject Jupyter::displayMime(const String& text, const String& mimetype)
+DisplayObject Jupyter::blob(const String& text, const String& mimetype)
 {
   return DisplayObject(mimetype, text);
 }

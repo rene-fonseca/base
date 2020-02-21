@@ -65,7 +65,7 @@ public:
 #endif
 
   /** Display data. */
-  static DisplayObject displayMime(const String& text, const String& mimetype = "text/html");
+  static DisplayObject blob(const String& text, const String& mimetype = "text/html");
 
   /** Display HTML. */
   static DisplayObject html(const String& text);

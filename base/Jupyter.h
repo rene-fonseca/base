@@ -21,17 +21,51 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class Jupyter {
 public:
   
-#if 0 // jupyter: not working
   /** Clear output field. */
-  static inline void clearOutput()
+  static inline void clearOutput(bool wait = true)
   {
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+    xeus::get_interpreter().clear_output(wait);
+#else
     fout << "\033[2K\r" << FLUSH;
     ferr << "\033[2K\r" << FLUSH;
+#endif
+  }
+  
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+  /** Display. */
+  template<class TYPE>
+  static void display(const TYPE& v)
+  {
+    xeus::get_interpreter().display_data(
+      mime_bundle_repr(v), // TAG: add separate hook - derive from v by casting?
+      ClingMimeBundleHandle(),
+      ClingMimeBundleHandle()
+    );
+  }
+
+  /** Display. */
+  template<class TYPE>
+  static void display(const TYPE& v, const String& id, bool update = false)
+  {
+    if (update) {
+      xeus::get_interpreter().update_display_data(
+        mime_bundle_repr(v), // TAG: add separate hook - derive from v by casting?
+        ClingMimeBundleHandle(),
+        cling_getAnyMimeBundle("display_id", id)
+      );
+    } else {
+      xeus::get_interpreter().display_data(
+        mime_bundle_repr(v), // TAG: add separate hook - derive from v by casting?
+        ClingMimeBundleHandle(),
+        cling_getAnyMimeBundle("display_id", id)
+      );
+    }
   }
 #endif
-  
+
   /** Display data. */
-  static DisplayObject display(const String& text, const String& mimetype = "text/html");
+  static DisplayObject displayMime(const String& text, const String& mimetype = "text/html");
 
   /** Display HTML. */
   static DisplayObject html(const String& text);

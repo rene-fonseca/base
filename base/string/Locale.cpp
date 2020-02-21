@@ -135,13 +135,6 @@ Locale::Locale() noexcept
 {
   falseMessage = MESSAGE("false");
   trueMessage = MESSAGE("true");
-
-  listBegin = '{';
-  listEnd = '}';
-  listSeparator = ';';
-  vectorBegin = '(';
-  vectorEnd = ')';
-  vectorSeparator = ',';
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

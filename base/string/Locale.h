@@ -112,6 +112,7 @@ public:
   }
 };
 
+/** Date and time formatting. */
 class _COM_AZURE_DEV__BASE__API DateFormatSet : public Object {
 private:
 
@@ -150,9 +151,9 @@ private:
   };
 
   /** Date separator used with short formats. */
-  char dateSeparator;
+  char dateSeparator = ':';
   /** Time separator. */
-  char timeSeparator;
+  char timeSeparator = '-';
   /** AM symbol. */
   String am;
   /** PM symbol. */
@@ -166,67 +167,73 @@ private:
   String longDateFormat;
 public:
 
-// TAG: need time zone support - specifies local time offset from UTC time
-//  int getOffset() const noexcept;
-//  void setOffset(int offset) noexcept;
-//  String getTimeZone() noexcept; returns (+|-)hh:mm if unknown name
+  // TAG: need time zone support - specifies local time offset from UTC time
+  // String getTimeZone() noexcept; returns (+|-)hh:mm if unknown name
   
   /**
     Initializes object with POSIX settings.
   */
   DateFormatSet() noexcept;
 
+  /** Returns date separator. */
   inline char getDateSeparator() const noexcept
   {
     return dateSeparator;
   }
 
+  /** Returns time separator. */
   inline char getTimeSeparator() const noexcept
   {
     return timeSeparator;
   }
 
+  /** Returns short name of weekday. */
   String getShortNameOfWeekday(unsigned int weekday) const
   {
     bassert(weekday < 7, OutOfDomain(Type::getType<DateFormatSet>()));
     return shortNameOfWeekday[weekday];
   }
   
+  /** Returns long name of weekday. */
   String getLongNameOfWeekday(unsigned int weekday) const
   {
     bassert(weekday < 7, OutOfDomain(Type::getType<DateFormatSet>()));
     return longNameOfWeekday[weekday];
   }
   
+  /** Returns short name of month. */
   String getShortNameOfMonth(unsigned int month) const
   {
     bassert(month < 12, OutOfDomain(Type::getType<DateFormatSet>()));
     return shortNameOfMonth[month];
   }
   
+  /** Returns long name of month. */
   String getLongNameOfMonth(unsigned int month) const
   {
     bassert(month < 12, OutOfDomain(Type::getType<DateFormatSet>()));
     return longNameOfMonth[month];
   }
 
+  /** Returns PM. */
   inline const String& getPM() const noexcept
   {
     return pm;
   }
 
+  /** Returns AM. */
   inline const String& getAM() const noexcept
   {
     return am;
   }
   
-
-
+  /** Returns short date format. */
   inline const String& getShortDateFormat() const noexcept
   {
     return shortDateFormat;
   }
   
+  /** Sets short date format. */
   void setShortDateFormat(const String& format) noexcept;
   
   inline const String& getMediumDateFormat() const noexcept
@@ -234,34 +241,43 @@ public:
     return mediumDateFormat;
   }
   
+  /** Returns medium date format. */
   void setMediumDateFormat(const String& format) noexcept;
   
+  /** Returns short date format. */
   inline const String& getLongDateFormat() const noexcept
   {
     return longDateFormat;
   }
   
+  /** Returns long date format. */
   void setLongDateFormat(const String& format) noexcept;
 
+  /** Returns short time format. */
   inline const String& getShortTimeFormat() const noexcept
   {
     return shortTimeFormat;
   }
   
+  /** Sets short time format. */
   void setShortTimeFormat(const String& format) noexcept;
   
+  /** Returns medium time format. */
   inline const String& getMediumTimeFormat() const noexcept
   {
     return mediumTimeFormat;
   }
   
+  /** Sets medium time format. */
   void setMediumTimeFormat(const String& format) noexcept;
   
+  /** Returns long time format. */
   inline const String& getLongTimeFormat() const noexcept
   {
     return longTimeFormat;
   }
   
+  /** Sets long time format. */
   void setLongTimeFormat(const String& format) noexcept;
 };
 
@@ -275,10 +291,13 @@ public:
 class _COM_AZURE_DEV__BASE__API Locale : public DateFormatSet {
 public:
 
+  /** POSIX locale. */
   static const Locale POSIX;
-
-  //static void enable();
   
+  String falseMessage;
+  String trueMessage;
+  
+  /** Initializes locale. */
   Locale() noexcept;
   
   /**
@@ -307,23 +326,8 @@ public:
     Queries the locale specific numeric and monetary information.
   */
   static void getLocaleSpecific() noexcept;
-
-
-  char listBegin; // {
-  char listEnd; // }
-  char listSeparator; // ;
-  char vectorBegin; // (
-  char vectorEnd; // )
-  char vectorSeparator; // ,
   
-  inline char getListSeparator() const noexcept
-  {
-    return listSeparator;
-  }
-
-  String falseMessage;
-  String trueMessage;
-  
+  /** Returns boolean as string. */
   inline const String& getBoolean(bool value) const noexcept
   {
     if (value) {

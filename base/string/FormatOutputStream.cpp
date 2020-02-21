@@ -670,27 +670,29 @@ void FormatOutputStream::addDateField(const Date& date)
   // const bool posix = ((context.flags & Symbols::POSIX) != 0);
   // const Locale* locale = posix ? &Locale::POSIX : &locale; // FIXME
   const Locale* locale = &Locale::POSIX;
-  String format; // TAG: avoid copy for assigns below
+  String format;
   switch (context.majorDateFormat) {
   case Symbols::DATETIME:
     switch (context.namedDateFormat) {
     case Symbols::SHORT_FORMAT:
-      format = locale->getShortDateFormat() + MESSAGE(" ") + locale->getShortTimeFormat(); // TAG: optimize
+      format = locale->getShortDateFormat() + MESSAGE(" ") + locale->getShortTimeFormat();
       break;
     case Symbols::MEDIUM_FORMAT:
-      format = locale->getMediumDateFormat() + MESSAGE(" ") + locale->getMediumTimeFormat(); // TAG: optimize
+      format = locale->getMediumDateFormat() + MESSAGE(" ") + locale->getMediumTimeFormat();
       break;
     case Symbols::LONG_FORMAT:
-      format = locale->getLongDateFormat() + MESSAGE(" ") + locale->getLongTimeFormat(); // TAG: optimize
+      format = locale->getLongDateFormat() + MESSAGE(" ") + locale->getLongTimeFormat();
       break;
     case Symbols::RFC2822_FORMAT:
       format = "RFC2822";
       break;
     case Symbols::ISO8601_FORMAT:
       if (localTime) {
-        format = "%Y-%m-%dT%H:%M:%S";
+        static String _format("%Y-%m-%dT%H:%M:%S");
+        format = _format;
       } else {
-        format = "%Y-%m-%dT%H:%M:%SZ";
+        static String _format("%Y-%m-%dT%H:%M:%SZ");
+        format = _format;
       }
       break;
     }
@@ -711,9 +713,11 @@ void FormatOutputStream::addDateField(const Date& date)
       break;
     case Symbols::ISO8601_FORMAT:
       if (localTime) {
-        format = "%H:%M:%S";
+        static String _format("%H:%M:%S");
+        format = _format;
       } else {
-        format = "%H:%M:%SZ";
+        static String _format("%H:%M:%SZ");
+        format = _format;
       }
       break;
     }
@@ -733,7 +737,8 @@ void FormatOutputStream::addDateField(const Date& date)
       format = "<RFC2822>";
       break;
     case Symbols::ISO8601_FORMAT:
-      format = "%y-%m-%d";
+      static String _format("%y-%m-%d");
+      format = _format;
       break;
     }
     break;

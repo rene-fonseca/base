@@ -31,13 +31,13 @@ public:
 #endif
   
   /** Display data. */
-  static inline DisplayObject display(const String& text, const String& mimetype = "text/html");
+  static DisplayObject display(const String& text, const String& mimetype = "text/html");
 
   /** Display HTML. */
-  static inline DisplayObject html(const String& text);
+  static DisplayObject html(const String& text);
 
   /** Display data in iframe. */
-  static inline DisplayObject iframe(const String& url, unsigned width = 300, unsigned int height = 300);
+  static DisplayObject iframe(const String& url, unsigned width = 300, unsigned int height = 300);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

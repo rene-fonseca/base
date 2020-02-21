@@ -29,8 +29,8 @@ DisplayObject Jupyter::html(const String& text)
 
 DisplayObject Jupyter::iframe(const String& url, unsigned width, unsigned int height)
 {
-  return DisplayObject("text/html", "<iframe src=\"%1\" width=\"%2\" height=\"%3\"/>" %
-                       Subst(HTML::encode(url), width, height));
+  return DisplayObject("text/html",
+    "<iframe src=\"%1\" width=\"%2\" height=\"%3\"/>" % Subst(HTML::encode(url), width, height));
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

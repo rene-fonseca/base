@@ -17,6 +17,46 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#if 1
+/** Jupyter media blob. */
+class _COM_AZURE_DEV__BASE__API JupyterMediaBlob {
+public:
+  
+  class Blob {
+  public:
+    
+    String mimetype;
+    String bytes;
+  };
+  
+  // Blob fields[2];
+  // TAG: we could add support for up to 2 types
+
+  String mimetype;
+  String bytes;
+  
+  inline JupyterMediaBlob()
+  {
+  }
+
+  inline JupyterMediaBlob(const String& _mimetype, const String& _bytes, bool encode = false)
+    : mimetype(_mimetype), bytes(encode ? base64encode(_bytes) : _bytes)
+  {
+  }
+};
+#endif
+
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const JupyterMediaBlob& blob) \
+{ \
+  return ClingMimeBundleHandle().setMimeType(blob.mimetype, blob.bytes); \
+}
+
+#endif
+
+
+
 /** Media object. */
 class _COM_AZURE_DEV__BASE__API Media {
 private:
@@ -25,15 +65,6 @@ private:
   String bytes;
 public:
 
-/*
-  static String getJSON();
-  static String getHTML();
-  static String getMarkdown();
-  static String getPNG();
-  static String getJPEG();
-  static String getGIF();
-*/
-  
   inline Media(const String& _mimetype, const String& _bytes)
     : mimetype(_mimetype), bytes(_bytes)
   {
@@ -50,6 +81,12 @@ public:
   {
     return bytes;
   }
+
+  // cling: would like cling to pick this up for display
+  inline operator JupyterMediaBlob() const
+  {
+    return JupyterMediaBlob(getMimeType(), getBytes(), true);
+  }
 };
 
 /** Image. */
@@ -57,6 +94,11 @@ class _COM_AZURE_DEV__BASE__API Image : public Media {
 public:
   
   using Media::Media;
+  
+  inline operator JupyterMediaBlob() const
+  {
+    return JupyterMediaBlob(getMimeType(), getBytes(), true);
+  }
 };
 
 /** Audio. */

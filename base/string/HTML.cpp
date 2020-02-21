@@ -455,7 +455,8 @@ namespace html {
     return row;
   }
 
-  String Table::getHTML() {
+  String Table::getHTML()
+  {
     if (!e) {
       return String();
     }

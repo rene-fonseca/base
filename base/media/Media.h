@@ -25,6 +25,15 @@ private:
   String bytes;
 public:
 
+/*
+  static String getJSON();
+  static String getHTML();
+  static String getMarkdown();
+  static String getPNG();
+  static String getJPEG();
+  static String getGIF();
+*/
+  
   inline Media(const String& _mimetype, const String& _bytes)
     : mimetype(_mimetype), bytes(_bytes)
   {

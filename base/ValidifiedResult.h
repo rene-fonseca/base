@@ -172,4 +172,6 @@ inline FormatOutputStream& operator<<(FormatOutputStream& stream, const Validifi
 template<class TYPE>
 using Validified = ValidifiedResult<TYPE>;
 
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_TEMPLATE(ValidifiedResult)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

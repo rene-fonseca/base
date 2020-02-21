@@ -78,6 +78,12 @@ public:
 
   /** Converts the guid to a string. E.g. "{B429A864-CDFC-4044-BCC1-BDDE18EAF8DE}" */
   String toString() const;
+  
+  /** Converts the guid to a string. E.g. "{B429A864-CDFC-4044-BCC1-BDDE18EAF8DE}" */
+  inline operator String() const
+  {
+    return toString();
+  }
 
   /**
     Returns the identifier.
@@ -92,5 +98,7 @@ public:
   Writes the guid to the format output stream. E.g. {B429A864-CDFC-4044-BCC1-BDDE18EAF8DE}.
 */
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Guid& value);
+
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(Guid)
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

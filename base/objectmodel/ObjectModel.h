@@ -933,4 +933,31 @@ Reference<ObjectModel::Object> buildObjectModel(const BinaryNode<TYPE>* node)
   return BuildObjectModel<TYPE>().build(node);
 }
 
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const R<ObjectModel::Value>& v) \
+{ \
+  return cling_getAnyMimeBundle("application/json", toString(v)); \
+}
+
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const R<ObjectModel::String>& v) \
+{ \
+  return cling_getAnyMimeBundle("application/json", toString(v)); \
+}
+
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const R<ObjectModel::Integer>& v) \
+{ \
+  return cling_getAnyMimeBundle("application/json", toString(v)); \
+}
+
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const R<ObjectModel::Object>& v) \
+{ \
+  return cling_getAnyMimeBundle("application/json", toString(v)); \
+}
+
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const R<ObjectModel::Array>& v) \
+{ \
+  return cling_getAnyMimeBundle("application/json", toString(v)); \
+}
+#endif
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

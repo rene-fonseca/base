@@ -935,7 +935,7 @@ String Date::format(const String& format) const
       case 'D':
         stream << setWidth(2);
         if (flags & DEFAULT) {stream << ZEROPAD;}
-        stream << dateTime.month << '/';
+        stream << (dateTime.month + 1) << '/';
         stream << setWidth(2);
         if (flags & DEFAULT) {stream << ZEROPAD;}
         stream << dateTime.day << '/';
@@ -952,7 +952,7 @@ String Date::format(const String& format) const
         stream << dateTime.year << '-';
         stream << setWidth(2);
         if (flags & DEFAULT) {stream << ZEROPAD;}
-        stream << dateTime.month << '-';
+        stream << (dateTime.month + 1) << '-';
         stream << setWidth(2);
         if (flags & DEFAULT) {stream << ZEROPAD;}
         stream << dateTime.day;
@@ -980,7 +980,7 @@ String Date::format(const String& format) const
       case 'm':
         stream << setWidth(2);
         if (flags & DEFAULT) {stream << ZEROPAD;}
-        stream << dateTime.month;
+        stream << (dateTime.month + 1);
         break;
       case 'M':
         stream << setWidth(2);

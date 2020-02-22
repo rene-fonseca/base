@@ -17,19 +17,25 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-DisplayObject Jupyter::blob(const String& text, const String& mimetype)
+MediaBlob Jupyter::blob(const String& text, const String& mimetype)
 {
-  return DisplayObject(mimetype, text);
+  return MediaBlob(mimetype, text);
 }
 
-DisplayObject Jupyter::html(const String& text)
+MediaBlob Jupyter::html(const String& text)
 {
-  return DisplayObject("text/html", text);
+  return MediaBlob(MediaBlob::getHTMLType(), text);
 }
 
-DisplayObject Jupyter::iframe(const String& url, unsigned width, unsigned int height)
+MediaBlob Jupyter::script(const String& text)
 {
-  return DisplayObject("text/html",
+  return MediaBlob(MediaBlob::getHTMLType(),
+    "<script type=\"application/javascript\">" + /*HTML::encode*/(text) + "</script>");
+}
+
+MediaBlob Jupyter::iframe(const String& url, unsigned width, unsigned int height)
+{
+  return MediaBlob(MediaBlob::getHTMLType(),
     "<iframe src=\"%1\" width=\"%2\" height=\"%3\"/>" % Subst(HTML::encode(url), width, height));
 }
 

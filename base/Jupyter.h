@@ -17,8 +17,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-/** Jupyter integration. */
-class Jupyter {
+/** Jupyter and compatible interpreter front-ends integration. */
+class Jupyter { // class InterpreterFrontEnd
 public:
   
   /** Clear output field. */
@@ -38,7 +38,7 @@ public:
   static void display(const TYPE& v)
   {
     xeus::get_interpreter().display_data(
-      mime_bundle_repr(v), // TAG: add separate hook - derive from v by casting?
+      _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(v),
       ClingMimeBundleHandle(),
       ClingMimeBundleHandle()
     );
@@ -50,13 +50,13 @@ public:
   {
     if (update) {
       xeus::get_interpreter().update_display_data(
-        mime_bundle_repr(v), // TAG: add separate hook - derive from v by casting?
+        _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(v),
         ClingMimeBundleHandle(),
         cling_getAnyMimeBundle("display_id", id)
       );
     } else {
       xeus::get_interpreter().display_data(
-        mime_bundle_repr(v), // TAG: add separate hook - derive from v by casting?
+        _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(v),
         ClingMimeBundleHandle(),
         cling_getAnyMimeBundle("display_id", id)
       );
@@ -65,13 +65,16 @@ public:
 #endif
 
   /** Display data. */
-  static DisplayObject blob(const String& text, const String& mimetype = "text/html");
+  static MediaBlob blob(const String& text, const String& mimetype);
 
   /** Display HTML. */
-  static DisplayObject html(const String& text);
-
+  static MediaBlob html(const String& text);
+  
+  /** Display JavaScript. */
+  static MediaBlob script(const String& text);
+  
   /** Display data in iframe. */
-  static DisplayObject iframe(const String& url, unsigned width = 300, unsigned int height = 300);
+  static MediaBlob iframe(const String& url, unsigned width = 300, unsigned int height = 300);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

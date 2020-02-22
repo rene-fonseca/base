@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/media/Media.h>
+#include <base/string/FormatOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <base/security/Base64.h>
+#include <base/string/String.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

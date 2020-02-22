@@ -14,6 +14,7 @@
 #include <base/media/Media.h>
 #include <base/string/HTML.h>
 #include <base/string/StringOutputStream.h>
+#include <base/security/Base64.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

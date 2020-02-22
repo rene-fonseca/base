@@ -1689,7 +1689,7 @@ _COM_AZURE_DEV__BASE__API String base64encode(const String& bytes);
 
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
 
-/** Cling mime bundle. */
+/** Cling MIME bundle. */
 class _COM_AZURE_DEV__BASE__API ClingMimeBundleHandle {
 private:
   
@@ -1713,11 +1713,6 @@ public:
     return *this;
   }
 
-  inline ClingMimeBundleHandle& setOctetStream(const String& bytes)
-  {
-    return setMimeType("application/octet-stream", base64encode(bytes));
-  }
-
   inline ClingMimeBundleHandle& setPlainText(const String& text)
   {
     return setMimeType("text/plain", text);
@@ -1727,35 +1722,15 @@ public:
   {
     return setMimeType("text/html", html);
   }
-  
-  inline ClingMimeBundleHandle& setImageGIF(const String& bytes)
-  {
-    return setMimeType("image/gif", base64encode(bytes));
-  }
 
-  inline ClingMimeBundleHandle& setImagePNG(const String& bytes)
+  inline operator ClingMimeBundle&&() noexcept
   {
-    return setMimeType("image/png", base64encode(bytes));
-  }
-
-  inline ClingMimeBundleHandle& setImageJPEG(const String& bytes)
-  {
-    return setMimeType("image/jpeg", base64encode(bytes));
-  }
-
-  inline ClingMimeBundleHandle& setImageSVG(const String& svg)
-  {
-    return setMimeType("image/svg+xml", svg);
-  }
-
-  inline operator const ClingMimeBundle&() noexcept
-  {
-    return bundle;
+    return moveObject(bundle);
   }
   
-  inline const ClingMimeBundle& present() noexcept
+  inline ClingMimeBundle&& getBundle() noexcept
   {
-    return bundle;
+    return moveObject(bundle);
   }
 };
 

@@ -472,4 +472,17 @@ inline Path operator/(const Path& a, const Path& b)
   return FileSystem::join(a, b);
 }
 
+/** Concats paths. Use / operator. */
+Path operator+(const Path& a, const String& b) = delete;
+
+/**
+  Writes a string representation of the InetAddress object to a format stream.
+*/
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const Path& value)
+{
+  return stream << static_cast<const String&>(value);
+}
+
+_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(Path)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

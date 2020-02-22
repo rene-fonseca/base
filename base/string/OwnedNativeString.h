@@ -26,7 +26,7 @@ class _COM_AZURE_DEV__BASE__API OwnedNativeString {
 private:
   
   char* text = nullptr;
-  ReferenceCountedObject* buffer = nullptr;
+  ReferenceCountedObject* buffer = nullptr; // ATTENTION: we must have operator= implemented since primitive!
 public:
   
   /** Initializes empty string. */
@@ -45,12 +45,27 @@ public:
   /** Initializes string. */
   OwnedNativeString(const OwnedNativeString& copy) noexcept;
 
+  /** Initializes string. */
+  OwnedNativeString(OwnedNativeString&& move) noexcept;
+
+  /** Assigns string. */
+  OwnedNativeString& operator=(const OwnedNativeString& assign) noexcept;
+
+  /** Assigns string. */
+  OwnedNativeString& operator=(OwnedNativeString&& assign) noexcept;
+
+  /** Assigns string. */
+  OwnedNativeString& operator=(const char* assign) noexcept;
+
   /** Do NOT keep string pointer after life time of OwnedNativeString. */
   inline operator const char*() const noexcept
   {
     return text;
   }
 
+  /** Returns the length of the string. */
+  // MemorySize getLength() const noexcept;
+  
   /** Destruct string. */
   ~OwnedNativeString();
 };

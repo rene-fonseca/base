@@ -109,6 +109,17 @@ String::String(const UTF8Stringify& stringify)
   elements = stringify.getStringBuffer();
 }
 
+String::String(const OwnedNativeString& string)
+{
+  ReferenceCountedAllocator<char>* e = dynamic_cast<ReferenceCountedAllocator<char>*>(string.buffer);
+  if (e) {
+    this->elements = e;
+  } else {
+    const char* s = string;
+    initialize(s, getNullTerminatedLength(s));
+  }
+}
+
 String::String(MemorySize capacity)
 {
   if (capacity == 0) {

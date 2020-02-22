@@ -46,6 +46,60 @@ OwnedNativeString::OwnedNativeString(const OwnedNativeString& copy) noexcept
   }
 }
 
+OwnedNativeString::OwnedNativeString(OwnedNativeString&& move) noexcept
+{
+  text = move.text;
+  buffer = move.buffer;
+  move.buffer = nullptr;
+}
+
+OwnedNativeString& OwnedNativeString::operator=(const char* text) noexcept
+{
+  this->text = nullptr;
+  if (buffer) {
+    if (ReferenceCountedObject::ReferenceImpl(*buffer).removeReference()) {
+      delete buffer;
+      buffer = nullptr;
+    }
+  }
+
+  if (text) {
+    MemorySize length = getNullTerminatedLength(text);
+    ReferenceCountedAllocator<char>* buffer = new ReferenceCountedAllocator<char>(length + 1);
+    ReferenceCountedObject::ReferenceImpl(*buffer).addReference();
+    copy(buffer->getElements(), text, length + 1);
+    this->text = buffer->getElements();
+    this->buffer = buffer;
+  } else {
+    static char EMPTY[1] = {'\0'};
+    this->text = EMPTY;
+  }
+  return *this;
+}
+
+OwnedNativeString& OwnedNativeString::operator=(const OwnedNativeString& copy) noexcept
+{
+  if (&copy != this) {
+    text = copy.text;
+    buffer = copy.buffer;
+    if (buffer) {
+      ReferenceCountedObject::ReferenceImpl(*buffer).addReference();
+    }
+  }
+  return *this;
+}
+
+OwnedNativeString& OwnedNativeString::operator=(OwnedNativeString&& move) noexcept
+{
+  if (&move != this) {
+    text = move.text;
+    buffer = move.buffer;
+    move.text = nullptr;
+    move.buffer = nullptr;
+  }
+  return *this;
+}
+
 OwnedNativeString::~OwnedNativeString()
 {
   if (buffer) {

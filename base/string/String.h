@@ -262,6 +262,9 @@ public:
   
   /** Initializes string. */
   String(const UTF8Stringify& stringify);
+
+  /** Initializes string. */
+  String(const OwnedNativeString& string);
   
   /**
     Initializes the string from a string literal. The string literal is not

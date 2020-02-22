@@ -673,6 +673,14 @@ public:
     return *this;
   }
 
+#if 0
+  /** Write value to stream. */
+  inline FormatOutputStream& operator<<(const OwnedNativeString& value)
+  {
+    return *this << static_cast<const char*>(value); // we could cache length also
+  }
+#endif
+
   /** Write value to stream. */
   inline FormatOutputStream& operator<<(const char* value)
   {

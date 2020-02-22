@@ -1251,7 +1251,7 @@ Date File::getLastModification()
     int result = ::fstat(handle->handle, &status);
   #endif // LFS
     bassert(result == 0, FileException("Unable to get status.", this));
-    return Date(status.st_mtime);
+    return Date(status.st_mtime * 1000000LL);
 #endif
 }
 
@@ -1277,7 +1277,7 @@ Date File::getLastAccess()
     int result = ::fstat(handle->handle, &status);
   #endif // LFS
     bassert(result == 0, FileException("Unable to get status.", this));
-    return Date(status.st_atime);
+    return Date(status.st_atime * 1000000LL);
 #endif
 }
 
@@ -1303,7 +1303,7 @@ Date File::getLastChange()
     int result = ::fstat(handle->handle, &status);
   #endif // LFS
     bassert(result == 0, FileException("Unable to get status.", this));
-    return Date(status.st_ctime);
+    return Date(status.st_ctime * 1000000LL);
 #endif
 }
 

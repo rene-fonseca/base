@@ -179,7 +179,7 @@ public:
   {
     const Type resultType = MapType<RESULT>::type;
     const Type types[] = { MapType<ARGS>::type..., TYPE_UNSPECIFIED };
-    registerFunctionImpl(func, resultType, types, getArraySize(types) - 1, name);
+    registerFunctionImpl((void*)func, resultType, types, getArraySize(types) - 1, name);
   }
 
   /** Loads the given WASM module. */

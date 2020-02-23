@@ -195,6 +195,12 @@ if (USE_SHARED AND NOT IOS)
   # find_package(OpenCL REQUIRED)
 endif ()
 
+if (CMAKE_WASMTIME_DIR)
+  set(WASMTIME_FOUND 1)
+  set(WASMTIME_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_WASMTIME_DIR}/include")
+  set(WASMTIME_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_WASMTIME_DIR}/lib/libwasmtime.dylib")
+endif ()
+
 file(GLOB_RECURSE base_platforms_SRC
   "base/platforms/*.h"
   "base/platforms/features.cpp"
@@ -319,9 +325,12 @@ endif ()
 if (CURL_FOUND)
   option(_COM_AZURE_DEV__BASE__USE_CURL "Enable CURL" ON)
 endif ()
+if (WASMTIME_FOUND)
+  option(_COM_AZURE_DEV__BASE__USE_WASMTIME "Enable Wasmtime" ON)
+endif ()
 
 option(_COM_AZURE_DEV__BASE__USE_X11 "Enable X11" X11_FOUND)
-option(_COM_AZURE_DEV__BASE__USE_WASM "Enable WASMTIME" WASMTIME_FOUND)
+option(_COM_AZURE_DEV__BASE__USE_WASMTIME "Enable WASMTIME" WASMTIME_FOUND)
 configure_file(${CMAKE_SOURCE_DIR}/build.h.in ${CMAKE_BINARY_DIR}/generated/base/build.h)
 # e.g. #include <relativepath/xxx.h> ${CMAKE_BINARY_DIR}/generated/base/bzip2.h)
 
@@ -365,6 +374,9 @@ endif ()
 if (OPENSSL_FOUND)
   target_include_directories(base PRIVATE ${OPENSSL_INCLUDE_DIRS})
 endif ()
+if (WASMTIME_FOUND)
+  target_include_directories(base PRIVATE ${WASMTIME_INCLUDE_DIRS})
+endif ()
 endif ()
 
 if (WIN32)
@@ -404,6 +416,9 @@ if (CURL_FOUND)
 endif ()
 if (OPENSSL_FOUND)
   target_link_libraries(base PRIVATE ${OPENSSL_LIBRARIES})
+endif ()
+if (WASMTIME_FOUND)
+  target_link_libraries(base PRIVATE ${WASMTIME_LIBRARIES})
 endif ()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -449,6 +464,9 @@ if (CURL_FOUND)
 endif ()
 if (OPENSSL_FOUND)
   target_include_directories(base_STATIC PRIVATE ${OPENSSL_INCLUDE_DIRS})
+endif ()
+if (WASMTIME_FOUND)
+  target_include_directories(base_STATIC PRIVATE ${WASMTIME_INCLUDE_DIRS})
 endif ()
 
 file(GLOB_RECURSE base_HEADERS

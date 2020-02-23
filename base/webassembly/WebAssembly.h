@@ -31,6 +31,25 @@ private:
   AnyReference handle;
 public:
 
+  /**
+    Returns true if WASM is supported by the runtime.
+  */
+  static bool isSupported() noexcept;
+
+  /** WASM module. */
+  class Module {
+  private:
+    
+    AnyReference handle;
+  public:
+    
+    /** Initializes module. */
+    Module();
+
+    /** Destroys module. */
+    ~Module();
+  };
+
 #if 0
   /** File for virtual file system. */
   class _COM_AZURE_DEV__BASE__API VirtualFile {
@@ -109,18 +128,43 @@ public:
   f64 -> double
   */
 
+  /** Function. */
+  class Function {
+  public:
+    
+    Function();
+    
+    ~Function();
+  };
+
   /** Description for symbol. */
   class Symbol {
   public:
 
-    String id;
+    unsigned int index = 0;
+    String name;
+    Function f;
+    
+    // type info
     Type type = TYPE_FUNCTION;
     Array<Type> arguments;
-    Type returnType = TYPE_i32;
+    Array<Type> results;
   };
 
+  /** WebAssembly exception. */
   class _COM_AZURE_DEV__BASE__API WebAssemblyException : public Exception {
   public:
+
+    /** WebAssembly exception. */
+    inline WebAssemblyException()
+    {
+    }
+
+    /** WebAssembly exception. */
+    inline WebAssemblyException(const char* message)
+      : Exception(message)
+    {
+    }
   };
   
   // CompileError, LinkError, RuntimeError
@@ -153,10 +197,24 @@ public:
   /** Garbage collects any unused memory. */
   void garbageCollect();
 
-  /** Loads the given wasm module. */
-  bool load(const String& path);
+  /** Register global function. */
+  void registerFunctionImpl(void* func, const Type* args, unsigned int argsSize);
   
-  /** Loads the given wasm module in buffer. */
+  template<class TYPE>
+  void registerFunction(TYPE func)
+  {
+    // TAG: result + args
+    // TAG: where do we map function
+    registerFunctionImpl(func, nullptr, 0);
+  }
+  
+  /** Loads the given WASM module. */
+  bool load(const String& path);
+
+  /** Returns true if the given WASM module is valid. */
+  bool isValid(const uint8* wasm, MemorySize size);
+
+  /** Loads the given WASM module in buffer. */
   bool load(const uint8* wasm, MemorySize size);
 
   // TAG: force full compilation instead of JIT
@@ -167,8 +225,19 @@ public:
   /** Returns information about the given id. */
   Symbol getSymbol(const String& id);
 
+  /** Calls the entry function without arguments. */
+  void callEntry();
+  
   /** Calls the function with the given id and arguments. */
   AnyValue call(const String& id, const Array<AnyValue>& arguments);
+
+  /** Calls the exported function with the given id and arguments. */
+  AnyValue call(unsigned int id, const Array<AnyValue>& arguments);
+  
+  Function getFunction(unsigned int id);
+  
+  /** Calls the exported function with the given id and arguments. */
+  AnyValue call(Function func, const Array<AnyValue>& arguments);
 
   // void readMemory(uint8* dest, unsigned int address, unsigned int size);
   // void writeMemory(unsigned int address, const uint8* src, unsigned int size);

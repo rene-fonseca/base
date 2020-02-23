@@ -34,6 +34,13 @@ private:
     COMMAND_DUMP,
     COMMAND_RUN
   };
+  
+  Command command = COMMAND_RUN;
+  String path;
+  String id;
+  String pattern = "*";
+  Array<AnyValue> callArguments;
+  bool time = false;
 public:
   
   WASMApplication()
@@ -55,7 +62,7 @@ public:
   void help()
   {
     version();
-    fout << "Usage: " << getFormalName() << " [OPTIONS] [ID] [ARGS]" << EOL
+    fout << "Usage: " << getFormalName() << " [OPTIONS] PATH [ID] [ARGS]" << EOL
          << EOL
          << "Options:" << EOL
          << indent(2) << "--help      This message" << EOL
@@ -80,10 +87,21 @@ public:
       return;
     }
     for (const auto& s : wasm.getExports()) {
-      if (Parser::doesMatchPattern(pattern, s.id)) {
+      if (Parser::doesMatchPattern(pattern, s.name)) {
         if (s.type == WebAssembly::TYPE_FUNCTION) {
-          fout << WebAssembly::toString(s.returnType) << " " << s.id << "(";
+          fout << "[";
           bool first = true;
+          for (auto a : s.results) {
+            if (first) {
+              first = false;
+            } else {
+              fout << ", ";
+            }
+            fout << WebAssembly::toString(a);
+          }
+          fout << "]";
+          fout << s.name << "(";
+          first = true;
           for (auto a : s.arguments) {
             if (first) {
               fout << ", ";
@@ -93,7 +111,9 @@ public:
           }
           fout << ")" << ENDL;
         } else {
-          fout << WebAssembly::toString(s.returnType) << " " << s.id << ENDL;
+          for (auto a : s.results) {
+            fout << WebAssembly::toString(a) << " " << s.name << ENDL;
+          }
         }
       }
     }
@@ -130,15 +150,8 @@ public:
     }
   }
   
-  void main()
+  bool parseArguments()
   {
-    Command command = COMMAND_RUN;
-    String path;
-    String id;
-    String pattern = "*";
-    Array<AnyValue> callArguments;
-    bool time = false;
-    
     const auto arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
@@ -158,6 +171,7 @@ public:
           id = argument;
           pattern = argument;
         } else {
+          // TAG: parse as JSON value?
           try {
             callArguments.append(static_cast<int64>(LongInteger::parse(argument)));
           } catch (...) {
@@ -171,11 +185,19 @@ public:
             } catch (...) {
               fout << "Error: Invalid argument." << ENDL;
               setExitCode(1);
-              return;
+              return false;
             }
           }
         }
       }
+    }
+    return true;
+  }
+  
+  void main()
+  {
+    if (!parseArguments()) {
+      return;
     }
     
     switch (command) {
@@ -190,10 +212,9 @@ public:
       break;
     default:
       if (!id) {
-        id = "main";
+        id = ""; // call first exported
       }
       run(path, id, callArguments, time);
-      break;
     }
   }
 };

@@ -48,6 +48,16 @@ public:
   {
   }
 
+  static void hello()
+  {
+    fout << "Hello, World!" << ENDL;
+  }
+
+  static void throwit()
+  {
+    _throw Exception("This is an exception.");
+  }
+
   void version()
   {
     fout << getFormalName() << " version "
@@ -128,6 +138,10 @@ public:
       return;
     }
     WebAssembly wasm;
+    
+    wasm.registerFunction(hello);
+    wasm.registerFunction(throwit);
+
     Timer timer;
     if (!wasm.load(path)) {
       ferr << "Error: Failed to load and compile module." << ENDL;

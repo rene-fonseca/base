@@ -37,7 +37,7 @@ public:
   static bool isSupported() noexcept;
 
   /** WASM module. */
-  class Module {
+  class _COM_AZURE_DEV__BASE__API Module {
   private:
     
     AnyReference handle;
@@ -75,7 +75,8 @@ public:
     virtual VirtualFile* open(const String& path) = 0;
   };
 #endif
-  
+
+  /** Types. */
   enum Type {
     TYPE_UNSPECIFIED,
     TYPE_FUNCTION,
@@ -87,49 +88,10 @@ public:
   };
 
   /** Returns type as string. */
-  static const char* toString(Type type) noexcept
-  {
-    switch (type) {
-    case TYPE_UNSPECIFIED:
-      return "UNSPECIFIED";
-    case TYPE_FUNCTION:
-      return "FUNCTION";
-    case TYPE_i32:
-      return "i32";
-    case TYPE_i64:
-      return "i64";
-    case TYPE_f32:
-      return "f32";
-    case TYPE_f64:
-      return "f64";
-    case TYPE_STRING:
-      return "STRING";
-    default:
-      BASSERT(!"Not supported.");
-      return "UNSPECIFIED";
-    }
-  }
-
-  /*
-  bool -> i32
-  int -> i32
-  int64 -> i64
-  float -> f32
-  double -> f64
-  long double -> f64
-  String/WideString -> string
-  */
-
-  /*
-  string -> String/WideString
-  i32 -> int
-  i64 -> int64
-  f32 -> float
-  f64 -> double
-  */
+  static const char* toString(Type type) noexcept;
 
   /** Function. */
-  class Function {
+  class _COM_AZURE_DEV__BASE__API Function {
   public:
     
     Function();
@@ -137,8 +99,16 @@ public:
     ~Function();
   };
 
+  /** Function type. */
+  class _COM_AZURE_DEV__BASE__API FunctionType {
+  public:
+
+    Array<Type> arguments;
+    Array<Type> results;
+  };
+
   /** Description for symbol. */
-  class Symbol {
+  class _COM_AZURE_DEV__BASE__API Symbol {
   public:
 
     unsigned int index = 0;
@@ -167,15 +137,6 @@ public:
     }
   };
   
-  // CompileError, LinkError, RuntimeError
-
-  // add directory access by paths
-  // callbacks
-  // register host functions - need to parse and build this automatically
-  // consider ioctl/syskern appoach for all resource access - need security layer
-  // auto detect dead-lock / timeout
-  // probe features supported for WASM engine
-  
   /** Initializes WebAssembly engine. */
   WebAssembly();
 
@@ -197,17 +158,151 @@ public:
   /** Garbage collects any unused memory. */
   void garbageCollect();
 
-  /** Register global function. */
-  void registerFunctionImpl(void* func, const Type* args, unsigned int argsSize);
-  
   template<class TYPE>
-  void registerFunction(TYPE func)
+  class MapType {
+  public:
+  };
+
+  template<>
+  class MapType<void> {
+  public:
+
+    static constexpr Type type = TYPE_UNSPECIFIED;
+  };
+
+  template<>
+  class MapType<bool> {
+  public:
+
+    static constexpr Type type = TYPE_i32;
+  };
+
+  template<>
+  class MapType<short> {
+  public:
+
+    static constexpr Type type = TYPE_i32;
+  };
+
+  template<>
+  class MapType<unsigned short> {
+  public:
+
+    static constexpr Type type = TYPE_i32;
+  };
+
+  template<>
+  class MapType<int> {
+  public:
+
+    static constexpr Type type = TYPE_i32;
+  };
+
+  template<>
+  class MapType<unsigned int> {
+  public:
+
+    static constexpr Type type = TYPE_i32;
+  };
+
+#if 0
+  template<>
+  class MapType<long> {
+  public:
+
+    static constexpr Type type = TYPE_i32;
+  };
+
+  template<>
+  class MapType<unsigned long> {
+  public:
+
+    static constexpr Type type = TYPE_i32;
+  };
+#endif
+
+  template<>
+  class MapType<int64> {
+  public:
+
+    static constexpr Type type = TYPE_i64;
+  };
+
+  template<>
+  class MapType<uint64> {
+  public:
+
+    static constexpr Type type = TYPE_i64;
+  };
+
+  template<>
+  class MapType<float> {
+  public:
+
+    static constexpr Type type = TYPE_f32;
+  };
+
+  template<>
+  class MapType<double> {
+  public:
+
+    static constexpr Type type = TYPE_f64;
+  };
+
+  template<>
+  class MapType<long double> {
+  public:
+
+    static constexpr Type type = TYPE_f64;
+  };
+
+  template<>
+  class MapType<const char*> {
+  public:
+
+    static constexpr Type type = TYPE_STRING;
+  };
+
+  template<>
+  class MapType<const wchar*> {
+  public:
+
+    static constexpr Type type = TYPE_STRING;
+  };
+
+  template<>
+  class MapType<String> {
+  public:
+
+    static constexpr Type type = TYPE_STRING;
+  };
+
+  template<>
+  class MapType<WideString> {
+  public:
+
+    static constexpr Type type = TYPE_STRING;
+  };
+
+  /** Returns the number of arguments. */
+  template<typename RESULT, typename... TYPES>
+  constexpr size_t getNumberOfArguments(RESULT(*f)(TYPES ...))
   {
-    // TAG: result + args
-    // TAG: where do we map function
-    registerFunctionImpl(func, nullptr, 0);
+    return sizeof...(TYPES);
   }
-  
+
+  /** Registers global function. */
+  void registerFunctionImpl(void* func, Type result, const Type* args, unsigned int argsSize, const String& name);
+
+  /** Registers global function. */
+  template<typename RESULT, typename... ARGS>
+  void registerFunction(RESULT (*func)(ARGS...), const String& name = String())
+  {
+    const Type resultType = MapType<RESULT>::type;
+    const Type types[] = { MapType<ARGS>::type..., TYPE_UNSPECIFIED };
+    registerFunctionImpl(func, resultType, types, getArraySize(types) - 1, name);
+  }
+
   /** Loads the given WASM module. */
   bool load(const String& path);
 
@@ -217,8 +312,6 @@ public:
   /** Loads the given WASM module in buffer. */
   bool load(const uint8* wasm, MemorySize size);
 
-  // TAG: force full compilation instead of JIT
-
   /** Returns the exported symbols. */
   Array<Symbol> getExports();
 
@@ -227,30 +320,32 @@ public:
 
   /** Calls the entry function without arguments. */
   void callEntry();
-  
+
   /** Calls the function with the given id and arguments. */
   AnyValue call(const String& id, const Array<AnyValue>& arguments);
 
   /** Calls the exported function with the given id and arguments. */
   AnyValue call(unsigned int id, const Array<AnyValue>& arguments);
-  
+
+#if 0
+  /** Calls function. */
+  template<typename RESULT, typename... ARGS>
+  RESULT callFunction(const String& id, ARGS... args)
+  {
+    // TAG: avoid AnyValue intermediate so we can validate if arguments match
+    Array<AnyValue> args = { AnyValue<ARGS>(args)... };
+    AnyValue r = call(id, args);
+    return RESULT(); // TAG: cast to result
+  }
+#endif
+
+  // TAG: FunctionType getFunctionType(unsigned int id);
+
   Function getFunction(unsigned int id);
   
   /** Calls the exported function with the given id and arguments. */
   AnyValue call(Function func, const Array<AnyValue>& arguments);
 
-  // void readMemory(uint8* dest, unsigned int address, unsigned int size);
-  // void writeMemory(unsigned int address, const uint8* src, unsigned int size);
-  // String getString(unsigned int address, unsigned int length);
-
-  // TAG: handle imports
-  // TAG: StackTrace getStackTrace()
-  // TAG: call async to start thread
-  // TAG: add template for automatic conversion
-
-  // Array<VirtualFileSystem*> getMounts();
-  // void mountFileSystem(const String& path);
-  
   ~WebAssembly();
 };
 

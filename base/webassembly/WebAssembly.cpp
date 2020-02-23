@@ -17,6 +17,7 @@
 #include <base/Module.h>
 #include <base/string/Format.h>
 #include <base/Functor.h>
+#include <base/UnitTest.h>
 #include <base/build.h>
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
@@ -63,6 +64,29 @@ bool WebAssembly::isSupported() noexcept
 #endif
 }
 
+const char* WebAssembly::toString(Type type) noexcept
+{
+  switch (type) {
+  case TYPE_UNSPECIFIED:
+    return "UNSPECIFIED";
+  case TYPE_FUNCTION:
+    return "FUNCTION";
+  case TYPE_i32:
+    return "i32";
+  case TYPE_i64:
+    return "i64";
+  case TYPE_f32:
+    return "f32";
+  case TYPE_f64:
+    return "f64";
+  case TYPE_STRING:
+    return "STRING";
+  default:
+    BASSERT(!"Not supported.");
+    return "UNSPECIFIED";
+  }
+}
+
 WebAssembly::Function::Function()
 {
 }
@@ -99,12 +123,39 @@ private:
   own wasm_extern_vec_t exports = {0};
   const wasm_func_t* entry = nullptr;
 #endif
-  Array<void*> imports;
+
+  class ImportFunction {
+  public:
+  
+    void* func = nullptr;
+    WebAssembly::Type result = TYPE_UNSPECIFIED;
+    Array<WebAssembly::Type> arguments;
+    String name;
+  };
+
+  Array<ImportFunction> imports;
 public:
 
-  void registerFunctionImpl(void* func)
+  void registerFunctionImpl(void* func, Type result, const Type* args, unsigned int argsSize, const String& name)
   {
-    imports.append(func);
+    if (!func) {
+      _throw NullPointer();
+    }
+    if (argsSize != 0) {
+      if (!args) {
+        _throw NullPointer();
+      }
+    }
+
+    ImportFunction f;
+    f.result = result;
+    f.arguments.setSize(argsSize);
+    // copy(&f.arguments[0], args, args + argsSize);
+    for (MemorySize i = 0; i < argsSize; ++i) {
+      f.arguments[i] = args[i];
+    }
+    f.name = name;
+    imports.append(f);
   }
   
   Handle()
@@ -187,6 +238,10 @@ public:
     wasm_byte_vec_delete(&binary);
 #endif
     
+    // TAG: build table from imports
+    // own wasm_functype_t* functype = wasm_functype_new_0_0();
+    // TAG: can we dynamically register a function
+
     own wasm_functype_t* hello_type = wasm_functype_new_0_0();
     // own wasm_func_t* hook_func = wasm_func_new_with_env(store, hello_type, hook, nullptr, nullptr);
     own wasm_func_t* hello_func = wasm_func_new(store, hello_type, hello);
@@ -479,10 +534,10 @@ void WebAssembly::garbageCollect()
   return handle->garbageCollect();
 }
 
-void WebAssembly::registerFunctionImpl(void* func, const Type* args, unsigned int argsSize)
+void WebAssembly::registerFunctionImpl(void* func, Type result, const Type* args, unsigned int argsSize, const String& name)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
-  return handle->registerFunctionImpl(func);
+  return handle->registerFunctionImpl(func, result, args, argsSize, name);
 }
 
 bool WebAssembly::load(const String& path)
@@ -548,9 +603,57 @@ WebAssembly::~WebAssembly()
 {
 }
 
+#if 0
+// void readMemory(uint8* dest, unsigned int address, unsigned int size);
+// void writeMemory(unsigned int address, const uint8* src, unsigned int size);
+// String getString(unsigned int address, unsigned int length);
+
+// TAG: handle imports
+// TAG: StackTrace getStackTrace()
+// TAG: call async to start thread
+// TAG: add template for automatic conversion
+
+// Array<VirtualFileSystem*> getMounts();
+// void mountFileSystem(const String& path);
+// CompileError, LinkError, RuntimeError
+
+// add directory access by paths
+// consider ioctl/syskern appoach for all resource access - need security layer
+// auto detect dead-lock / timeout
+// probe features supported for WASM engine
+#endif
+
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
 // TAG: wasmtime: get version from header
 MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "dev.wasmtime", "libwasmtime", "0.8", "https://wasmtime.dev/");
+#endif
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS) && defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+
+class TEST_CLASS(WebAssembly) : public UnitTest {
+public:
+
+  TEST_PRIORITY(1000);
+  TEST_PROJECT("base/webassembly");
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  static void hello()
+  {
+    fout << "Hello, World!" << ENDL;
+  }
+
+  void run() override
+  {
+    WebAssembly wasm;
+    TEST_ASSERT(wasm.isSupported());
+    wasm.registerFunction(hello, "hello");
+    // wasm.load();
+    // wasm.call()
+  }
+};
+
+TEST_REGISTER(WebAssembly);
+
 #endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

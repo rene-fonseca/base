@@ -212,6 +212,7 @@ public:
 #endif
   }
   
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
   Symbol getSymbol(MemorySize i, const wasm_func_t* f)
   {
     Symbol s;
@@ -236,6 +237,7 @@ public:
     }
     return s;
   }
+#endif
   
   String toString(const Symbol& s)
   {

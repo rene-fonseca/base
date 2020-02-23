@@ -460,8 +460,15 @@ public:
   
 #if 0
   // TAG: map arguments to types
-  void convert(* dest, const Array<AnyValue>& arguments)
+  wasm_valkind_t* convert(wasm_valkind_t* dest, const Array<AnyValue>& arguments)
   {
+    for (const auto& a : arguments) {
+      WASM_I32,
+      WASM_I64,
+      WASM_F32,
+      WASM_F64,
+      *dest++ = ...
+    }
   }
 #endif
   

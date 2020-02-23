@@ -165,7 +165,7 @@ public:
 
   /** Returns the number of arguments. */
   template<typename RESULT, typename... TYPES>
-  constexpr size_t getNumberOfArguments(RESULT(*f)(TYPES ...))
+  static constexpr size_t getNumberOfArguments(RESULT(*f)(TYPES ...))
   {
     return sizeof...(TYPES);
   }

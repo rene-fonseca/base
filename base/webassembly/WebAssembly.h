@@ -163,127 +163,6 @@ public:
   public:
   };
 
-  template<>
-  class MapType<void> {
-  public:
-
-    static constexpr Type type = TYPE_UNSPECIFIED;
-  };
-
-  template<>
-  class MapType<bool> {
-  public:
-
-    static constexpr Type type = TYPE_i32;
-  };
-
-  template<>
-  class MapType<short> {
-  public:
-
-    static constexpr Type type = TYPE_i32;
-  };
-
-  template<>
-  class MapType<unsigned short> {
-  public:
-
-    static constexpr Type type = TYPE_i32;
-  };
-
-  template<>
-  class MapType<int> {
-  public:
-
-    static constexpr Type type = TYPE_i32;
-  };
-
-  template<>
-  class MapType<unsigned int> {
-  public:
-
-    static constexpr Type type = TYPE_i32;
-  };
-
-#if 0
-  template<>
-  class MapType<long> {
-  public:
-
-    static constexpr Type type = TYPE_i32;
-  };
-
-  template<>
-  class MapType<unsigned long> {
-  public:
-
-    static constexpr Type type = TYPE_i32;
-  };
-#endif
-
-  template<>
-  class MapType<int64> {
-  public:
-
-    static constexpr Type type = TYPE_i64;
-  };
-
-  template<>
-  class MapType<uint64> {
-  public:
-
-    static constexpr Type type = TYPE_i64;
-  };
-
-  template<>
-  class MapType<float> {
-  public:
-
-    static constexpr Type type = TYPE_f32;
-  };
-
-  template<>
-  class MapType<double> {
-  public:
-
-    static constexpr Type type = TYPE_f64;
-  };
-
-  template<>
-  class MapType<long double> {
-  public:
-
-    static constexpr Type type = TYPE_f64;
-  };
-
-  template<>
-  class MapType<const char*> {
-  public:
-
-    static constexpr Type type = TYPE_STRING;
-  };
-
-  template<>
-  class MapType<const wchar*> {
-  public:
-
-    static constexpr Type type = TYPE_STRING;
-  };
-
-  template<>
-  class MapType<String> {
-  public:
-
-    static constexpr Type type = TYPE_STRING;
-  };
-
-  template<>
-  class MapType<WideString> {
-  public:
-
-    static constexpr Type type = TYPE_STRING;
-  };
-
   /** Returns the number of arguments. */
   template<typename RESULT, typename... TYPES>
   constexpr size_t getNumberOfArguments(RESULT(*f)(TYPES ...))
@@ -347,6 +226,127 @@ public:
   AnyValue call(Function func, const Array<AnyValue>& arguments);
 
   ~WebAssembly();
+};
+
+template<>
+class WebAssembly::MapType<void> {
+public:
+
+  static constexpr Type type = TYPE_UNSPECIFIED;
+};
+
+template<>
+class WebAssembly::MapType<bool> {
+public:
+
+  static constexpr Type type = TYPE_i32;
+};
+
+template<>
+class WebAssembly::MapType<short> {
+public:
+
+  static constexpr Type type = TYPE_i32;
+};
+
+template<>
+class WebAssembly::MapType<unsigned short> {
+public:
+
+  static constexpr Type type = TYPE_i32;
+};
+
+template<>
+class WebAssembly::MapType<int> {
+public:
+
+  static constexpr Type type = TYPE_i32;
+};
+
+template<>
+class WebAssembly::MapType<unsigned int> {
+public:
+
+  static constexpr Type type = TYPE_i32;
+};
+
+#if 0
+template<>
+class WebAssembly::MapType<long> {
+public:
+
+  static constexpr Type type = TYPE_i32;
+};
+
+template<>
+class WebAssembly::MapType<unsigned long> {
+public:
+
+  static constexpr Type type = TYPE_i32;
+};
+#endif
+
+template<>
+class WebAssembly::MapType<int64> {
+public:
+
+  static constexpr Type type = TYPE_i64;
+};
+
+template<>
+class WebAssembly::MapType<uint64> {
+public:
+
+  static constexpr Type type = TYPE_i64;
+};
+
+template<>
+class WebAssembly::MapType<float> {
+public:
+
+  static constexpr Type type = TYPE_f32;
+};
+
+template<>
+class WebAssembly::MapType<double> {
+public:
+
+  static constexpr Type type = TYPE_f64;
+};
+
+template<>
+class WebAssembly::MapType<long double> {
+public:
+
+  static constexpr Type type = TYPE_f64;
+};
+
+template<>
+class WebAssembly::MapType<const char*> {
+public:
+
+  static constexpr Type type = TYPE_STRING;
+};
+
+template<>
+class WebAssembly::MapType<const wchar*> {
+public:
+
+  static constexpr Type type = TYPE_STRING;
+};
+
+template<>
+class WebAssembly::MapType<String> {
+public:
+
+  static constexpr Type type = TYPE_STRING;
+};
+
+template<>
+class WebAssembly::MapType<WideString> {
+public:
+
+  static constexpr Type type = TYPE_STRING;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

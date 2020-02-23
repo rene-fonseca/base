@@ -92,7 +92,6 @@ private:
     }
   };
   
-  Array<void*> imports;
   wasm_engine_t* engine = nullptr;
   wasm_store_t* store = nullptr;
   own wasm_instance_t* instance = nullptr;
@@ -100,6 +99,7 @@ private:
   own wasm_extern_vec_t exports = {0};
   const wasm_func_t* entry = nullptr;
 #endif
+  Array<void*> imports;
 public:
 
   void registerFunctionImpl(void* func)

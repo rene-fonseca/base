@@ -211,35 +211,40 @@ public:
   {
 #if 0 && defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
     wasm_byte_vec_t binary;
-    wasm_byte_vec_new_uninitialized(&binary, size);
+    clear(binary);
+    binary.size = size;
+    binary.data = (byte_t*)const_cast<uint8*>(wasm);
+
+    // wasm_byte_vec_new_uninitialized(&binary, size);
     // wasmtime: missing symbol bool status = wasm_module_validate(store, &binary);
-    wasm_byte_vec_delete(&binary);
+    // wasm_byte_vec_delete(&binary);
     // return status;
+    return false;
 #else
     return false;
 #endif
   }
 
-  // TAG: add support for journal for bug fixing
   bool load(const uint8* wasm, MemorySize size)
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+    
+#if 0
+    wasm_byte_vec_t binaryZeros;
+    wasm_byte_vec_new_uninitialized(&binaryZeros, 1024);
+    bool status = wasm_module_validate(store, &binaryZeros);
+    module = wasm_module_new(store, &binaryZeros);
+#endif
+    
     wasm_byte_vec_t binary;
-#if 1
-    wasm_byte_vec_new_uninitialized(&binary, size);
-    copy(reinterpret_cast<uint8*>(binary.data), wasm, size);
-#else
+    // wasm_byte_vec_new_uninitialized(&binary, size);
+    // copy(reinterpret_cast<uint8*>(binary.data), wasm, size);
     clear(binary);
     binary.size = size;
     binary.data = (byte_t*)const_cast<uint8*>(wasm);
-#endif
     module = wasm_module_new(store, &binary);
-#if 1
-    wasm_byte_vec_delete(&binary);
-#endif
-    
-    // TAG: build table from imports
-    // own wasm_functype_t* functype = wasm_functype_new_0_0();
+    // wasm_byte_vec_delete(&binary);
+ 
     // TAG: can we dynamically register a function
 
     own wasm_functype_t* hello_type = wasm_functype_new_0_0();
@@ -249,8 +254,16 @@ public:
     // TAG: add template to bind global function/static function
     const wasm_extern_t* imports[] = { wasm_func_as_extern(hello_func), nullptr };
 
-    own wasm_trap_t* traps = nullptr;
-    instance = wasm_instance_new(store, module, imports, &traps);
+    own wasm_trap_t* trap = nullptr;
+    instance = wasm_instance_new(store, module, imports, &trap);
+    if (trap) {
+      own wasm_message_t message;
+      wasm_trap_message(trap, &message);
+      if (message.size) {
+        String msg(reinterpret_cast<const char*>(message.data), message.size);
+        _throw WebAssemblyException(msg.native());
+      }
+    }
     wasm_func_delete(hello_func);
     if (!instance) {
       return false;

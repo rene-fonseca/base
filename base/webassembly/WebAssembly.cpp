@@ -37,7 +37,7 @@ own wasm_trap_t* hook(void* env, const wasm_val_t args[], wasm_val_t results[]) 
     return nullptr; // TAG: trap
   }
   try {
-    fout << "Hello, World!" << ENDL;
+    fout << "hook(): Hello, World!" << ENDL;
   } catch (...) {
     // TAG: need to generate trap
   }
@@ -47,7 +47,7 @@ own wasm_trap_t* hook(void* env, const wasm_val_t args[], wasm_val_t results[]) 
 own wasm_trap_t* hello(const wasm_val_t args[], wasm_val_t results[]) noexcept
 {
   try {
-    fout << "Hello, World!" << ENDL;
+    fout << "hello(): Hello, World!" << ENDL;
   } catch (...) {
     // TAG: need to generate trap
   }
@@ -225,6 +225,39 @@ public:
 #endif
   }
 
+  void dumpExtern(MemorySize i, wasm_extern_t* _extern)
+  {
+    const wasm_externkind_t kind = wasm_extern_kind(_extern);
+    switch (kind) {
+    case WASM_EXTERN_FUNC:
+      {
+        wasm_func_t* func = wasm_extern_as_func(_extern);
+        fout << "  " << i << " " << "FUNC" << " " << func << ENDL;
+      }
+      break;
+    case WASM_EXTERN_GLOBAL:
+      {
+        wasm_global_t* global = wasm_extern_as_global(_extern);
+        fout << "  " << i << " " << "GLOBAL" << " " << global << ENDL;
+      }
+      break;
+    case WASM_EXTERN_TABLE:
+      {
+        wasm_table_t* table = wasm_extern_as_table(_extern);
+        fout << "  " << i << " " << "TABLE" << " " << table << ENDL;
+      }
+      break;
+    case WASM_EXTERN_MEMORY:
+      {
+        wasm_memory_t* memory = wasm_extern_as_memory(_extern);
+        fout << "  " << i << " " << "MEMORY" << " " << memory << ENDL;
+      }
+      break;
+    default:
+      ; // ignore
+    }
+  }
+  
   bool load(const uint8* wasm, MemorySize size)
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
@@ -245,15 +278,32 @@ public:
     module = wasm_module_new(store, &binary);
     // wasm_byte_vec_delete(&binary);
  
-    // TAG: can we dynamically register a function
+    if (!wasm_module_validate(store, &binary)) {
+      return false;
+    }
 
+    own wasm_importtype_vec_t _imports;
+    wasm_module_imports(module, &_imports);
+    fout << "IMPORTS" << ENDL;
+    for (MemorySize i = 0; i < _imports.size; ++i) {
+      dumpExtern(i, (wasm_extern_t*)_imports.data[i]);
+    }
+    
+#if 1
+    // TAG: can we dynamically register a function
     own wasm_functype_t* hello_type = wasm_functype_new_0_0();
     // own wasm_func_t* hook_func = wasm_func_new_with_env(store, hello_type, hook, nullptr, nullptr);
     own wasm_func_t* hello_func = wasm_func_new(store, hello_type, hello);
     wasm_functype_delete(hello_type);
     // TAG: add template to bind global function/static function
-    const wasm_extern_t* imports[] = { wasm_func_as_extern(hello_func), nullptr };
+    PrimitiveArray<const wasm_extern_t*> imports(_imports.size);
+    // const wasm_extern_t* imports[256] = { wasm_func_as_extern(hello_func), nullptr };
+    for (MemorySize i = 0; i < _imports.size; ++i) {
+      imports[i] = wasm_func_as_extern(hello_func);
+    }
+#endif
 
+    // TAG: add support for wasm text from memory
     own wasm_trap_t* trap = nullptr;
     instance = wasm_instance_new(store, module, imports, &trap);
     if (trap) {
@@ -264,12 +314,18 @@ public:
         _throw WebAssemblyException(msg.native());
       }
     }
-    wasm_func_delete(hello_func);
+    // wasm_func_delete(hello_func);
     if (!instance) {
       return false;
     }
-
+    
+    // own wasm_exporttype_vec_t _exports;
+    // wasm_module_exports(module, &_exports);
     wasm_instance_exports(instance, &exports);
+    fout << "EXPORTS" << ENDL;
+    for (MemorySize i = 0; i < exports.size; ++i) {
+      dumpExtern(i, exports.data[i]);
+    }
     if (exports.size > 0) {
       entry = wasm_extern_as_func(exports.data[0]);
     }
@@ -284,11 +340,12 @@ public:
   Symbol getSymbol(MemorySize i, const wasm_func_t* f)
   {
     Symbol s;
-    if (!f) {
+    if (f) {
       s.index = i;
       s.name = String(format() << i);
       
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+      s.func = reinterpret_cast<void*>((void*)f);
       size_t argSize = wasm_func_param_arity(f);
       s.arguments.setSize(argSize);
 
@@ -321,7 +378,7 @@ public:
       sos << WebAssembly::toString(type);
     }
     sos << "] ";
-    sos << s.name << "(";
+    sos << (s.name ? s.name : (format() << s.func)) << "(";
     first = true;
     for (auto type : s.arguments) {
       if (!first) {
@@ -341,7 +398,7 @@ public:
     for (size_t i = 0; i < exports.size; ++i) {
       result.ensureCapacity(exports.size);
       const wasm_func_t* func = wasm_extern_as_func(exports.data[i]);
-      if (!func) {
+      if (func) {
         auto s = getSymbol(i, func);
         result.append(s);
         fout << toString(s) << ENDL;
@@ -420,11 +477,12 @@ public:
       }
 
       const wasm_func_t* func = wasm_extern_as_func(exports.data[id]);
-      if (!func) {
+      if (func) {
         // TAG: add support for arguments and result
         if (wasm_func_call(func, NULL, NULL)) {
           _throw WebAssemblyException("Failed to call entry function.");
         }
+        return AnyValue();
       }
     }
 #endif
@@ -487,13 +545,11 @@ public:
   
   AnyValue call(const String& id, const Array<AnyValue>& arguments)
   {
-    unsigned int index = 0;
-    try {
-      index = UnsignedInteger::parse(id, UnsignedInteger::DEC);
-    } catch (InvalidFormat&) {
-      _throw WebAssemblyException("No such function.");
+    Validified<unsigned int> index = UnsignedInteger::parseNoThrow(id, UnsignedInteger::DEC);
+    if (!index.isValid()) {
+      index = 0;
+      // _throw WebAssemblyException("No such function.");
     }
-    
     // TAG: add support for any function
     return call(index, arguments);
   }

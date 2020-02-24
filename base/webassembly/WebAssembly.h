@@ -114,6 +114,7 @@ public:
     unsigned int index = 0;
     String name;
     Function f;
+    void* func = nullptr;
     
     // type info
     Type type = TYPE_FUNCTION;

@@ -1437,6 +1437,9 @@ void AnyValue::setReference(const AnyReference& value) noexcept
 FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value)
 {
   switch (value.representation) {
+  case AnyValue::VOID:
+    stream << "void";
+    break;
   case AnyValue::TYPE:
     stream << TypeInfo::getTypename(Type::makeType(value.type));
     break;
@@ -1503,6 +1506,8 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value
 const char* AnyValue::getTypeAsId(AnyValue::Representation representation)
 {
   switch (representation) {
+  case AnyValue::VOID:
+    return "void";
   case AnyValue::TYPE:
     return "Type";
   case AnyValue::POINTER:

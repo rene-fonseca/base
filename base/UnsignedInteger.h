@@ -17,6 +17,7 @@
 #include <base/Primitives.h>
 #include <base/string/String.h>
 #include <base/string/InvalidFormat.h>
+#include <base/ValidifiedResult.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -65,8 +66,25 @@ public:
   */
   static unsigned int parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT);
 
-  static unsigned int parse(const String& string, unsigned int flags = FLAG_DEFAULT) {
+  /** Parse string. */
+  static unsigned int parse(const String& string, unsigned int flags = FLAG_DEFAULT)
+  {
     return parse(string.native(), string.native() + string.getLength(), flags);
+  }
+  
+  /**
+    Returns the value of the integer string representation.
+
+    @param src The string representation.
+    @param end The string representation.
+    @param accept Specifies the integer bases to accept. Default is ANY.
+  */
+  static Validified<unsigned int> parseNoThrow(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT) noexcept;
+
+  /** Parse string. */
+  static Validified<unsigned int> parseNoThrow(const String& string, unsigned int flags = FLAG_DEFAULT) noexcept
+  {
+    return parseNoThrow(string.native(), string.native() + string.getLength(), flags);
   }
   
   /**

@@ -1171,6 +1171,132 @@ unsigned long long AnyValue::getUnsignedLongLongInteger() const noexcept
   }
 }
 
+float AnyValue::getFloat() const noexcept
+{
+  switch (representation) {
+  case VOID:
+    return 0;
+  case CHARACTER:
+    return static_cast<uint8>(character);
+  case WIDE_CHARACTER:
+    return wideCharacter; // TAG: make unsigned
+  case BOOLEAN:
+    return boolean ? 1 : 0;
+  case SHORT_INTEGER:
+    return shortInteger;
+  case UNSIGNED_SHORT_INTEGER:
+    return unsignedShortInteger;
+  case INTEGER:
+    return integer;
+  case UNSIGNED_INTEGER:
+    return unsignedInteger;
+  case LONG_INTEGER:
+    return longInteger;
+  case UNSIGNED_LONG_INTEGER:
+    return unsignedLongInteger;
+  case LONG_LONG_INTEGER:
+    return longLongInteger;
+  case UNSIGNED_LONG_LONG_INTEGER:
+    return unsignedLongLongInteger;
+  case FLOAT:
+    return f;
+  case DOUBLE:
+    return d;
+  case LONG_DOUBLE:
+    return ld;
+  case STRING:
+    return Integer::parse(string, Integer::FLAG_ALLOW_SIGN); // TAG: fixme
+  case WIDE_STRING:
+    return Integer::parse(wideString, Integer::FLAG_ALLOW_SIGN); // TAG: fixme
+  default:
+    return 0;
+  }
+}
+
+double AnyValue::getDouble() const noexcept
+{
+  switch (representation) {
+  case VOID:
+    return 0;
+  case CHARACTER:
+    return static_cast<uint8>(character);
+  case WIDE_CHARACTER:
+    return wideCharacter; // TAG: make unsigned
+  case BOOLEAN:
+    return boolean ? 1 : 0;
+  case SHORT_INTEGER:
+    return shortInteger;
+  case UNSIGNED_SHORT_INTEGER:
+    return unsignedShortInteger;
+  case INTEGER:
+    return integer;
+  case UNSIGNED_INTEGER:
+    return unsignedInteger;
+  case LONG_INTEGER:
+    return longInteger;
+  case UNSIGNED_LONG_INTEGER:
+    return unsignedLongInteger;
+  case LONG_LONG_INTEGER:
+    return longLongInteger;
+  case UNSIGNED_LONG_LONG_INTEGER:
+    return unsignedLongLongInteger;
+  case FLOAT:
+    return f;
+  case DOUBLE:
+    return d;
+  case LONG_DOUBLE:
+    return ld;
+  case STRING:
+    return Integer::parse(string, Integer::FLAG_ALLOW_SIGN); // TAG: fixme
+  case WIDE_STRING:
+    return Integer::parse(wideString, Integer::FLAG_ALLOW_SIGN); // TAG: fixme
+  default:
+    return 0;
+  }
+}
+
+long double AnyValue::getLongDouble() const noexcept
+{
+  switch (representation) {
+  case VOID:
+    return 0;
+  case CHARACTER:
+    return static_cast<uint8>(character);
+  case WIDE_CHARACTER:
+    return wideCharacter; // TAG: make unsigned
+  case BOOLEAN:
+    return boolean ? 1 : 0;
+  case SHORT_INTEGER:
+    return shortInteger;
+  case UNSIGNED_SHORT_INTEGER:
+    return unsignedShortInteger;
+  case INTEGER:
+    return integer;
+  case UNSIGNED_INTEGER:
+    return unsignedInteger;
+  case LONG_INTEGER:
+    return longInteger;
+  case UNSIGNED_LONG_INTEGER:
+    return unsignedLongInteger;
+  case LONG_LONG_INTEGER:
+    return longLongInteger;
+  case UNSIGNED_LONG_LONG_INTEGER:
+    return unsignedLongLongInteger;
+  case FLOAT:
+    return f;
+  case DOUBLE:
+    return d;
+  case LONG_DOUBLE:
+    return ld;
+  case STRING:
+    return Integer::parse(string, Integer::FLAG_ALLOW_SIGN); // TAG: fixme
+  case WIDE_STRING:
+    return Integer::parse(wideString, Integer::FLAG_ALLOW_SIGN); // TAG: fixme
+  default:
+    return 0;
+  }
+}
+
 String AnyValue::getString() const noexcept
 {
   switch (representation) {

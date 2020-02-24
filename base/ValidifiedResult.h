@@ -33,7 +33,7 @@ class ValidifiedResult : public AutomationObject {
 private:
 
   /** The value. */
-  TYPE value= TYPE();
+  TYPE value = TYPE();
   /** The validity. */
   bool valid = false;
 public:
@@ -146,15 +146,18 @@ public:
     }
   }
 
-  inline operator const TYPE&() const noexcept
+  inline operator const TYPE&() const
   {
-    return getValue();
+    if (!valid) {
+      _throw InvalidException(this);
+    }
+    return value;
   }
 
 #if 0 // conflicts with valid operator
   inline operator bool() const noexcept
   {
-    return isValid();
+    return valid;
   }
 #endif
 };

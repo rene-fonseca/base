@@ -225,6 +225,7 @@ public:
 #endif
   }
 
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
   void dumpExtern(MemorySize i, wasm_extern_t* _extern)
   {
     const wasm_externkind_t kind = wasm_extern_kind(_extern);
@@ -257,6 +258,7 @@ public:
       ; // ignore
     }
   }
+#endif
   
   bool load(const uint8* wasm, MemorySize size)
   {

@@ -24,9 +24,10 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 class _COM_AZURE_DEV__BASE__API WebAssembly : public Object {
-private:
+public:
 
   class Handle;
+private:
 
   AnyReference handle;
 public:
@@ -107,19 +108,25 @@ public:
     Array<Type> results;
   };
 
+  enum ExternType {
+    EXTERN_FUNCTION,
+    EXTERN_GLOBAL,
+    EXTERN_TABLE,
+    EXTERN_MEMORY
+  };
+  
   /** Description for symbol. */
   class _COM_AZURE_DEV__BASE__API Symbol {
   public:
 
     unsigned int index = 0;
     String name;
+    String moduleName;
+    ExternType externType = EXTERN_FUNCTION;
+
     Function f;
     void* func = nullptr;
-    
-    // type info
-    Type type = TYPE_FUNCTION;
-    Array<Type> arguments;
-    Array<Type> results;
+    FunctionType functionType;
   };
 
   /** WebAssembly exception. */
@@ -186,17 +193,32 @@ public:
   /** Loads the given WASM module. */
   bool load(const String& path);
 
+  /** Loads the given WASM module in buffer. */
+  bool load(const uint8* wasm, MemorySize size);
+
   /** Returns true if the given WASM module is valid. */
   bool isValid(const uint8* wasm, MemorySize size);
 
-  /** Loads the given WASM module in buffer. */
-  bool load(const uint8* wasm, MemorySize size);
+  /** Makes instance for loaded module. */
+  bool makeInstance();
+  
+  /** Returns the number of imported symbols. */
+  MemorySize getNumberOfImports() const;
+
+  /** Returns the number of exported symbols. */
+  MemorySize getNumberOfExports() const;
+
+  /** Returns the imported symbols for the module. */
+  Array<Symbol> getImports();
 
   /** Returns the exported symbols. */
   Array<Symbol> getExports();
 
-  /** Returns information about the given id. */
-  Symbol getSymbol(const String& id);
+  /** Returns information about the given index. */
+  Symbol getSymbol(MemorySize index);
+
+  /** Returns information about the given name. */
+  Symbol getSymbol(const String& name);
 
   /** Calls the entry function without arguments. */
   void callEntry();
@@ -219,8 +241,19 @@ public:
   }
 #endif
 
-  // TAG: FunctionType getFunctionType(unsigned int id);
+  /** Returns function type as string. */
+  static String toString(
+    const FunctionType& functionType,
+    const String& name = String(),
+    const String& module = String(), bool colorize = false);
 
+  /** Returns symbol as string. */
+  static String toString(const Symbol& s, bool colorize = false);
+
+  /** Returns function type. */
+  FunctionType getFunctionType(unsigned int id);
+
+  /** Returns function. */
   Function getFunction(unsigned int id);
   
   /** Calls the exported function with the given id and arguments. */
@@ -349,5 +382,7 @@ public:
 
   static constexpr Type type = TYPE_STRING;
 };
+
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const WebAssembly::Symbol& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

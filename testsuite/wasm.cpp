@@ -86,44 +86,72 @@ public:
   void dump(const String& path, const String& pattern)
   {
     if (!FileSystem::fileExists(path)) {
-      ferr << "Error: Failed to load module." << ENDL;
       setExitCode(1);
+      ferr << "Error: Failed to load module." << ENDL;
       return;
     }
     WebAssembly wasm;
     if (!wasm.load(path)) {
-      ferr << "Error: Failed to load and compile module." << ENDL;
       setExitCode(1);
+      ferr << "Error: Failed to load and compile module." << ENDL;
       return;
     }
+    
+    bool colorize = fout.isANSITerminal(); // TAG: fixme
+    fout << "IMPORTS:" << EOL;
+    for (const auto& s : wasm.getImports()) {
+      if (Parser::doesMatchPattern(pattern, s.name)) {
+        fout << "  " << "[" << s.index << "] ";
+        switch (s.externType) {
+        case WebAssembly::EXTERN_FUNCTION:
+          fout << "FUNCTION " << WebAssembly::toString(s, colorize) << ENDL;
+          break;
+        case WebAssembly::EXTERN_GLOBAL:
+          fout << "GLOBAL " << s.name << ENDL;
+          break;
+        case WebAssembly::EXTERN_TABLE:
+          fout << "TABLE " << s.name << ENDL;
+          break;
+        case WebAssembly::EXTERN_MEMORY:
+          fout << "MEMORY " << s.name << ENDL;
+          break;
+        default:
+          fout << "?" << " " << s.name << ENDL;
+        }
+      }
+    }
+    
+    try {
+      if (!wasm.makeInstance()) {
+        setExitCode(1);
+        ferr << "Error: Failed to create instance." << ENDL;
+        return;
+      }
+    } catch (Exception& e) {
+      setExitCode(1);
+      ferr << "Error: Failed to create instance '%1'." % Subst(e.getMessage()) << ENDL;
+      return;
+    }
+    
+    fout << "EXPORTS:" << EOL;
     for (const auto& s : wasm.getExports()) {
       if (Parser::doesMatchPattern(pattern, s.name)) {
-        if (s.type == WebAssembly::TYPE_FUNCTION) {
-          fout << "[";
-          bool first = true;
-          for (auto a : s.results) {
-            if (first) {
-              first = false;
-            } else {
-              fout << ", ";
-            }
-            fout << WebAssembly::toString(a);
-          }
-          fout << "]";
-          fout << s.name << "(";
-          first = true;
-          for (auto a : s.arguments) {
-            if (first) {
-              fout << ", ";
-            }
-            first = false;
-            fout << WebAssembly::toString(a);
-          }
-          fout << ")" << ENDL;
-        } else {
-          for (auto a : s.results) {
-            fout << WebAssembly::toString(a) << " " << s.name << ENDL;
-          }
+        fout << "  " << "[" << s.index << "] ";
+        switch (s.externType) {
+        case WebAssembly::EXTERN_FUNCTION:
+          fout << "FUNCTION " << WebAssembly::toString(s, colorize) << ENDL;
+          break;
+        case WebAssembly::EXTERN_GLOBAL:
+          fout << "GLOBAL " << s.name << ENDL;
+          break;
+        case WebAssembly::EXTERN_TABLE:
+          fout << "TABLE " << s.name << ENDL;
+          break;
+        case WebAssembly::EXTERN_MEMORY:
+          fout << "MEMORY " << s.name << ENDL;
+          break;
+        default:
+          fout << "?" << " " << s.name << ENDL;
         }
       }
     }
@@ -152,6 +180,15 @@ public:
       fout << "Compile time: " << timer << ENDL;
     }
     timer.start();
+    if (!wasm.makeInstance()) {
+      ferr << "Error: Failed to create instance." << ENDL;
+      setExitCode(1);
+      return;
+    }
+    if (time) {
+      fout << "Compile time: " << timer << ENDL;
+    }
+    timer.start();
     try {
       auto result = wasm.call(id, arguments);
       fout << result << ENDL;
@@ -166,6 +203,7 @@ public:
   
   bool parseArguments()
   {
+    bool gotFunction = false;
     const auto arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
@@ -181,26 +219,31 @@ public:
       } else {
         if (!path) {
           path = argument;
-        } else if (!id) {
+        } else if (!gotFunction) {
+          gotFunction = true;
           id = argument;
           pattern = argument;
         } else {
-          // TAG: parse as JSON value?
+          Reference<ObjectModel::Value> v;
           try {
-            callArguments.append(static_cast<int64>(LongInteger::parse(argument)));
+            v = JSON::parse(argument);
           } catch (...) {
-            double value = 0;
-            if (Posix::toDouble(argument, value)) {
-              callArguments.append(value);
-              continue;
-            }
-            try {
-              callArguments.append(JSON::parseString(argument));
-            } catch (...) {
-              fout << "Error: Invalid argument." << ENDL;
-              setExitCode(1);
-              return false;
-            }
+            fout << "Error: Invalid argument." << ENDL;
+            setExitCode(1);
+            return false;
+          }
+          if (auto _v = v.cast<ObjectModel::Integer>()) {
+            callArguments.append(_v->value);
+          } else if (auto _v = v.cast<ObjectModel::Boolean>()) {
+            callArguments.append(_v->value);
+          } else if (auto _v = v.cast<ObjectModel::Float>()) {
+            callArguments.append(_v->value);
+          } else if (auto _v = v.cast<ObjectModel::String>()) {
+            callArguments.append(_v->value);
+          } else {
+            fout << "Error: Invalid argument." << ENDL;
+            setExitCode(1);
+            return false;
           }
         }
       }

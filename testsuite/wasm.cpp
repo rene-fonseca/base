@@ -240,6 +240,8 @@ public:
       } else if (argument == "--dump") {
         getJSON = false;
         command = COMMAND_DUMP;
+      } else if (argument == "--run") {
+        command = COMMAND_RUN;
       } else if (argument == "--json") {
         getJSON = true;
         command = COMMAND_DUMP;

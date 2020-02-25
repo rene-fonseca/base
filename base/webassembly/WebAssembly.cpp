@@ -40,24 +40,27 @@ String getValuesAsString(const wasm_val_t args[], MemorySize size)
   sos << "(";
   for (MemorySize i = 0; i < size; ++i) {
     const wasm_val_t& arg = args[i];
+    if (i > 0) {
+      sos << ", ";
+    }
     switch (arg.kind) {
     case WASM_I32:
-      sos << "i32 " << arg.of.i32;
+      sos << "i32: " << arg.of.i32 << " = " << HEX << arg.of.i32;
       break;
     case WASM_I64:
-      sos << "i64 " << arg.of.i64;
+      sos << "i64: " << arg.of.i64 << " = " << HEX << arg.of.i64;
       break;
     case WASM_F32:
-      sos << "f32 " << arg.of.f32 << " = " << FHEX << arg.of.f32;
+      sos << "f32: " << arg.of.f32 << " = " << FHEX << arg.of.f32;
       break;
     case WASM_F64:
-      sos << "f64 " << arg.of.f64 << " = " << FHEX << arg.of.f64;
+      sos << "f64: " << arg.of.f64 << " = " << FHEX << arg.of.f64;
       break;
     case WASM_ANYREF:
       sos << "<REF>"; // TAG: what can we show
       break;
     case WASM_FUNCREF:
-      sos << "<FUNCTION> " << arg.of.i32; // TAG: make sure we get function id
+      sos << "<FUNCTION> = " << arg.of.i32; // TAG: make sure we get function id
       break;
     default:
       sos << "<BAD>";
@@ -577,7 +580,7 @@ public:
   bool makeWASIInstance(InputStream* stdin, OutputStream* stdout, OutputStream* stderr)
   {
     // TAG: waiting for wasi.h support
-    return false;
+    return makeInstance(true);
   }
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)

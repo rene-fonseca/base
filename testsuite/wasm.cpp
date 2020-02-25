@@ -157,7 +157,11 @@ public:
           fout << "TABLE " << s.name << ENDL;
           break;
         case WebAssembly::EXTERN_MEMORY:
-          fout << "MEMORY " << s.name << ENDL;
+          if (s.name) {
+            fout << "MEMORY " << s.name << " SIZE=" << s.memorySize/1024 << " kB" << ENDL;
+          } else {
+            fout << "MEMORY " << "SIZE=" << s.memorySize/1024 << " kB" << ENDL;
+          }
           break;
         default:
           fout << "?" << " " << s.name << ENDL;
@@ -178,6 +182,8 @@ public:
     
     wasm.registerFunction(hello);
     wasm.registerFunction(throwit);
+    
+    // TAG: add option to control memory - max limit
 
     Timer timer;
     if (!wasm.load(path)) {

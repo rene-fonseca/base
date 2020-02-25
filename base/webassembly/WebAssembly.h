@@ -127,6 +127,8 @@ public:
     Function f;
     void* func = nullptr;
     FunctionType functionType;
+    
+    MemorySize memorySize = 0;
   };
 
   /** WebAssembly exception. */

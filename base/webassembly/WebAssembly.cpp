@@ -664,6 +664,7 @@ public:
       case WASM_EXTERN_MEMORY:
         {
           result[i].externType = EXTERN_MEMORY;
+          // TAG: const wasm_memory_t* ft = wasm_externtype_as_memory_const(externType);
         }
         break;
       default:
@@ -714,9 +715,23 @@ public:
         break;
       case WASM_EXTERN_MEMORY:
         {
-          result[i].externType = EXTERN_MEMORY;
+          Symbol& symbol = result[i];
+          symbol.externType = EXTERN_MEMORY;
           const wasm_memory_t* memory = wasm_extern_as_memory(e);
           if (memory) {
+#if 0
+            // TAG: wasm_memory_type not available
+            own wasm_memorytype_t* type = wasm_memory_type(memory);
+            const wasm_limits_t* limits = wasm_memorytype_limits(type);
+            fout << "LIMITS [%1; %2]" % Subst(limits->min, limits->max) << ENDL;
+#endif
+            size_t size = wasm_memory_data_size(memory);
+            symbol.memorySize = size;
+            // byte_t* bytes = wasm_memory_data(memory);
+            // fout << "SIZE %1" % Subst(size) << ENDL;
+            // wasm_memory_pages_t pages = wasm_memory_size(memory);
+            // fout << "PAGES %1" % Subst(pages) << ENDL;
+            // bool wasm_memory_grow(wasm_memory_t*, wasm_memory_pages_t delta);
           }
         }
         break;
@@ -1119,7 +1134,7 @@ bool WebAssembly::load(const String& path)
   
   Allocator<uint8> buffer;
   {
-    fout << "WebAssembly::load(): " << path << ENDL;
+    // fout << "WebAssembly::load(): " << path << ENDL;
     File file(path, File::READ, 0);
     if (file.getSize() > (128 * 1024 * 1024)) {
       return false;

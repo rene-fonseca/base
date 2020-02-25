@@ -214,7 +214,7 @@ public:
   /**
     Makes a WASI instance.
   */
-  bool makeWASIInstance(InputStream* stdin, OutputStream* stdout, OutputStream* stderr);
+  bool makeWASIInstance(InputStream* _stdin, OutputStream* _stdout, OutputStream* _stderr);
   
   /** Returns the number of imported symbols. */
   MemorySize getNumberOfImports() const;

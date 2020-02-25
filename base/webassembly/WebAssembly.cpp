@@ -33,6 +33,15 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#if 0
+// https://github.com/bytecodealliance/wasmtime/blob/master/docs/WASI-api.md
+
+int __wasi_fd_close(__wasi_fd_t fd)
+{
+  return -1;
+}
+#endif
+
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
 String getValuesAsString(const wasm_val_t args[], MemorySize size)
 {
@@ -149,6 +158,21 @@ public:
     }
     
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+    // read/write safely
+    uint8* read(MemorySize slot, MemorySize size)
+    {
+      return nullptr;
+    }
+    
+    void* getMemory()
+    {
+      wasm_store_t* store = handle->store;
+      wasm_memory_t* memory = nullptr;
+      byte_t* bytes = wasm_memory_data(memory);
+      size_t s = wasm_memory_data_size(memory);
+      return bytes;
+    }
+    
     /** Returns trap for given message. */
     own wasm_trap_t* getTrap(const char* _message)
     {
@@ -577,7 +601,7 @@ public:
     return false;
   }
   
-  bool makeWASIInstance(InputStream* stdin, OutputStream* stdout, OutputStream* stderr)
+  bool makeWASIInstance(InputStream* _stdin, OutputStream* _stdout, OutputStream* _stderr)
   {
     // TAG: waiting for wasi.h support
     return makeInstance(true);

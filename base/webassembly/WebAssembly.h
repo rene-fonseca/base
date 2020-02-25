@@ -16,6 +16,8 @@
 #include <base/string/String.h>
 #include <base/collection/Array.h>
 #include <base/AnyValue.h>
+#include <base/io/InputStream.h>
+#include <base/io/OutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

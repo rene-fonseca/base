@@ -207,6 +207,12 @@ public:
     @param fake If, true dummy imports will be registered automatically.
   */
   bool makeInstance(bool fake = false);
+
+  // TAG: there needs to be resource config - e.g. threads limits
+  /**
+    Makes a WASI instance.
+  */
+  bool makeWASIInstance(InputStream* stdin, OutputStream* stdout, OutputStream* stderr);
   
   /** Returns the number of imported symbols. */
   MemorySize getNumberOfImports() const;

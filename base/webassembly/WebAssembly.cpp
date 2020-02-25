@@ -48,10 +48,10 @@ String getValuesAsString(const wasm_val_t args[], MemorySize size)
       sos << "i64 " << arg.of.i64;
       break;
     case WASM_F32:
-      sos << "f32 " << arg.of.f32; // TAG: show hex representation also
+      sos << "f32 " << arg.of.f32 << " = " << FHEX << arg.of.f32;
       break;
     case WASM_F64:
-      sos << "f64 " << arg.of.f64; // TAG: show hex representation also
+      sos << "f64 " << arg.of.f64 << " = " << FHEX << arg.of.f64;
       break;
     case WASM_ANYREF:
       sos << "<REF>"; // TAG: what can we show
@@ -574,6 +574,12 @@ public:
     return false;
   }
   
+  bool makeWASIInstance(InputStream* stdin, OutputStream* stdout, OutputStream* stderr)
+  {
+    // TAG: waiting for wasi.h support
+    return false;
+  }
+
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
   Symbol getSymbol(MemorySize i, const wasm_functype_t* ft, const String& name, const String& moduleName)
   {
@@ -1161,6 +1167,12 @@ bool WebAssembly::makeInstance(bool fake)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
   return handle->makeInstance(fake);
+}
+
+bool WebAssembly::makeWASIInstance(InputStream* stdin, OutputStream* stdout, OutputStream* stderr)
+{
+  auto handle = this->handle.cast<WebAssembly::Handle>();
+  return handle->makeWASIInstance(stdin, stdout, stderr);
 }
 
 Array<WebAssembly::Symbol> WebAssembly::getImports()

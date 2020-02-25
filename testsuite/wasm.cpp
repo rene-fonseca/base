@@ -43,6 +43,7 @@ private:
   Array<AnyValue> callArguments;
   bool time = false;
   bool getJSON = false;
+  bool wasi = false;
   bool fake = false;
 public:
   
@@ -82,6 +83,7 @@ public:
          << indent(2) << "--help      This message" << EOL
          << indent(2) << "--fake      Register fake imports" << EOL
          << indent(2) << "--json      Get WASM module info as JSON" << EOL
+         << indent(2) << "--wasi      Use WASI mode" << EOL
          << indent(2) << "--dump      Dumps info about the WASM module" << EOL
          << indent(2) << "--version   Show the version" << EOL
          << indent(2) << "--run       Run WASM module" << EOL
@@ -179,10 +181,7 @@ public:
       return;
     }
     WebAssembly wasm;
-    
-    wasm.registerFunction(hello);
-    wasm.registerFunction(throwit);
-    
+        
     // TAG: add option to control memory - max limit
 
     Timer timer;
@@ -192,14 +191,24 @@ public:
       return;
     }
     if (time) {
-      fout << "Compile time: " << timer << ENDL;
+      fout << "Load time: " << timer << ENDL;
     }
     timer.start();
-    // TAG: show imports registered
-    if (!wasm.makeInstance(fake)) {
-      ferr << "Error: Failed to create instance." << ENDL;
-      setExitCode(1);
-      return;
+    if (wasi) {
+      if (!wasm.makeWASIInstance(nullptr, nullptr, nullptr)) {
+        ferr << "Error: Failed to create instance." << ENDL;
+        setExitCode(1);
+        return;
+      }
+    } else {
+      wasm.registerFunction(hello);
+      wasm.registerFunction(throwit);
+      // TAG: show imports registered
+      if (!wasm.makeInstance(fake)) {
+        ferr << "Error: Failed to create instance." << ENDL;
+        setExitCode(1);
+        return;
+      }
     }
     if (time) {
       fout << "Compile time: " << timer << ENDL;

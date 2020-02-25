@@ -34,36 +34,40 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
-void dumpValues(const wasm_val_t args[], MemorySize size)
+String getValuesAsString(const wasm_val_t args[], MemorySize size)
 {
-  fout << "(";
+  StringOutputStream sos;
+  sos << "(";
   for (MemorySize i = 0; i < size; ++i) {
     const wasm_val_t& arg = args[i];
     switch (arg.kind) {
     case WASM_I32:
-      fout << arg.of.i32;
+      sos << "i32 " << arg.of.i32;
       break;
     case WASM_I64:
-      fout << arg.of.i64;
+      sos << "i64 " << arg.of.i64;
       break;
     case WASM_F32:
-      fout << arg.of.f32;
+      sos << "f32 " << arg.of.f32; // TAG: show hex representation also
       break;
     case WASM_F64:
-      fout << arg.of.f64;
+      sos << "f64 " << arg.of.f64; // TAG: show hex representation also
       break;
     case WASM_ANYREF:
-      fout << "<REF>";
+      sos << "<REF>"; // TAG: what can we show
       break;
     case WASM_FUNCREF:
-      fout << "<FUNCTION>";
+      sos << "<FUNCTION> " << arg.of.i32; // TAG: make sure we get function id
       break;
     default:
-      fout << "<BAD>";
+      sos << "<BAD>";
     }
   }
-  fout << ")";
+  sos << ")";
+  return sos;
 }
+
+own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept;
 
 own wasm_trap_t* hook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept;
 
@@ -119,9 +123,25 @@ public:
     
     WebAssembly::Handle* handle = nullptr;
     MemorySize argSize = 0;
+    MemorySize resultSize = 0;
+    String fullname;
+    PreferredAtomicCounter invocations;
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+    const wasm_functype_t* functype = nullptr;
     
-    FunctionContext(WebAssembly::Handle* _handle, MemorySize _argSize) noexcept
-      : handle(_handle), argSize(_argSize)
+    FunctionContext(WebAssembly::Handle* _handle, const wasm_functype_t* _functype) noexcept
+      : handle(_handle), functype(_functype)
+    {
+      BASSERT(functype);
+      const wasm_valtype_vec_t* ps = wasm_functype_params(functype);
+      argSize = ps->size;
+      const wasm_valtype_vec_t* rs = wasm_functype_results(functype);
+      resultSize = rs->size;
+    }
+#endif
+    
+    FunctionContext(WebAssembly::Handle* _handle, MemorySize _argSize, MemorySize _resultSize) noexcept
+      : handle(_handle), argSize(_argSize), resultSize(_resultSize)
     {
     }
     
@@ -185,7 +205,8 @@ private:
     return String();
   }
 #endif
-  
+
+  /** Registered import function. */
   class ImportFunction {
   public:
   
@@ -193,13 +214,17 @@ private:
     WebAssembly::Type result = TYPE_UNSPECIFIED;
     Array<WebAssembly::Type> arguments;
     String name;
+    bool nothrow = false;
   };
 
+  /** Registered import functions. */
   Array<ImportFunction> imports;
+  /** Function contexts. */
   Array<FunctionContext*> functionContexts;
 public:
 
-  void registerFunctionImpl(void* func, Type result, const Type* args, unsigned int argsSize, const String& name)
+  void registerFunctionImpl(
+    void* func, Type result, const Type* args, unsigned int argsSize, const String& name, bool nothrow)
   {
     if (!func) {
       _throw NullPointer();
@@ -219,6 +244,7 @@ public:
     }
     f.name = name;
     f.func = func;
+    f.nothrow = nothrow;
     imports.append(f);
   }
   
@@ -360,7 +386,7 @@ public:
     return TYPE_UNSPECIFIED;
   }
   
-  FunctionType getFunctionType(wasm_functype_t* functype)
+  FunctionType getFunctionType(const wasm_functype_t* functype)
   {
     FunctionType r;
     if (!functype) {
@@ -390,7 +416,6 @@ public:
   
   WebAssembly::FunctionType getFunctionType(unsigned int id)
   {
-    // wasmtime: missing symbol /*own*/ wasm_functype_t* functype = wasm_func_type(f);
     return FunctionType();
   }
 
@@ -452,7 +477,7 @@ public:
 #endif
   }
   
-  bool makeInstance()
+  bool makeInstance(bool fake)
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
     if (!module) {
@@ -464,23 +489,62 @@ public:
     PrimitiveArray<const wasm_extern_t*> imports(_imports.size);
 #if 1
     // TAG: can we dynamically register a function
-    own wasm_functype_t* hello_type = wasm_functype_new_0_0();
-    FunctionContext* functionContext = new FunctionContext(this, 0);
-    functionContexts.append(functionContext);
-    own wasm_func_t* hook_func = wasm_func_new_with_env(store, hello_type, hook, functionContext, nullptr);
-    /*
-    wasm_func_callback_with_env_t f = (wasm_func_callback_with_env_t)this->imports[0].func;
-    if (f) {
-      own wasm_func_t* func1 = wasm_func_new_with_env(store, hello_type, f, functionContext, nullptr);
-      imports[0] = wasm_func_as_extern(func1);
+    
+    if (fake) {
+      for (MemorySize i = 0; i < _imports.size; ++i) {
+        const wasm_importtype_t* import = _imports.data[i];
+        if (!import) {
+          continue;
+        }
+        const wasm_name_t* _moduleName = wasm_importtype_module(import); // wasmtime: should this be a URN that is registered
+        const String moduleName = _moduleName ? toString(*_moduleName) : String();
+        const wasm_name_t* _name = wasm_importtype_name(import);
+        const String name = _name ? toString(*_name) : String();
+        const wasm_externtype_t* externType = wasm_importtype_type(import);
+        wasm_externkind_t kind = wasm_externtype_kind(externType);
+        switch (kind) {
+        case WASM_EXTERN_FUNC:
+          {
+            const wasm_functype_t* functype = wasm_externtype_as_functype_const(externType);
+            FunctionContext* functionContext = new FunctionContext(this, functype);
+            if (moduleName) {
+              functionContext->fullname = moduleName + "!" + name;
+            } else {
+              functionContext->fullname = name;
+            }
+            functionContexts.append(functionContext);
+            own wasm_func_t* hook_func = wasm_func_new_with_env(store, functype, fakeHook, functionContext, nullptr);
+            imports[i] = wasm_func_as_extern(hook_func);
+          }
+          break;
+        default:
+          BASSERT(!"Unsupported import.");
+        }
+      }
     }
-     */
-    // own wasm_func_t* hello_func = wasm_func_new(store, hello_type, hello);
-    wasm_functype_delete(hello_type);
-    // TAG: add template to bind global function/static function
-    for (MemorySize i = 0; i < _imports.size; ++i) {
-      imports[i] = wasm_func_as_extern(hook_func);
+    
+    #if 0
+      wasm_valtype_t* ps[n] = {p1, ...};
+      wasm_valtype_t* rs[m] = {r1, ...};
+      wasm_valtype_vec_t params, results;
+      wasm_valtype_vec_new(&params, getArraySize(ps), ps);
+      wasm_valtype_vec_new(&results, getArraySize(rs), rs);
+      own wasm_functype_t* = wasm_functype_new(&params, &results);
+    #endif
+    
+    if (!fake) {
+      own wasm_functype_t* hello_type = wasm_functype_new_0_0();
+      FunctionContext* functionContext = new FunctionContext(this, 0, 0);
+      functionContexts.append(functionContext);
+      own wasm_func_t* hook_func = wasm_func_new_with_env(store, hello_type, hook, functionContext, nullptr);
+      // own wasm_func_t* hello_func = wasm_func_new(store, hello_type, hello);
+      wasm_functype_delete(hello_type);
+      // TAG: add template to bind global function/static function
+      for (MemorySize i = 0; i < _imports.size; ++i) {
+        imports[i] = wasm_func_as_extern(hook_func);
+      }
     }
+    
 #endif
 
     // TAG: add support for WASI instance
@@ -511,6 +575,17 @@ public:
   }
   
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+  Symbol getSymbol(MemorySize i, const wasm_functype_t* ft, const String& name, const String& moduleName)
+  {
+    Symbol s;
+    s.index = i;
+    s.name = name;
+    s.moduleName = moduleName;
+    s.externType = EXTERN_FUNCTION;
+    s.functionType = getFunctionType(ft);
+    return s;
+  }
+
   Symbol getSymbol(MemorySize i, const wasm_func_t* f, const String& name, const String& moduleName)
   {
     Symbol s;
@@ -518,7 +593,7 @@ public:
     s.name = name;
     s.moduleName = moduleName;
     s.externType = EXTERN_FUNCTION;
-    if (f) { // TAG: how do we get function type when f is null for importtype
+    if (f) {
       s.func = (void*)f;
       s.functionType = getFunctionType(wasm_func_type(f));
     }
@@ -566,14 +641,14 @@ public:
       const String moduleName = _moduleName ? toString(*_moduleName) : String();
       const wasm_name_t* _name = wasm_importtype_name(import);
       const String name = _name ? toString(*_name) : String();
-      const wasm_externtype_t* type = wasm_importtype_type(import);
-      wasm_externkind_t kind = wasm_externtype_kind(type);
+      const wasm_externtype_t* externType = wasm_importtype_type(import);
+      wasm_externkind_t kind = wasm_externtype_kind(externType);
 
       switch (kind) {
       case WASM_EXTERN_FUNC:
         {
-          // TAG: get type
-          result[i] = getSymbol(i, nullptr, name, moduleName);
+          const wasm_functype_t* ft = wasm_externtype_as_functype_const(externType);
+          result[i] = getSymbol(i, ft, name, moduleName);
         }
         break;
       case WASM_EXTERN_GLOBAL:
@@ -1031,10 +1106,11 @@ WebAssembly::FunctionType WebAssembly::getFunctionType(unsigned int id)
   return handle->getFunctionType(id);
 }
 
-void WebAssembly::registerFunctionImpl(void* func, Type result, const Type* args, unsigned int argsSize, const String& name)
+void WebAssembly::registerFunctionImpl(
+  void* func, Type result, const Type* args, unsigned int argsSize, const String& name, bool nothrow)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
-  return handle->registerFunctionImpl(func, result, args, argsSize, name);
+  return handle->registerFunctionImpl(func, result, args, argsSize, name, nothrow);
 }
 
 bool WebAssembly::load(const String& path)
@@ -1066,10 +1142,10 @@ bool WebAssembly::load(const uint8* wasm, MemorySize size)
   return handle->load(wasm, size);
 }
 
-bool WebAssembly::makeInstance()
+bool WebAssembly::makeInstance(bool fake)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
-  return handle->makeInstance();
+  return handle->makeInstance(fake);
 }
 
 Array<WebAssembly::Symbol> WebAssembly::getImports()
@@ -1137,13 +1213,40 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const WebAssembly::Sy
 }
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
+{
+  WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
+  if (!context) {
+    return context->getTrap("Missing context.");
+  }
+  context->invocations++;
+  // TAG: colorize
+  auto& stream = fout;
+  try {
+    stream << context->fullname << getValuesAsString(args, context->argSize);
+    // TAG: is types correct for input or do we need to set explicitly
+    stream << " -> " << getValuesAsString(results, context->resultSize);
+    stream << " INVOKES=" << context->invocations << ENDL;
+    for (MemorySize i = 0; i < context->resultSize; ++i) {
+      wasm_val_t& v = results[i];
+      v.kind = WASM_I32;
+      v.of.i32 = 0;
+    }
+  } catch (Exception& e) {
+    return context->getTrap(e);
+  } catch (...) {
+    return context->getTrap("Unknown exception throw.");
+  }
+  return nullptr;
+}
+
 own wasm_trap_t* hook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
 {
   WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
   if (!context) {
     return context->getTrap("Missing context.");
   }
-  dumpValues(args, context->argSize);
+  fout << getValuesAsString(args, context->argSize) << ENDL;
   try {
     fout << "hook(): Hello, World!" << ENDL;
   } catch (Exception& e) {
@@ -1156,11 +1259,8 @@ own wasm_trap_t* hook(void* env, const wasm_val_t args[], wasm_val_t results[]) 
 
 own wasm_trap_t* hello(const wasm_val_t args[], wasm_val_t results[]) noexcept
 {
-  try {
-    fout << "hello(): Hello, World!" << ENDL;
-  } catch (...) {
-    // TAG: need to generate trap
-  }
+  // no access to store so we cannot make trap
+  fout << "hello(): Hello, World!" << ENDL;
   return nullptr;
 }
 #endif

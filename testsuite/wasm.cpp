@@ -35,17 +35,21 @@ private:
     COMMAND_RUN
   };
   
+  bool colorize = false;
   Command command = COMMAND_RUN;
   String path;
   String id;
   String pattern = "*";
   Array<AnyValue> callArguments;
   bool time = false;
+  bool getJSON = false;
+  bool fake = false;
 public:
   
   WASMApplication()
     : Application("wasm")
   {
+    colorize = fout.isANSITerminal();
   }
 
   static void hello()
@@ -76,6 +80,8 @@ public:
          << EOL
          << "Options:" << EOL
          << indent(2) << "--help      This message" << EOL
+         << indent(2) << "--fake      Register fake imports" << EOL
+         << indent(2) << "--json      Get WASM module info as JSON" << EOL
          << indent(2) << "--dump      Dumps info about the WASM module" << EOL
          << indent(2) << "--version   Show the version" << EOL
          << indent(2) << "--run       Run WASM module" << EOL
@@ -96,8 +102,11 @@ public:
       ferr << "Error: Failed to load and compile module." << ENDL;
       return;
     }
+
+    // TAG: get imports and exports as JSON
+    // TAG: global info, imports, exports
+    // TAG: how can we bind 2 modules together - imports from 1 use exports from the other
     
-    bool colorize = fout.isANSITerminal(); // TAG: fixme
     fout << "IMPORTS:" << EOL;
     for (const auto& s : wasm.getImports()) {
       if (Parser::doesMatchPattern(pattern, s.name)) {
@@ -122,7 +131,7 @@ public:
     }
     
     try {
-      if (!wasm.makeInstance()) {
+      if (!wasm.makeInstance(true || fake)) {
         setExitCode(1);
         ferr << "Error: Failed to create instance." << ENDL;
         return;
@@ -180,7 +189,8 @@ public:
       fout << "Compile time: " << timer << ENDL;
     }
     timer.start();
-    if (!wasm.makeInstance()) {
+    // TAG: show imports registered
+    if (!wasm.makeInstance(fake)) {
       ferr << "Error: Failed to create instance." << ENDL;
       setExitCode(1);
       return;
@@ -210,7 +220,13 @@ public:
       const String argument = enu.next();
       if (argument == "--help") {
         command = COMMAND_HELP;
+      } else if (argument == "--fake") {
+        fake = true;
       } else if (argument == "--dump") {
+        getJSON = false;
+        command = COMMAND_DUMP;
+      } else if (argument == "--json") {
+        getJSON = true;
         command = COMMAND_DUMP;
       } else if (argument == "--version") {
         command = COMMAND_VERSION;

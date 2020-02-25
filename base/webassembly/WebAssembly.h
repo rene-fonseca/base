@@ -179,7 +179,7 @@ public:
   }
 
   /** Registers global function. */
-  void registerFunctionImpl(void* func, Type result, const Type* args, unsigned int argsSize, const String& name);
+  void registerFunctionImpl(void* func, Type result, const Type* args, unsigned int argsSize, const String& name, bool nothrow);
 
   /** Registers global function. */
   template<typename RESULT, typename... ARGS>
@@ -187,7 +187,7 @@ public:
   {
     const Type resultType = MapType<RESULT>::type;
     const Type types[] = { MapType<ARGS>::type..., TYPE_UNSPECIFIED };
-    registerFunctionImpl((void*)func, resultType, types, getArraySize(types) - 1, name);
+    registerFunctionImpl((void*)func, resultType, types, getArraySize(types) - 1, name, noexcept(func));
   }
 
   /** Loads the given WASM module. */
@@ -199,8 +199,12 @@ public:
   /** Returns true if the given WASM module is valid. */
   bool isValid(const uint8* wasm, MemorySize size);
 
-  /** Makes instance for loaded module. */
-  bool makeInstance();
+  /**
+    Makes instance for loaded module.
+   
+    @param fake If, true dummy imports will be registered automatically.
+  */
+  bool makeInstance(bool fake = false);
   
   /** Returns the number of imported symbols. */
   MemorySize getNumberOfImports() const;

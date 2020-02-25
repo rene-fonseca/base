@@ -1196,10 +1196,10 @@ bool WebAssembly::makeInstance(bool fake)
   return handle->makeInstance(fake);
 }
 
-bool WebAssembly::makeWASIInstance(InputStream* stdin, OutputStream* stdout, OutputStream* stderr)
+bool WebAssembly::makeWASIInstance(InputStream* _stdin, OutputStream* _stdout, OutputStream* _stderr)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
-  return handle->makeWASIInstance(stdin, stdout, stderr);
+  return handle->makeWASIInstance(_stdin, _stdout, _stderr);
 }
 
 Array<WebAssembly::Symbol> WebAssembly::getImports()

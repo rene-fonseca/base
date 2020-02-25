@@ -994,7 +994,7 @@ _COM_AZURE_DEV__BASE__API String operator<<(FormatOutputStream& stream, const Ge
 template<class TYPE>
 inline FormatOutputStream& operator<<(FormatOutputStream& stream, const AtomicCounter<TYPE>& value)
 {
-  return stream << value.getValue();
+  return stream << static_cast<TYPE>(value);
 }
 
 // _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE(Exception)

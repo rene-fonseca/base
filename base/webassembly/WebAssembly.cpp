@@ -22,11 +22,11 @@
 #include <base/UnitTest.h>
 #include <base/build.h>
 
-#undef _COM_AZURE_DEV__BASE__USE_WASMTIME
+// #undef _COM_AZURE_DEV__BASE__USE_WASMTIME
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
-//#  include <base/platforms/backend/WASI.cpp>
-//#  define _COM_AZURE_DEV__BASE__USE_WASMTIME_WASI
+// #  include <base/platforms/backend/WASI.cpp>
+// #  define _COM_AZURE_DEV__BASE__USE_WASMTIME_WASI
 #  include <wasm.h>
 #  define own
 #endif
@@ -42,10 +42,7 @@ __wasi_errno_t __wasi_fd_prestat_get(__wasi_fd_t fd, __wasi_prestat_t *buf)
   return 0;
 }
 
-own wasm_trap_t* __wasiimpl_fd_prestat_get(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
-{
-  return nullptr;
-}
+own wasm_trap_t* __wasiimpl_fd_prestat_get(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept;
 #endif
 
 #if 0
@@ -99,7 +96,7 @@ String getValuesAsString(const wasm_val_t args[], MemorySize size)
 }
 
 own wasm_trap_t* bindToImplementation(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept;
-
+// TAG: add support for forwarding hook to allow tracking
 own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept;
 
 own wasm_trap_t* hook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept;
@@ -1446,9 +1443,15 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const WebAssembly::Sy
 }
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
-inline MemorySize getMemorySlot(const wasm_val_t& v) noexcept
+
+typedef uint32 WASM_MemorySize;
+
+inline MemorySize getMemorySlot(const wasm_val_t& v)
 {
-  return (v.kind == WASM_I32) ? v.of.i32 : 0;
+  if (v.kind != WASM_I32) {
+    _throw WebAssembly::WebAssemblyException("Not a memory pointer.");
+  }
+  return v.of.i32;
 }
 
 // TAG: need template to handle automatic mapping
@@ -1472,6 +1475,129 @@ own wasm_trap_t* bindToImplementation(void* env, const wasm_val_t args[], wasm_v
       v.kind = WASM_I32;
       v.of.i32 = 0;
     }
+  } catch (Exception& e) {
+    return context->getTrap(e);
+  } catch (...) {
+    return context->getTrap("Unknown exception throw.");
+  }
+  return nullptr;
+}
+
+template<typename TYPE>
+inline TYPE toNative(const wasm_val_t& v)
+{
+  _throw WebAssembly::WebAssemblyException("Unsupported type.");
+}
+
+template<>
+inline bool toNative<bool>(const wasm_val_t& v)
+{
+  if (v.kind != WASM_I32) {
+    _throw WebAssembly::WebAssemblyException("Unsupported type.");
+  }
+  return v.of.i32 != 0;
+}
+
+template<>
+inline short toNative<short>(const wasm_val_t& v)
+{
+  if (v.kind != WASM_I32) {
+    _throw WebAssembly::WebAssemblyException("Unsupported type.");
+  }
+  if (v.of.i32 < PrimitiveTraits<short>::MINIMUM) {
+    _throw WebAssembly::WebAssemblyException("Out of range value.");
+  }
+  if (v.of.i32 > PrimitiveTraits<short>::MAXIMUM) {
+    _throw WebAssembly::WebAssemblyException("Out of range value.");
+  }
+  return static_cast<short>(v.of.i32);
+}
+
+template<>
+inline unsigned short toNative<unsigned short>(const wasm_val_t& v)
+{
+  if (v.kind != WASM_I32) {
+    _throw WebAssembly::WebAssemblyException("Unsupported type.");
+  }
+  if (v.of.i32 < PrimitiveTraits<unsigned short>::MINIMUM) {
+    _throw WebAssembly::WebAssemblyException("Out of range value.");
+  }
+  if (v.of.i32 > PrimitiveTraits<unsigned short>::MAXIMUM) {
+    _throw WebAssembly::WebAssemblyException("Out of range value.");
+  }
+  return static_cast<unsigned short>(v.of.i32);
+}
+
+template<>
+inline int toNative<int>(const wasm_val_t& v)
+{
+  if (v.kind != WASM_I32) {
+    _throw WebAssembly::WebAssemblyException("Unsupported type.");
+  }
+  return v.of.i32;
+}
+
+template<>
+inline unsigned int toNative<unsigned int>(const wasm_val_t& v)
+{
+  if (v.kind != WASM_I32) {
+    _throw WebAssembly::WebAssemblyException("Unsupported type.");
+  }
+  return static_cast<unsigned int>(v.of.i32);
+}
+
+template<>
+inline int64 toNative<int64>(const wasm_val_t& v)
+{
+  if (v.kind != WASM_I64) {
+    _throw WebAssembly::WebAssemblyException("Unsupported type.");
+  }
+  return v.of.i64;
+}
+
+template<>
+inline uint64 toNative<uint64>(const wasm_val_t& v)
+{
+  if (v.kind != WASM_I64) {
+    _throw WebAssembly::WebAssemblyException("Unsupported type.");
+  }
+  return static_cast<uint64>(v.of.i64);
+}
+
+template<typename TYPE>
+inline TYPE toNativePointer(const wasm_val_t& v, WebAssembly::Handle::FunctionContext* context)
+{
+  if (v.kind != WASM_I32) {
+    _throw WebAssembly::WebAssemblyException("Unsupported type.");
+  }
+  WASM_MemorySize slot = getMemorySlot(v);
+  return reinterpret_cast<TYPE>((void*)context->read(slot, sizeof(typename std::remove_pointer<TYPE>::type)));
+}
+
+own wasm_trap_t* __wasiimpl_fd_prestat_get(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
+{
+  WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
+  if (!context) {
+    return context->getTrap("Missing context.");
+  }
+  context->invocations++;
+  auto& stream = fout;
+  try {
+    stream << context->fullname << getValuesAsString(args, context->argSize);
+    // TAG: is types correct for input or do we need to set explicitly
+    stream << " -> " << getValuesAsString(results, context->resultSize);
+    stream << " INVOKES=" << context->invocations << ENDL;
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME_WASI)
+    int32 fd = toNative<int32>(args[0]);
+    __wasi_prestat_t* prestat = toNativePointer<__wasi_prestat_t*>(args[1], context);
+    (void)prestat->u.dir.pr_name_len;
+
+    for (MemorySize i = 0; i < context->resultSize; ++i) {
+      wasm_val_t& v = results[i];
+      v.kind = WASM_I32;
+      v.of.i32 = __WASI_ERRNO_INVAL;
+    }
+#endif
   } catch (Exception& e) {
     return context->getTrap(e);
   } catch (...) {

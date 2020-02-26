@@ -1262,7 +1262,7 @@ String WebAssembly::toString(const FunctionType& functionType, const String& nam
   StringOutputStream sos;
   bool first = true;
   if (colorize) {
-    sos << setForeground(ANSIEscapeSequence::RED) << dim() << italic();
+    sos << setForeground(ANSIEscapeSequence::RED) << italic();
   }
   sos << "[";
   for (const auto type : functionType.results) {
@@ -1281,7 +1281,7 @@ String WebAssembly::toString(const FunctionType& functionType, const String& nam
     sos << module << "!";
   }
   if (colorize) {
-    sos << normal();
+    sos << normal() << bold();
     sos << setForeground(ANSIEscapeSequence::BLUE);
   }
   if (name) {
@@ -1290,7 +1290,7 @@ String WebAssembly::toString(const FunctionType& functionType, const String& nam
     sos << "(*)";
   }
   if (colorize) {
-    sos << dim() << italic();
+    sos << nobold() << italic();
   }
   sos << "(";
   first = true;

@@ -18,6 +18,7 @@
 #include <base/string/Format.h>
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/Functor.h>
+#include <base/mem/MemoryDump.h>
 #include <base/UnitTest.h>
 #include <base/build.h>
 
@@ -34,7 +35,19 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 #if 0
+// https://github.com/WebAssembly/WASI/blob/master/phases/snapshot/witx/typenames.witx
 // https://github.com/bytecodealliance/wasmtime/blob/master/docs/WASI-api.md
+// https://github.com/CraneStation/wasi-libc/blob/master/libc-bottom-half/headers/public/wasi/api.h
+// TAG: add security manifest
+// TAG: lookup each API - from imports - add auto generate manifest - allow to run with disapproved security slots
+
+__wasi_errno_t __wasi_fd_prestat_get(
+  __wasi_fd_t fd,
+  __wasi_prestat_t *buf
+)
+{
+  return 0;
+}
 
 int __wasi_fd_close(__wasi_fd_t fd)
 {
@@ -158,28 +171,69 @@ public:
     }
     
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
-    // read/write safely
-    uint8* read(MemorySize slot, MemorySize size)
+    inline Pair<uint8*, MemorySize> getMemory() noexcept
     {
-      return nullptr;
-    }
-    
-    void* getMemory()
-    {
-      wasm_store_t* store = handle->store;
-      wasm_memory_t* memory = nullptr;
+      wasm_memory_t* memory = handle->memory;
       byte_t* bytes = wasm_memory_data(memory);
-      size_t s = wasm_memory_data_size(memory);
-      return bytes;
+      size_t size = wasm_memory_data_size(memory);
+      return {reinterpret_cast<uint8*>(bytes), size};
     }
-    
+
+    inline Pair<const uint8*, MemorySize> getMemory() const noexcept
+    {
+      wasm_memory_t* memory = handle->memory;
+      byte_t* bytes = wasm_memory_data(memory);
+      size_t size = wasm_memory_data_size(memory);
+      return {reinterpret_cast<const uint8*>(bytes), size};
+    }
+
+    const uint8* read(MemorySize slot, MemorySize size) const
+    {
+      auto memory = getMemory();
+      MemorySize end = slot + size;
+      if ((slot >= memory.getSecond()) ||
+          (end < slot) ||
+          (end >= memory.getSecond())) {
+        _throw WebAssemblyException("Accessing out of memory scope.");
+      }
+      return memory.getFirst() + slot;
+    }
+
+    inline const uint8* read(const wasm_val_t& v, MemorySize size) const
+    {
+      if (v.kind == WASM_I32) {
+        return read(v.of.i32, size);
+      }
+      _throw WebAssemblyException("Unable to access memory.");
+    }
+
+    uint8* write(MemorySize slot, MemorySize size)
+    {
+      auto memory = getMemory();
+      MemorySize end = slot + size;
+      if ((slot >= memory.getSecond()) ||
+          (end < slot) ||
+          (end >= memory.getSecond())) {
+        _throw WebAssemblyException("Accessing out of memory scope.");
+      }
+      return memory.getFirst() + slot;
+    }
+
+    inline uint8* write(const wasm_val_t& v, MemorySize size)
+    {
+      if (v.kind == WASM_I32) {
+        return write(v.of.i32, size);
+      }
+      _throw WebAssemblyException("Unable to access memory.");
+    }
+
     /** Returns trap for given message. */
     own wasm_trap_t* getTrap(const char* _message)
     {
       wasm_message_t message;
       wasm_store_t* store = handle->store;
       const MemorySize length = getNullTerminatedLength(_message);
-      message.size = length;
+      message.size = length + 1;
       message.data = (wasm_byte_t*)_message;
       own wasm_trap_t* trap = wasm_trap_new(store, &message);
       return trap;
@@ -218,6 +272,7 @@ private:
   own wasm_instance_t* instance = nullptr;
   own wasm_module_t* module = nullptr;
   own wasm_extern_vec_t exports = {0};
+  wasm_memory_t* memory = nullptr;
 #endif
   Array<String> exportNames;
   MemorySize maximumMemoryUsage = 0;
@@ -497,7 +552,7 @@ public:
       // wasm_externkind_t kind = wasm_externtype_kind(type);
       // dumpExtern(i, (wasm_extern_t*)e, name);
     }
-    
+        
     return true;
 #else
     return false;
@@ -587,6 +642,18 @@ public:
     }
     
     wasm_instance_exports(instance, &exports);
+    
+    // get memory
+    for (size_t i = 0; i < exports.size; ++i) {
+      if (wasm_extern_t* e = exports.data[i]) {
+        wasm_externkind_t kind = wasm_extern_kind(e);
+        if (kind == WASM_EXTERN_MEMORY) {
+          this->memory = wasm_extern_as_memory(e);
+          break;
+        }
+      }
+    }
+
 #if 0
     // fout << "EXPORTS:" << ENDL;
     for (MemorySize i = 0; i < exports.size; ++i) {
@@ -1267,6 +1334,11 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const WebAssembly::Sy
 }
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+inline MemorySize getMemorySlot(const wasm_val_t& v) noexcept
+{
+  return (v.kind == WASM_I32) ? v.of.i32 : 0;
+}
+
 own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
 {
   WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
@@ -1281,10 +1353,30 @@ own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results
     // TAG: is types correct for input or do we need to set explicitly
     stream << " -> " << getValuesAsString(results, context->resultSize);
     stream << " INVOKES=" << context->invocations << ENDL;
+  
+    MemorySize slot = 0;
+    if (context->fullname == "wasi_unstable!fd_prestat_get") {
+      slot = getMemorySlot(args[1]);
+    } else if (context->fullname == "wasi_unstable!fd_prestat_dir_name") {
+      slot = getMemorySlot(args[1]);
+    } else if (context->fullname == "wasi_unstable!fd_fdstat_get") {
+      slot = getMemorySlot(args[1]);
+    } else if (context->fullname == "wasi_unstable!proc_exit") {
+      return context->getTrap("Force stop.");
+    }
+    if (slot) {
+      uint8* data = context->write(slot, 64);
+      MemoryDump dump(data, 64); // TAG: add slot as offset
+      // dump.setGlobalOffset((slot) & ~0xf);
+      // TAG: add ANSI support - highlight span support
+      fout << dump << ENDL;
+    }
+  
     for (MemorySize i = 0; i < context->resultSize; ++i) {
       wasm_val_t& v = results[i];
+      BASSERT(v.kind == WASM_I32); // TAG: temp test
       v.kind = WASM_I32;
-      v.of.i32 = 0;
+      v.of.i32 = 0 + 16;
     }
   } catch (Exception& e) {
     return context->getTrap(e);

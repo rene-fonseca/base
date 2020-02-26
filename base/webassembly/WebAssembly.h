@@ -87,20 +87,11 @@ public:
     TYPE_i64,
     TYPE_f32,
     TYPE_f64,
-    TYPE_STRING
+    TYPE_STRING // TAG: remove
   };
 
   /** Returns type as string. */
   static const char* toString(Type type) noexcept;
-
-  /** Function. */
-  class _COM_AZURE_DEV__BASE__API Function {
-  public:
-    
-    Function();
-    
-    ~Function();
-  };
 
   /** Function type. */
   class _COM_AZURE_DEV__BASE__API FunctionType {
@@ -108,6 +99,26 @@ public:
 
     Array<Type> arguments;
     Array<Type> results;
+  };
+
+  /** Function. */
+  class _COM_AZURE_DEV__BASE__API Function {
+  private:
+    
+    unsigned int functionReference = 0;
+  public:
+    
+    Function();
+    
+    // FunctionType getType();
+    
+#if 0
+    /** Calls function. */
+    template<typename RESULT, typename... ARGS>
+    RESULT call(ARGS... args);
+#endif
+    
+    ~Function();
   };
 
   enum ExternType {
@@ -126,10 +137,12 @@ public:
     String moduleName;
     ExternType externType = EXTERN_FUNCTION;
 
+    // function type
     Function f;
     void* func = nullptr;
     FunctionType functionType;
     
+    // memory type
     MemorySize memorySize = 0;
   };
 
@@ -167,6 +180,9 @@ public:
   /** Returns the current memory usage. */
   MemorySize getMemoryUsage() const;
 
+  /** Enables logging. */
+  // void setUseLog(bool uselog);
+
   /** Garbage collects any unused memory. */
   void garbageCollect();
 
@@ -203,6 +219,12 @@ public:
   /** Returns true if the given WASM module is valid. */
   bool isValid(const uint8* wasm, MemorySize size);
 
+#if 0
+  // TAG: add override of arguments and environment
+  void setArguments(Array<String>& arguments);
+  void setEnvironment(Map<String, String>& environment);
+#endif
+  
   /**
     Makes instance for loaded module.
    
@@ -238,22 +260,53 @@ public:
   void callEntry();
 
   /** Calls the function with the given id and arguments. */
+  AnyValue call(const String& id, const AnyValue* arguments, MemorySize size);
+
+  /** Calls the function with the given id and arguments. */
   AnyValue call(const String& id, const Array<AnyValue>& arguments);
 
   /** Calls the exported function with the given id and arguments. */
   AnyValue call(unsigned int id, const Array<AnyValue>& arguments);
 
 #if 0
+  /** WASM value. */
+  class WASMValue {
+  private:
+    
+    Type type = TYPE_i32;
+    union {
+      int32 i32;
+      int64 i64;
+      float f;
+      double d;
+      unsigned int function;
+    };
+    String s;
+  public:
+
+    WASMValue();
+    WASMValue(int32);
+    WASMValue(int64);
+    WASMValue(float);
+    WASMValue(double);
+    WASMValue(const char* string);
+    WASMValue(const wchar* string);
+    WASMValue(const String& string);
+    WASMValue(const WideString& string);
+  };
+#endif
+  
+  typedef AnyValue WASMValue;
+  
+  // TAG: we could also add call on Function object if it has link to instance
+  
   /** Calls function. */
   template<typename RESULT, typename... ARGS>
   RESULT callFunction(const String& id, ARGS... args)
   {
-    // TAG: avoid AnyValue intermediate so we can validate if arguments match
-    Array<AnyValue> args = { AnyValue<ARGS>(args)... };
-    AnyValue r = call(id, args);
-    return RESULT(); // TAG: cast to result
+    WASMValue _args[] = { WASMValue(args)..., WASMValue() };
+    return call(id, _args, getArraySize(_args) - 1);
   }
-#endif
 
   /** Returns function type as string. */
   static String toString(
@@ -267,7 +320,7 @@ public:
   /** Returns function type. */
   FunctionType getFunctionType(unsigned int id);
 
-  /** Returns function. */
+  /** Returns function reference. */
   Function getFunction(unsigned int id);
   
   /** Calls the exported function with the given id and arguments. */

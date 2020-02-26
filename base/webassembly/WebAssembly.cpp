@@ -233,8 +233,8 @@ public:
       wasm_message_t message;
       wasm_store_t* store = handle->store;
       const MemorySize length = getNullTerminatedLength(_message);
-      message.size = length + 1;
-      message.data = (wasm_byte_t*)_message;
+      message.size = length + 1; // null-terminator is required to be included
+      message.data = reinterpret_cast<wasm_byte_t*>(const_cast<char*>(_message));
       own wasm_trap_t* trap = wasm_trap_new(store, &message);
       return trap;
     }
@@ -439,8 +439,15 @@ public:
       own wasm_message_t message;
       wasm_trap_message(trap, &message);
       if (message.size) {
+        // TAG: wasmtime: why do we get an extra null-terminator added - https://github.com/bytecodealliance/wasmtime/issues/994
+        while ((message.size > 0) && !message.data[message.size - 1]) {
+          --message.size;
+        }
+        // fout << MemoryDump((const uint8*)message.data, message.size) << ENDL;
         String msg(reinterpret_cast<const char*>(message.data), message.size);
         _throw WebAssemblyException(msg.native());
+      } else {
+        _throw WebAssemblyException("Trap was raised.");
       }
     }
     _throw WebAssemblyException("Unsupported trap.");
@@ -881,11 +888,13 @@ public:
     return Symbol();
   }
   
-  FormatOutputStream& writeFunction(FormatOutputStream& stream, const String& id, const Array<AnyValue>& arguments)
+  FormatOutputStream& writeFunction(
+    FormatOutputStream& stream, const String& id, const AnyValue* arguments, MemorySize size)
   {
     stream << "WebAssemble: calling: " << id << "(";
     bool first = true;
-    for (auto a : arguments) {
+    for (MemorySize i = 0; i < size; ++i) {
+      const AnyValue& a = arguments[i];
       if (!first) {
         stream << ", ";
       }
@@ -896,29 +905,32 @@ public:
     return stream;
   }
 
-  AnyValue call(MemorySize id, const Array<AnyValue>& arguments)
+  AnyValue call(MemorySize id, const AnyValue* arguments, MemorySize argumentsSize)
   {
     String name = exportNames[id];
     if (!name) {
       name = String(format() << id);
     }
-    writeFunction(fout, name, arguments);
+    writeFunction(fout, name, arguments, argumentsSize);
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
     if (id < exports.size) {
-      // wasm_externkind_t kind = wasm_extern_kind(exports.data[id]);
-      const wasm_func_t* func = wasm_extern_as_func(exports.data[id]);
+      wasm_extern_t* e = exports.data[id];
+      wasm_externkind_t kind = wasm_extern_kind(e);
+      if (kind != WASM_EXTERN_FUNC) {
+        _throw WebAssemblyException("Not a function.");
+      }
+      const wasm_func_t* func = wasm_extern_as_func(e);
       if (!func) {
         _throw WebAssemblyException("Not a function.");
       }
 
       const size_t size = wasm_func_param_arity(func);
       const size_t resultSize = wasm_func_result_arity(func);
-      wasm_val_t args[256];
-      BASSERT(arguments.getSize() <= getArraySize(args)); // TAG: handle 2 vals for strings
-      wasm_val_t* end = convert(args, arguments);
+      PrimitiveStackArray<wasm_val_t> args(size);
+      PrimitiveStackArray<wasm_val_t> results(resultSize);
+      convert(args, args + size, arguments, argumentsSize);
       // own wasm_functype_t* type = wasm_func_type(func);
-      wasm_val_t results[2];
       if (own wasm_trap_t* trap = wasm_func_call(func, args, results)) {
         onTrap(trap);
       }
@@ -928,49 +940,14 @@ public:
     _throw WebAssemblyException("No such function.");
   }
   
-  AnyValue call(WebAssembly::Function f, const Array<AnyValue>& arguments)
+  AnyValue call(WebAssembly::Function f, const AnyValue* arguments, MemorySize argumentsSize)
   {
-    writeFunction(fout, "?", arguments);
-
-#if 0
-    if (!f) {
-      _throw WebAssemblyException("Invalid function");
-    }
-#endif
-    
-#if 0 && defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
-    // TAG: handle exceptions
-    if (wasm_func_call(f, NULL, NULL)) {
-      return 1;
-    }
-    
-    if (argSize != arguments.getSize()) {
-      _throw OutOfRange("Invalid number of arguments.");
-    }
-    if (resultSize > 8) {
-      _throw OutOfRange("Invalid number of results.");
-    }
-    // String would map to 2 words - mem+size
-    wasm_val_t args[64];
-    wasm_val_t results[8];
-    /*own*/ wasm_trap_t* trap = wasm_func_call(func, args, results);
-
-    if (trap) {
-    #if 0
-      wasm_message_t*
-      wasm_trap_message(const wasm_trap_t*, own wasm_message_t* out);
-      own wasm_frame_t* wasm_trap_origin(const wasm_trap_t*);
-      wasm_trap_trace(const wasm_trap_t*, own wasm_frame_vec_t* out);
-    #endif
-    }
-#endif
-    
-    return AnyValue();
+    _throw WebAssemblyException("Invalid function");
   }
   
   void callEntry()
   {
-    call(0, {});
+    call(0, nullptr, 0);
   }
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
@@ -996,12 +973,14 @@ public:
       dest->kind = WASM_I64;
       dest++->of.i64 = value.getLongLongInteger();
       break;
-      case AnyValue::UNSIGNED_LONG_INTEGER:
+    case AnyValue::UNSIGNED_LONG_INTEGER:
     case AnyValue::UNSIGNED_LONG_LONG_INTEGER:
       dest->kind = WASM_I64;
       dest++->of.i64 = value.getUnsignedLongLongInteger();
       break;
     case AnyValue::FLOAT:
+      // API is doing float mapping for now (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
+      // detect if float32_t is compatible with float
       dest->kind = WASM_F32;
       dest++->of.f32 = value.getFloat();
       break;
@@ -1018,6 +997,9 @@ public:
     case AnyValue::STRING:
     case AnyValue::WIDE_STRING:
       {
+        // TAG: how can we pass on string
+        _throw NotSupported("String is not supported.");
+
         String s(value.getString());
         dest->kind = WASM_I32;
         dest++->of.i32 = s.getLength();
@@ -1031,12 +1013,18 @@ public:
     return dest;
   }
   
-  wasm_val_t* convert(wasm_val_t* dest, const Array<AnyValue>& arguments)
+   void convert(wasm_val_t* dest, const wasm_val_t* end, const AnyValue* arguments, MemorySize argumentsSize)
   {
-    for (const auto& a : arguments) {
+    for (MemorySize i = 0; i < argumentsSize; ++i) {
+      if (dest == end) {
+        _throw WebAssemblyException("Arguments mismatch.");
+      }
+      const AnyValue& a = arguments[i];
       dest = convert(dest, a);
     }
-    return dest;
+    if (dest != end) {
+      _throw WebAssemblyException("Arguments mismatch.");
+    }
   }
   
   AnyValue convertToAnyValue(const wasm_val_t* src, MemorySize size)
@@ -1074,7 +1062,7 @@ public:
   
   // TAG: use wasm_name_new_from_string
   
-  AnyValue call(const String& id, const Array<AnyValue>& arguments)
+  AnyValue call(const String& id, const AnyValue* arguments, MemorySize argumentsSize)
   {
     MemorySize index = 0;
 
@@ -1091,7 +1079,7 @@ public:
       }
     }
     
-    return call(index, arguments);
+    return call(index, arguments, argumentsSize);
   }
   
   ~Handle()
@@ -1311,16 +1299,23 @@ void WebAssembly::callEntry()
   return handle->callEntry();
 }
 
+AnyValue WebAssembly::call(const String& id, const AnyValue* arguments, MemorySize argumentsSize)
+{
+  auto handle = this->handle.cast<WebAssembly::Handle>();
+  return handle->call(id, arguments, argumentsSize);
+}
+
 AnyValue WebAssembly::call(const String& id, const Array<AnyValue>& arguments)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
-  return handle->call(id, arguments);
+  // TAG: add Array::getFirst()
+  return handle->call(id, arguments ? &arguments[0] : nullptr, arguments.getSize());
 }
 
 AnyValue WebAssembly::call(unsigned int id, const Array<AnyValue>& arguments)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
-  return handle->call(id, arguments);
+  return handle->call(id, arguments ? &arguments[0] : nullptr, arguments.getSize());
 }
 
 WebAssembly::~WebAssembly()

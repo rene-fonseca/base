@@ -225,6 +225,12 @@ public:
   /** Returns true if the given WASM module is valid. */
   bool isValid(const uint8* wasm, MemorySize size);
 
+  /** Returns true if the given WASM module is valid. */
+  inline bool isValid(const String& bytes)
+  {
+    return isValid(bytes.getBytes(), bytes.getLength());
+  }
+
 #if 0
   // TAG: add override of arguments and environment
   void setArguments(Array<String>& arguments);

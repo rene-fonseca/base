@@ -1330,7 +1330,7 @@ void WebAssembly::registerFunctionImpl(
   return handle->registerFunctionImpl(func, result, args, argsSize, name, nothrow);
 }
 
-bool WebAssembly::load(const String& path)
+bool WebAssembly::loadFile(const String& path)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
   
@@ -1620,7 +1620,8 @@ own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results
     // TAG: is types correct for input or do we need to set explicitly
     stream << " -> " << getValuesAsString(results, context->resultSize);
     stream << " INVOKES=" << context->invocations << ENDL;
-  
+  return context->getTrap("Force stop.");
+
     MemorySize slot = 0;
     if (context->fullname == "wasi_unstable!fd_prestat_get") {
       slot = getMemorySlot(args[1]);

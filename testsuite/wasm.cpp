@@ -99,7 +99,7 @@ public:
       return;
     }
     WebAssembly wasm;
-    if (!wasm.load(path)) {
+    if (!wasm.loadFile(path)) {
       setExitCode(1);
       ferr << "Error: Failed to load and compile module." << ENDL;
       return;
@@ -193,7 +193,7 @@ public:
     // TAG: add option to control memory - max limit
 
     Timer timer;
-    if (!wasm.load(path)) {
+    if (!wasm.loadFile(path)) {
       ferr << "Error: Failed to load and compile module." << ENDL;
       setExitCode(1);
       return;

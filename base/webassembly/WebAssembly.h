@@ -211,10 +211,16 @@ public:
   }
 
   /** Loads the given WASM module. */
-  bool load(const String& path);
+  bool loadFile(const String& path);
 
   /** Loads the given WASM module in buffer. */
   bool load(const uint8* wasm, MemorySize size);
+  
+  /** Loads the given WASM module in buffer. */
+  inline bool load(const String& path)
+  {
+    return load(path.getBytes(), path.getLength());
+  }
 
   /** Returns true if the given WASM module is valid. */
   bool isValid(const uint8* wasm, MemorySize size);
@@ -261,6 +267,12 @@ public:
 
   /** Calls the function with the given id and arguments. */
   AnyValue call(const String& id, const AnyValue* arguments, MemorySize size);
+
+  /** Calls the function with the given id and arguments. */
+  inline AnyValue call(const String& id)
+  {
+    return call(id, nullptr, 0);
+  }
 
   /** Calls the function with the given id and arguments. */
   AnyValue call(const String& id, const Array<AnyValue>& arguments);

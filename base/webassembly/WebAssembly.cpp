@@ -22,9 +22,11 @@
 #include <base/UnitTest.h>
 #include <base/build.h>
 
-// #undef _COM_AZURE_DEV__BASE__USE_WASMTIME
+#undef _COM_AZURE_DEV__BASE__USE_WASMTIME
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+//#  include <base/platforms/backend/WASI.cpp>
+//#  define _COM_AZURE_DEV__BASE__USE_WASMTIME_WASI
 #  include <wasm.h>
 #  define own
 #endif
@@ -34,20 +36,24 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME_WASI)
+__wasi_errno_t __wasi_fd_prestat_get(__wasi_fd_t fd, __wasi_prestat_t *buf)
+{
+  return 0;
+}
+
+own wasm_trap_t* __wasiimpl_fd_prestat_get(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
+{
+  return nullptr;
+}
+#endif
+
 #if 0
 // https://github.com/WebAssembly/WASI/blob/master/phases/snapshot/witx/typenames.witx
 // https://github.com/bytecodealliance/wasmtime/blob/master/docs/WASI-api.md
 // https://github.com/CraneStation/wasi-libc/blob/master/libc-bottom-half/headers/public/wasi/api.h
 // TAG: add security manifest
 // TAG: lookup each API - from imports - add auto generate manifest - allow to run with disapproved security slots
-
-__wasi_errno_t __wasi_fd_prestat_get(
-  __wasi_fd_t fd,
-  __wasi_prestat_t *buf
-)
-{
-  return 0;
-}
 
 int __wasi_fd_close(__wasi_fd_t fd)
 {
@@ -91,6 +97,8 @@ String getValuesAsString(const wasm_val_t args[], MemorySize size)
   sos << ")";
   return sos;
 }
+
+own wasm_trap_t* bindToImplementation(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept;
 
 own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept;
 
@@ -142,6 +150,23 @@ WebAssembly::Function::~Function()
 class WebAssembly::Handle : public ReferenceCountedObject {
 public:
 
+  class BindNativeType {
+  public:
+
+    enum {
+      TYPE_BOOL,
+      TYPE_INT16,
+      TYPE_UINT16,
+      TYPE_INT32,
+      TYPE_UINT32,
+      TYPE_INT64,
+      TYPE_UINT64,
+      TYPE_POINTER, // match size of object
+      TYPE_CHAR,
+      TYPE_WCHAR
+    };
+  };
+
   /** Call context. */
   class FunctionContext {
   public:
@@ -151,6 +176,7 @@ public:
     MemorySize resultSize = 0;
     String fullname;
     PreferredAtomicCounter invocations;
+    
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
     const wasm_functype_t* functype = nullptr;
     
@@ -566,7 +592,95 @@ public:
 #endif
   }
   
-  bool makeInstance(bool fake)
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+  /** Registers WASI import. */
+  void registerWASIImport(const wasm_extern_t** dest,
+                          wasm_importtype_vec_t src,
+                          wasm_func_callback_with_env_t hook,
+                          const String& _moduleName,
+                          const String& _name)
+  {
+    for (MemorySize i = 0; i < src.size; ++i) {
+      const wasm_importtype_t* import = src.data[i];
+      if (!import) {
+        continue;
+      }
+      // TAG: check __moduleName against previous value
+      const wasm_name_t* __moduleName = wasm_importtype_module(import);
+      const String moduleName = __moduleName ? toString(*__moduleName) : String();
+      if (moduleName != _moduleName) {
+        continue;
+      }
+      const wasm_name_t* __name = wasm_importtype_name(import);
+      const String name = __name ? toString(*__name) : String();
+      if (name != _name) {
+        continue;
+      }
+      const wasm_externtype_t* externType = wasm_importtype_type(import);
+      wasm_externkind_t kind = wasm_externtype_kind(externType);
+      switch (kind) {
+      case WASM_EXTERN_FUNC:
+        {
+          const wasm_functype_t* functype = wasm_externtype_as_functype_const(externType);
+          FunctionContext* functionContext = new FunctionContext(this, functype);
+          if (moduleName) {
+            functionContext->fullname = moduleName + "!" + name;
+          } else {
+            functionContext->fullname = name;
+          }
+          functionContexts.append(functionContext);
+          own wasm_func_t* hook_func = wasm_func_new_with_env(store, functype, hook, functionContext, nullptr);
+          dest[i] = wasm_func_as_extern(hook_func);
+        }
+        break;
+      default:
+        BASSERT(!"Unsupported import.");
+      }
+      break;
+    }
+  }
+
+  /** Adds dummy imports. Does NOT overwrite imports. */
+  void registerFakeImports(const wasm_extern_t** dest, wasm_importtype_vec_t src)
+  {
+    for (MemorySize i = 0; i < src.size; ++i) {
+      const wasm_importtype_t* import = src.data[i];
+      if (!import) {
+        continue;
+      }
+      if (dest[i]) { // already registered
+        continue;
+      }
+      const wasm_name_t* _moduleName = wasm_importtype_module(import);
+      // wasmtime: should this be a URN that is registered
+      const String moduleName = _moduleName ? toString(*_moduleName) : String();
+      const wasm_name_t* _name = wasm_importtype_name(import);
+      const String name = _name ? toString(*_name) : String();
+      const wasm_externtype_t* externType = wasm_importtype_type(import);
+      wasm_externkind_t kind = wasm_externtype_kind(externType);
+      switch (kind) {
+      case WASM_EXTERN_FUNC:
+        {
+          const wasm_functype_t* functype = wasm_externtype_as_functype_const(externType);
+          FunctionContext* functionContext = new FunctionContext(this, functype);
+          if (moduleName) {
+            functionContext->fullname = moduleName + "!" + name;
+          } else {
+            functionContext->fullname = name;
+          }
+          functionContexts.append(functionContext);
+          own wasm_func_t* hook_func = wasm_func_new_with_env(store, functype, fakeHook, functionContext, nullptr);
+          dest[i] = wasm_func_as_extern(hook_func);
+        }
+        break;
+      default:
+        BASSERT(!"Unsupported import.");
+      }
+    }
+  }
+#endif
+  
+  bool makeInstance(bool fake, bool wasi = false)
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
     if (!module) {
@@ -576,42 +690,20 @@ public:
     own wasm_importtype_vec_t _imports;
     wasm_module_imports(module, &_imports);
     PrimitiveArray<const wasm_extern_t*> imports(_imports.size);
-#if 1
-    // TAG: can we dynamically register a function
-    
-    if (fake) {
-      for (MemorySize i = 0; i < _imports.size; ++i) {
-        const wasm_importtype_t* import = _imports.data[i];
-        if (!import) {
-          continue;
-        }
-        const wasm_name_t* _moduleName = wasm_importtype_module(import); // wasmtime: should this be a URN that is registered
-        const String moduleName = _moduleName ? toString(*_moduleName) : String();
-        const wasm_name_t* _name = wasm_importtype_name(import);
-        const String name = _name ? toString(*_name) : String();
-        const wasm_externtype_t* externType = wasm_importtype_type(import);
-        wasm_externkind_t kind = wasm_externtype_kind(externType);
-        switch (kind) {
-        case WASM_EXTERN_FUNC:
-          {
-            const wasm_functype_t* functype = wasm_externtype_as_functype_const(externType);
-            FunctionContext* functionContext = new FunctionContext(this, functype);
-            if (moduleName) {
-              functionContext->fullname = moduleName + "!" + name;
-            } else {
-              functionContext->fullname = name;
-            }
-            functionContexts.append(functionContext);
-            own wasm_func_t* hook_func = wasm_func_new_with_env(store, functype, fakeHook, functionContext, nullptr);
-            imports[i] = wasm_func_as_extern(hook_func);
-          }
-          break;
-        default:
-          BASSERT(!"Unsupported import.");
-        }
-      }
+    for (MemorySize i = 0; i < imports.size(); ++i) {
+      imports[i] = nullptr;
     }
     
+    if (wasi) {
+      registerWASIImports(imports.begin(), _imports);
+    }
+
+    if (fake) {
+      registerFakeImports(imports.begin(), _imports);
+    }
+    
+#if 0
+    // TAG: can we dynamically register a function
     #if 0
       wasm_valtype_t* ps[n] = {p1, ...};
       wasm_valtype_t* rs[m] = {r1, ...};
@@ -633,10 +725,9 @@ public:
         imports[i] = wasm_func_as_extern(hook_func);
       }
     }
-    
 #endif
 
-    // TAG: add support for WASI instance
+    // TAG: add support for WASI instance - waiting for wasi.h support
     // TAG: add support for wasm text from memory
     own wasm_trap_t* trap = nullptr;
     instance = wasm_instance_new(store, module, imports, &trap);
@@ -675,10 +766,36 @@ public:
     return false;
   }
   
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+  /** Registers WASI function. */
+  template<typename RESULT, typename... ARGS>
+  void registerWASIFunction(RESULT (*func)(ARGS...),
+                            const wasm_extern_t** dest,
+                            wasm_importtype_vec_t src,
+                            wasm_func_callback_with_env_t hook,
+                            const String& module,
+                            const String& name)
+  {
+    const Type resultType = MapType<RESULT>::type;
+    const Type types[] = { MapType<ARGS>::type..., TYPE_UNSPECIFIED };
+    // TAG: need to compare function type
+    registerWASIImport(dest, src, hook, module, name);
+  }
+
+#define REGISTER_WASI(NAME) \
+  registerWASIFunction(__wasi_##NAME, dest, src, __wasiimpl_##NAME, "wasi_unstable", _COM_AZURE_DEV__BASE__STRINGIFY(NAME));
+
+  void registerWASIImports(const wasm_extern_t** dest, wasm_importtype_vec_t src)
+  {
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME_WASI)
+    REGISTER_WASI(fd_prestat_get);
+#endif
+  }
+#endif
+  
   bool makeWASIInstance(InputStream* _stdin, OutputStream* _stdout, OutputStream* _stderr)
   {
-    // TAG: waiting for wasi.h support
-    return makeInstance(true);
+    return makeInstance(true, true);
   }
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
@@ -1334,6 +1451,35 @@ inline MemorySize getMemorySlot(const wasm_val_t& v) noexcept
   return (v.kind == WASM_I32) ? v.of.i32 : 0;
 }
 
+// TAG: need template to handle automatic mapping
+own wasm_trap_t* bindToImplementation(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
+{
+  WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
+  if (!context) {
+    return context->getTrap("Missing context.");
+  }
+  context->invocations++;
+  auto& stream = fout;
+  try {
+    stream << context->fullname << getValuesAsString(args, context->argSize);
+    // TAG: is types correct for input or do we need to set explicitly
+    stream << " -> " << getValuesAsString(results, context->resultSize);
+    stream << " INVOKES=" << context->invocations << ENDL;
+    // TAG: map WASM types to native types for function
+    for (MemorySize i = 0; i < context->resultSize; ++i) {
+      wasm_val_t& v = results[i];
+      BASSERT(v.kind == WASM_I32); // TAG: temp test
+      v.kind = WASM_I32;
+      v.of.i32 = 0;
+    }
+  } catch (Exception& e) {
+    return context->getTrap(e);
+  } catch (...) {
+    return context->getTrap("Unknown exception throw.");
+  }
+  return nullptr;
+}
+
 own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
 {
   WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
@@ -1371,7 +1517,7 @@ own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results
       wasm_val_t& v = results[i];
       BASSERT(v.kind == WASM_I32); // TAG: temp test
       v.kind = WASM_I32;
-      v.of.i32 = 0 + 16;
+      v.of.i32 = 0;
     }
   } catch (Exception& e) {
     return context->getTrap(e);
@@ -1380,7 +1526,8 @@ own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results
   }
   return nullptr;
 }
-
+  
+#if 0
 own wasm_trap_t* hook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
 {
   WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
@@ -1397,6 +1544,7 @@ own wasm_trap_t* hook(void* env, const wasm_val_t args[], wasm_val_t results[]) 
   }
   return nullptr;
 }
+#endif
 
 own wasm_trap_t* hello(const wasm_val_t args[], wasm_val_t results[]) noexcept
 {

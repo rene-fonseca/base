@@ -450,6 +450,22 @@ public:
   static constexpr Type type = TYPE_STRING;
 };
 
+template<class TYPE>
+class WebAssembly::MapType<const TYPE*> {
+public:
+
+  static constexpr Type type = TYPE_i32; // TAG: depends on WASM32/WASM64
+  static constexpr MemorySize SIZE = sizeof(TYPE);
+};
+
+template<class TYPE>
+class WebAssembly::MapType<TYPE*> {
+public:
+
+  static constexpr Type type = TYPE_i32;
+  static constexpr MemorySize SIZE = sizeof(TYPE);
+};
+
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const WebAssembly::Symbol& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

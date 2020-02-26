@@ -133,10 +133,18 @@ public:
     }
     
     try {
-      if (!wasm.makeInstance(true || fake)) {
-        setExitCode(1);
-        ferr << "Error: Failed to create instance." << ENDL;
-        return;
+      if (wasi) {
+        if (!wasm.makeWASIInstance(nullptr, nullptr, nullptr)) {
+          setExitCode(1);
+          ferr << "Error: Failed to create instance." << ENDL;
+          return;
+        }
+      } else {
+        if (!wasm.makeInstance(true || fake)) {
+          setExitCode(1);
+          ferr << "Error: Failed to create instance." << ENDL;
+          return;
+        }
       }
     } catch (Exception& e) {
       setExitCode(1);
@@ -237,6 +245,8 @@ public:
         command = COMMAND_HELP;
       } else if (argument == "--fake") {
         fake = true;
+      } else if (argument == "--wasi") {
+        wasi = true;
       } else if (argument == "--dump") {
         getJSON = false;
         command = COMMAND_DUMP;

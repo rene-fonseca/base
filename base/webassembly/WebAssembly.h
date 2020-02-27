@@ -164,6 +164,12 @@ public:
   
   /** Initializes WebAssembly engine. */
   WebAssembly();
+  
+  /** Returns text format for given WASM. */
+  static String convertToText(const String& bytes);
+
+  /** Returns the WASM for the given text (WAT). */
+  static String convertToWASM(const String& text);
 
   /** Returns info about the WebAssembly engine. */
   String getEngine();

@@ -1227,6 +1227,16 @@ String WebAssembly::getEngine()
   return handle->getEngine();
 }
 
+String WebAssembly::convertToText(const String& bytes)
+{
+  _throw WebAssemblyException("Unsupported conversion to WAT.");
+}
+
+String WebAssembly::convertToWASM(const String& text)
+{
+  _throw WebAssemblyException("Unsupported conversion to WASM.");
+}
+
 uint64 WebAssembly::getProcessingTime() const
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();

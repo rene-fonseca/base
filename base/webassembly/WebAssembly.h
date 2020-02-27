@@ -87,8 +87,7 @@ public:
     TYPE_i32,
     TYPE_i64,
     TYPE_f32,
-    TYPE_f64,
-    TYPE_STRING // TAG: remove
+    TYPE_f64
   };
 
   /** Returns type as string. */
@@ -454,28 +453,28 @@ template<>
 class WebAssembly::MapType<const char*> {
 public:
 
-  static constexpr Type type = TYPE_STRING;
+  static constexpr Type type = TYPE_UNSPECIFIED;
 };
 
 template<>
 class WebAssembly::MapType<const wchar*> {
 public:
 
-  static constexpr Type type = TYPE_STRING;
+  static constexpr Type type = TYPE_UNSPECIFIED;
 };
 
 template<>
 class WebAssembly::MapType<String> {
 public:
 
-  static constexpr Type type = TYPE_STRING;
+  static constexpr Type type = TYPE_UNSPECIFIED;
 };
 
 template<>
 class WebAssembly::MapType<WideString> {
 public:
 
-  static constexpr Type type = TYPE_STRING;
+  static constexpr Type type = TYPE_UNSPECIFIED;
 };
 
 template<class TYPE>

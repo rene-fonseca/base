@@ -129,8 +129,6 @@ const char* WebAssembly::toString(Type type) noexcept
     return "f32";
   case TYPE_f64:
     return "f64";
-  case TYPE_STRING:
-    return "STRING";
   default:
     BASSERT(!"Not supported.");
     return "UNSPECIFIED";

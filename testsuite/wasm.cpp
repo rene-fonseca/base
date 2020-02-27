@@ -90,6 +90,52 @@ public:
          << ENDL;
   }
 
+  R<ObjectModel::Array> getSymbolTable(ObjectModel& o, const Array<WebAssembly::Symbol>& symbols)
+  {
+    auto result = o.createArray();
+    for (const auto& s : symbols) {
+      // TAG: use initializer list
+      auto i = o.createObject();
+      if (s.moduleName) {
+        i->setValue("module", s.moduleName);
+      }
+      if (s.name) {
+        i->setValue("name", s.name);
+      }
+      switch (s.externType) {
+      case WebAssembly::EXTERN_FUNCTION:
+        {
+          i->setValue(o.createString("type"), "FUNCTION");
+          auto t = o.createObject();
+          auto a = o.createArray();
+          for (const auto type : s.functionType.arguments) {
+            a->append(o.createString(WebAssembly::toString(type)));
+          }
+          t->setValue(o.createString("arguments"), a);
+          a = o.createArray();
+          for (const auto type : s.functionType.results) {
+            a->append(o.createString(WebAssembly::toString(type)));
+          }
+          t->setValue(o.createString("results"), a);
+          i->setValue(o.createString("functionType"), t);
+        }
+        break;
+      case WebAssembly::EXTERN_GLOBAL:
+        i->setValue("type", "GLOBAL");
+        break;
+      case WebAssembly::EXTERN_TABLE:
+        i->setValue("type", "TABLE");
+        break;
+      case WebAssembly::EXTERN_MEMORY:
+        i->setValue("type", "MEMORY");
+        i->setValue(o.createString("memorySize"), o.createInteger(s.memorySize));
+        break;
+      }
+      result->append(i);
+    }
+    return result;
+  }
+  
   /** Dump all exported symbols in module. */
   void dump(const String& path, const String& pattern)
   {
@@ -105,29 +151,38 @@ public:
       return;
     }
 
-    // TAG: get imports and exports as JSON
-    // TAG: global info, imports, exports
+    const auto imports = wasm.getImports();
+
     // TAG: how can we bind 2 modules together - imports from 1 use exports from the other
-    
-    fout << "IMPORTS:" << EOL;
-    for (const auto& s : wasm.getImports()) {
-      if (Parser::doesMatchPattern(pattern, s.name)) {
-        fout << "  " << "[" << s.index << "] ";
-        switch (s.externType) {
-        case WebAssembly::EXTERN_FUNCTION:
-          fout << "FUNCTION " << WebAssembly::toString(s, colorize) << ENDL;
-          break;
-        case WebAssembly::EXTERN_GLOBAL:
-          fout << "GLOBAL " << s.name << ENDL;
-          break;
-        case WebAssembly::EXTERN_TABLE:
-          fout << "TABLE " << s.name << ENDL;
-          break;
-        case WebAssembly::EXTERN_MEMORY:
-          fout << "MEMORY " << s.name << ENDL;
-          break;
-        default:
-          fout << "?" << " " << s.name << ENDL;
+
+    ObjectModel o;
+    auto root = o.createObject();
+
+    if (getJSON) {
+      // root->setValue("digest", "sha256:...");
+      root->setValue("type", false ? "WASM64" : "WASM32"); // TAG: get type from WebAssembly
+      root->setValue(o.createString("imports"), getSymbolTable(o, imports));
+    } else {
+      fout << "IMPORTS:" << EOL;
+      for (const auto& s : imports) {
+        if (Parser::doesMatchPattern(pattern, s.name)) {
+          fout << "  " << "[" << s.index << "] ";
+          switch (s.externType) {
+          case WebAssembly::EXTERN_FUNCTION:
+            fout << "FUNCTION " << WebAssembly::toString(s, colorize) << ENDL;
+            break;
+          case WebAssembly::EXTERN_GLOBAL:
+            fout << "GLOBAL " << s.name << ENDL;
+            break;
+          case WebAssembly::EXTERN_TABLE:
+            fout << "TABLE " << s.name << ENDL;
+            break;
+          case WebAssembly::EXTERN_MEMORY:
+            fout << "MEMORY " << s.name << ENDL;
+            break;
+          default:
+            fout << "?" << " " << s.name << ENDL;
+          }
         }
       }
     }
@@ -152,29 +207,40 @@ public:
       return;
     }
     
-    fout << "EXPORTS:" << EOL;
-    for (const auto& s : wasm.getExports()) {
-      if (Parser::doesMatchPattern(pattern, s.name)) {
-        fout << "  " << "[" << s.index << "] ";
-        switch (s.externType) {
-        case WebAssembly::EXTERN_FUNCTION:
-          fout << "FUNCTION " << WebAssembly::toString(s, colorize) << ENDL;
-          break;
-        case WebAssembly::EXTERN_GLOBAL:
-          fout << "GLOBAL " << s.name << ENDL;
-          break;
-        case WebAssembly::EXTERN_TABLE:
-          fout << "TABLE " << s.name << ENDL;
-          break;
-        case WebAssembly::EXTERN_MEMORY:
-          if (s.name) {
-            fout << "MEMORY " << s.name << " SIZE=" << s.memorySize/1024 << " kB" << ENDL;
-          } else {
-            fout << "MEMORY " << "SIZE=" << s.memorySize/1024 << " kB" << ENDL;
+    const auto exports = wasm.getExports();
+
+    if (getJSON) {
+      root->setValue(o.createString("exports"), getSymbolTable(o, exports));
+      if (fout.isANSITerminal()) {
+        fout << JSON::getJSON(root, ObjectModel::DEFAULT_FORMATTING | ObjectModel::FLAG_COLOR) << ENDL;
+      } else {
+        fout << JSON::getJSONNoFormatting(root) << ENDL;
+      }
+    } else {
+      fout << "EXPORTS:" << EOL;
+      for (const auto& s : exports) {
+        if (Parser::doesMatchPattern(pattern, s.name)) {
+          fout << "  " << "[" << s.index << "] ";
+          switch (s.externType) {
+          case WebAssembly::EXTERN_FUNCTION:
+            fout << "FUNCTION " << WebAssembly::toString(s, colorize) << ENDL;
+            break;
+          case WebAssembly::EXTERN_GLOBAL:
+            fout << "GLOBAL " << s.name << ENDL;
+            break;
+          case WebAssembly::EXTERN_TABLE:
+            fout << "TABLE " << s.name << ENDL;
+            break;
+          case WebAssembly::EXTERN_MEMORY:
+            if (s.name) {
+              fout << "MEMORY " << s.name << " SIZE=" << s.memorySize/1024 << " kB" << ENDL;
+            } else {
+              fout << "MEMORY " << "SIZE=" << s.memorySize/1024 << " kB" << ENDL;
+            }
+            break;
+          default:
+            fout << "?" << " " << s.name << ENDL;
           }
-          break;
-        default:
-          fout << "?" << " " << s.name << ENDL;
         }
       }
     }

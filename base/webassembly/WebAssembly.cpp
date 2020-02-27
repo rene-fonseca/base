@@ -529,6 +529,20 @@ public:
   
   WebAssembly::FunctionType getFunctionType(unsigned int id)
   {
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+    own wasm_importtype_vec_t imports;
+    if (id < imports.size) {
+      const wasm_importtype_t* import = imports.data[id];
+      if (import) {
+        const wasm_externtype_t* externType = wasm_importtype_type(import);
+        wasm_externkind_t kind = wasm_externtype_kind(externType);
+        if (kind == WASM_EXTERN_FUNC) {
+          const wasm_functype_t* functype = wasm_externtype_as_functype_const(externType);
+          return getFunctionType(functype);
+        }
+      }
+    }
+#endif
     return FunctionType();
   }
 

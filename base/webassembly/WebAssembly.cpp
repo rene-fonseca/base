@@ -19,6 +19,7 @@
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/Functor.h>
 #include <base/mem/MemoryDump.h>
+#include <base/Profiler.h>
 #include <base/UnitTest.h>
 #include <base/build.h>
 
@@ -677,6 +678,10 @@ public:
   }
 #endif
   
+  void setUseProfiler(bool useProfiler)
+  {
+  }
+
   bool makeInstance(bool fake, bool wasi = false)
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
@@ -1367,6 +1372,22 @@ bool WebAssembly::load(const uint8* wasm, MemorySize size)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
   return handle->load(wasm, size);
+}
+
+void WebAssembly::setArguments(const Array<String>& arguments)
+{
+  _throw WebAssemblyException("Arguments not supported.");
+}
+
+void WebAssembly::setEnvironment(const Map<String, String>& environment)
+{
+  _throw WebAssemblyException("Environment not supported.");
+}
+
+void WebAssembly::setUseProfiler(bool useProfiler)
+{
+  auto handle = this->handle.cast<WebAssembly::Handle>();
+  return handle->setUseProfiler(useProfiler);
 }
 
 bool WebAssembly::makeInstance(bool fake)

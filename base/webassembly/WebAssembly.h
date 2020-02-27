@@ -15,6 +15,7 @@
 
 #include <base/string/String.h>
 #include <base/collection/Array.h>
+#include <base/collection/Map.h>
 #include <base/AnyValue.h>
 #include <base/io/InputStream.h>
 #include <base/io/OutputStream.h>
@@ -237,12 +238,15 @@ public:
     return isValid(bytes.getBytes(), bytes.getLength());
   }
 
-#if 0
-  // TAG: add override of arguments and environment
-  void setArguments(Array<String>& arguments);
-  void setEnvironment(Map<String, String>& environment);
-#endif
+  /** Sets the command line arguments. */
+  void setArguments(const Array<String>& arguments);
   
+  /** Sets the initial environment. */
+  void setEnvironment(const Map<String, String>& environment);
+
+  /** Enables profiling. */
+  void setUseProfiler(bool useProfiler);
+
   /**
     Makes instance for loaded module.
    

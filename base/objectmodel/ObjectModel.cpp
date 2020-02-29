@@ -1565,6 +1565,122 @@ Document ObjectModel::getXML(const Reference<ObjectModel::Value>& value, const S
   return d;
 }
 
+JSONValue::JSONValue(NullPtr)
+{
+  v = new ObjectModel::Void();
+}
+
+JSONValue::JSONValue(bool _v)
+{
+  v = new ObjectModel::Boolean(_v);
+}
+
+JSONValue::JSONValue(char _v)
+{
+  const char string[] = {_v, 0};
+  v = new ObjectModel::String(string);
+}
+
+JSONValue::JSONValue(wchar _v)
+{
+  const wchar string[] = {_v, 0};
+  v = new ObjectModel::String(string);
+}
+JSONValue::JSONValue(short _v)
+{
+  v = new ObjectModel::Integer(_v);
+}
+  
+JSONValue::JSONValue(unsigned short _v)
+{
+  v = new ObjectModel::Integer(static_cast<int64>(_v));
+}
+  
+JSONValue::JSONValue(int _v)
+{
+  v = new ObjectModel::Integer(_v);
+}
+    
+JSONValue::JSONValue(unsigned int _v)
+{
+  v = new ObjectModel::Integer(static_cast<int64>(_v));
+}
+    
+JSONValue::JSONValue(int64 _v)
+{
+  v = new ObjectModel::Integer(_v);
+}
+    
+JSONValue::JSONValue(uint64 _v)
+{
+  v = new ObjectModel::Integer(static_cast<int64>(_v));
+}
+    
+JSONValue::JSONValue(const char* _v)
+{
+  v = new ObjectModel::String(_v);
+}
+    
+JSONValue::JSONValue(const wchar* _v)
+{
+  v = new ObjectModel::String(_v);
+}
+    
+JSONValue::JSONValue(const String& _v)
+{
+  v = new ObjectModel::String(_v);
+}
+
+JSONValue::JSONValue(const WideString& _v)
+{
+  v = new ObjectModel::String(_v);
+}
+
+R<ObjectModel::Array> JSONValue::getArray(const JSONValue* values, MemorySize size)
+{
+  R<ObjectModel::Array> a = new ObjectModel::Array();
+  for (MemorySize i = 0; i < size; ++i) {
+    a->append(values[i].v);
+  }
+  return a;
+}
+
+JSONValue::JSONValue(std::initializer_list<JSONNameValue> _v)
+{
+  R<ObjectModel::Object> o = new ObjectModel::Object();
+  for (auto i : _v) {
+    // TAG: can we avoid cast
+    o->setValue(i.n.castChecked<ObjectModel::String>(), i.v);
+  }
+  v = o;
+}
+
+JSONArray::JSONArray()
+{
+  a = new ObjectModel::Array();
+}
+     
+JSONArray::JSONArray(std::initializer_list<JSONValue> _v)
+{
+  a = new ObjectModel::Array();
+  for (const auto& i : _v) {
+    a->append(i.v);
+  }
+}
+
+JSONObject::JSONObject()
+{
+  o = new ObjectModel::Object();
+}
+
+JSONObject::JSONObject(std::initializer_list<JSONNameValue> _v)
+{
+  o = new ObjectModel::Object();
+  for (const auto& i : _v) {
+    o->setValue(i.n.castChecked<ObjectModel::String>(), i.v);
+  }
+}
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(ObjectModel) : public UnitTest {

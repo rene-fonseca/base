@@ -933,6 +933,104 @@ Reference<ObjectModel::Object> buildObjectModel(const BinaryNode<TYPE>* node)
   return BuildObjectModel<TYPE>().build(node);
 }
 
+class JSONNameValue;
+class JSONArray;
+
+/** JSON value. */
+class JSONValue {
+  friend class JSONNameValue;
+  friend class JSONArray;
+private:
+  
+  R<ObjectModel::Value> v;
+public:
+  
+  JSONValue(NullPtr);
+  
+  JSONValue(bool _v);
+  
+  JSONValue(char _v);
+  
+  JSONValue(wchar _v);
+  
+  JSONValue(short _v);
+  
+  JSONValue(unsigned short _v);
+  
+  JSONValue(int _v);
+  
+  JSONValue(unsigned int _v);
+  
+  JSONValue(int64 _v);
+  
+  JSONValue(uint64 _v);
+  
+  JSONValue(const char* _v);
+  
+  JSONValue(const wchar* _v);
+  
+  JSONValue(const String& _v);
+  
+  JSONValue(const WideString& _v);
+  
+  JSONValue(const JSONArray& _v) noexcept;
+  
+  static R<ObjectModel::Array> getArray(const JSONValue* values, MemorySize size);
+  
+  template<MemorySize SIZE>
+  inline JSONValue(const JSONValue (&_v)[SIZE])
+  {
+    v = getArray(_v, SIZE);
+  }
+  
+  JSONValue(std::initializer_list<JSONNameValue> _v);
+    
+  inline operator R<ObjectModel::Value>() noexcept
+  {
+    return v;
+  }
+};
+
+/** JSON name/value pair. */
+class JSONNameValue {
+public:
+    
+  R<ObjectModel::Value> n;
+  R<ObjectModel::Value> v;
+    
+  inline JSONNameValue(const JSONValue& _n, const JSONValue& _v)
+    : n(_n.v), v(_v.v)
+  {
+  }
+};
+
+/** JSON array. */
+class JSONArray {
+public:
+    
+  R<ObjectModel::Array> a;
+  
+  JSONArray();
+    
+  JSONArray(std::initializer_list<JSONValue> _v);
+};
+
+inline JSONValue::JSONValue(const JSONArray& _v) noexcept
+  : v(_v.a)
+{
+}
+
+/** JSON object. */
+class JSONObject {
+public:
+    
+  R<ObjectModel::Object> o;
+    
+  JSONObject();
+    
+  JSONObject(std::initializer_list<JSONNameValue> _v);
+};
+
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
 inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const R<ObjectModel::Value>& v) \
 { \

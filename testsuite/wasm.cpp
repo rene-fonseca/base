@@ -96,7 +96,6 @@ public:
   {
     auto result = o.createArray();
     for (const auto& s : symbols) {
-      // TAG: use initializer list
       auto i = o.createObject();
       if (s.moduleName) {
         i->setValue("module", s.moduleName);

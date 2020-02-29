@@ -168,7 +168,7 @@ public:
 
     if (getJSON) {
       // root->setValue("digest", "sha256:...");
-      root->setValue("type", false ? "WASM64" : "WASM32"); // TAG: get type from WebAssembly
+      root->setValue("type", (wasm.getWASMABI() == WebAssembly::WASM64) ? "WASM64" : "WASM32");
       root->setValue(o.createString("imports"), getSymbolTable(o, imports));
     } else {
       fout << "IMPORTS:" << EOL;

@@ -1458,6 +1458,12 @@ void WebAssembly::setUseProfiler(bool useProfiler)
   return handle->setUseProfiler(useProfiler);
 }
 
+WebAssembly::WASMABI WebAssembly::getWASMABI() const
+{
+  auto handle = this->handle.cast<WebAssembly::Handle>();
+  return WASM32; // TAG: add support
+}
+
 bool WebAssembly::makeInstance(bool fake)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();

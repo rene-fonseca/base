@@ -227,6 +227,14 @@ public:
   {
     return load(path.getBytes(), path.getLength());
   }
+  
+  enum WASMABI {
+    WASM32,
+    WASM64
+  };
+  
+  /** Returns the WASM ABI. */
+  WASMABI getWASMABI() const;
 
   /** Returns true if the given WASM module is valid. */
   bool isValid(const uint8* wasm, MemorySize size);

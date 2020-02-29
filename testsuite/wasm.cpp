@@ -45,6 +45,7 @@ private:
   bool getJSON = false;
   bool wasi = false;
   bool fake = false;
+  bool useLog = false;
 public:
   
   WASMApplication()
@@ -85,6 +86,7 @@ public:
          << indent(2) << "--json      Get WASM module info as JSON" << EOL
          << indent(2) << "--wasi      Use WASI mode" << EOL
          << indent(2) << "--dump      Dumps info about the WASM module" << EOL
+         << indent(2) << "--log       Enabled log" << EOL
          << indent(2) << "--version   Show the version" << EOL
          << indent(2) << "--run       Run WASM module" << EOL
          << ENDL;
@@ -267,7 +269,9 @@ public:
       return;
     }
     WebAssembly wasm;
-        
+    wasm.setUseLog(useLog);
+    
+    // TAG: set stack limit
     // TAG: add option to control memory - max limit
 
     Timer timer;
@@ -324,6 +328,8 @@ public:
         fake = true;
       } else if (argument == "--wasi") {
         wasi = true;
+      } else if (argument == "--log") {
+        useLog = true;
       } else if (argument == "--dump") {
         getJSON = false;
         command = COMMAND_DUMP;

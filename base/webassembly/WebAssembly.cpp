@@ -191,7 +191,7 @@ public:
       : handle(_handle), argSize(_argSize), resultSize(_resultSize)
     {
     }
-    
+        
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
     inline Pair<uint8*, MemorySize> getMemory() noexcept
     {
@@ -298,6 +298,7 @@ private:
 #endif
   Array<String> exportNames;
   MemorySize maximumMemoryUsage = 0;
+  bool useLog = false;
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
   /** Returns string for given name. */
@@ -326,6 +327,16 @@ private:
   /** Function contexts. */
   Array<FunctionContext*> functionContexts;
 public:
+  
+  inline bool getUseLog() const noexcept
+  {
+    return useLog;
+  }
+
+  inline void setUseLog(bool _useLog) noexcept
+  {
+    useLog = _useLog;
+  }
 
   void registerFunctionImpl(
     void* func, Type result, const Type* args, unsigned int argsSize, const String& name, bool nothrow)
@@ -351,6 +362,37 @@ public:
     f.nothrow = nothrow;
     imports.append(f);
   }
+  
+  void writeLog(const String& text)
+  {
+    // TAG: need output
+    ferr << text << ENDL;
+  }
+    
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+  void writeLog(const String& id, bool in,
+                const wasm_val_t* args, MemorySize argSize, const wasm_val_t* results, MemorySize resultSize)
+  {
+    StringOutputStream sos;
+    sos << Date::getNow().getISO8601_US() << SP
+        << (in ? "CALL " : "CALLBACK ")
+        << getValuesAsString(results, resultSize) << SP
+        << id << getValuesAsString(args, argSize);
+    writeLog(sos);
+  }
+
+  void writeLog(const String& id, bool in,
+                const wasm_val_t* args, MemorySize argSize, const wasm_trap_t* trap)
+  {
+    String msg = getTrapMessage(trap);
+    StringOutputStream sos;
+    sos << Date::getNow().getISO8601_US() << SP
+        << (in ? "CALL " : "CALLBACK ")
+        << "TRAP " << escape(msg) << SP
+        << id << getValuesAsString(args, argSize);
+    writeLog(sos);
+  }
+#endif
   
   Handle()
   {
@@ -455,24 +497,32 @@ public:
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
-  [[noreturn]] void onTrap(own wasm_trap_t* trap)
+  String getTrapMessage(const wasm_trap_t* trap)
   {
+    String msg;
     if (trap) {
       own wasm_message_t message;
       wasm_trap_message(trap, &message);
       if (message.size) {
+        // fout << MemoryDump((const uint8*)message.data, message.size) << ENDL;
         // TAG: wasmtime: why do we get an extra null-terminator added - https://github.com/bytecodealliance/wasmtime/issues/994
         while ((message.size > 0) && !message.data[message.size - 1]) {
           --message.size;
         }
-        // fout << MemoryDump((const uint8*)message.data, message.size) << ENDL;
-        String msg(reinterpret_cast<const char*>(message.data), message.size);
-        _throw WebAssemblyException(msg.native());
-      } else {
-        _throw WebAssemblyException("Trap was raised.");
+        msg = String(reinterpret_cast<const char*>(message.data), message.size);
       }
     }
-    _throw WebAssemblyException("Unsupported trap.");
+    return msg;
+  }
+  
+  [[noreturn]] void onTrap(own wasm_trap_t* trap)
+  {
+    if (trap) {
+      String msg = getTrapMessage(trap);
+      _throw WebAssemblyException(msg.native());
+    } else {
+      _throw WebAssemblyException("Trap was raised.");
+    }
   }
   
   static inline WebAssembly::Type toType(wasm_valkind_t kind)
@@ -990,7 +1040,7 @@ public:
         return Symbol();
       }
       const wasm_func_t* func = wasm_extern_as_func(exports.data[index]);
-      // TAG: should we add isIndex()? exportnames.isIndex(index), maybe getAt(index, default)
+      // TAG: should we add isIndex() ? exportnames.isIndex(index), maybe getAt(index, default)
       String name((index < exportNames.getSize()) ? exportNames[index] : String());
       return getSymbol(index, func, name, String());
     }
@@ -1018,7 +1068,7 @@ public:
 #endif
     return Symbol();
   }
-  
+    
   FormatOutputStream& writeFunction(
     FormatOutputStream& stream, const String& id, const AnyValue* arguments, MemorySize size)
   {
@@ -1063,7 +1113,13 @@ public:
       convert(args, args + size, arguments, argumentsSize);
       // own wasm_functype_t* type = wasm_func_type(func);
       if (own wasm_trap_t* trap = wasm_func_call(func, args, results)) {
+        if (getUseLog()) {
+          writeLog(name, true, args, size, trap);
+        }
         onTrap(trap);
+      }
+      if (getUseLog()) {
+        writeLog(name, true, args, size, results, resultSize);
       }
       return convertToAnyValue(results, resultSize);
     }
@@ -1450,20 +1506,30 @@ WebAssembly::Symbol WebAssembly::getSymbol(const String& id)
   return handle->getSymbol(id);
 }
 
+void WebAssembly::setUseLog(bool useLog)
+{
+  auto handle = this->handle.cast<WebAssembly::Handle>();
+  handle->setUseLog(useLog);
+}
+
 void WebAssembly::callEntry()
 {
+  Profiler::Task profile("WebAssembly::call()", "WASM");
   auto handle = this->handle.cast<WebAssembly::Handle>();
   return handle->callEntry();
 }
 
 AnyValue WebAssembly::call(const String& id, const AnyValue* arguments, MemorySize argumentsSize)
 {
+  Profiler::Task profile("WebAssembly::call()", "WASM");
   auto handle = this->handle.cast<WebAssembly::Handle>();
   return handle->call(id, arguments, argumentsSize);
 }
 
 AnyValue WebAssembly::call(const String& id, const Array<AnyValue>& arguments)
 {
+  Profiler::Task profile("WebAssembly::call()", "WASM");
+  // TAG: add args
   auto handle = this->handle.cast<WebAssembly::Handle>();
   // TAG: add Array::getFirst()
   return handle->call(id, arguments ? &arguments[0] : nullptr, arguments.getSize());
@@ -1471,6 +1537,7 @@ AnyValue WebAssembly::call(const String& id, const Array<AnyValue>& arguments)
 
 AnyValue WebAssembly::call(unsigned int id, const Array<AnyValue>& arguments)
 {
+  Profiler::Task profile("WebAssembly::call()", "WASM");
   auto handle = this->handle.cast<WebAssembly::Handle>();
   return handle->call(id, arguments ? &arguments[0] : nullptr, arguments.getSize());
 }
@@ -1500,6 +1567,7 @@ inline MemorySize getMemorySlot(const wasm_val_t& v)
 // TAG: need template to handle automatic mapping
 own wasm_trap_t* bindToImplementation(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
 {
+  Profiler::Task profile("WebAssembly::callback()", "WASM");
   WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
   if (!context) {
     return context->getTrap("Missing context.");
@@ -1619,6 +1687,7 @@ inline TYPE toNativePointer(const wasm_val_t& v, WebAssembly::Handle::FunctionCo
 
 own wasm_trap_t* __wasiimpl_fd_prestat_get(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
 {
+  Profiler::Task profile("fd_prestat_get()", "WASM");
   WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
   if (!context) {
     return context->getTrap("Missing context.");
@@ -1651,6 +1720,7 @@ own wasm_trap_t* __wasiimpl_fd_prestat_get(void* env, const wasm_val_t args[], w
 
 own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
 {
+  Profiler::Task profile("WebAssembly::callback()", "WASM");
   WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
   if (!context) {
     return context->getTrap("Missing context.");
@@ -1700,6 +1770,7 @@ own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results
 #if 0
 own wasm_trap_t* hook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
 {
+  Profiler::Task profile("WebAssembly::callback()", "WASM");
   WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
   if (!context) {
     return context->getTrap("Missing context.");
@@ -1718,6 +1789,7 @@ own wasm_trap_t* hook(void* env, const wasm_val_t args[], wasm_val_t results[]) 
 
 own wasm_trap_t* hello(const wasm_val_t args[], wasm_val_t results[]) noexcept
 {
+  Profiler::Task profile("WebAssembly::callback()", "WASM");
   // no access to store so we cannot make trap
   fout << "hello(): Hello, World!" << ENDL;
   return nullptr;

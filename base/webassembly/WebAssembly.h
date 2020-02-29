@@ -187,8 +187,8 @@ public:
   MemorySize getMemoryUsage() const;
 
   /** Enables logging. */
-  // void setUseLog(bool uselog);
-
+  void setUseLog(bool useLog);
+    
   /** Garbage collects any unused memory. */
   void garbageCollect();
 

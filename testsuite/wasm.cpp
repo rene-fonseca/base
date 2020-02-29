@@ -275,9 +275,8 @@ public:
         return;
       }
     } else {
-      wasm.registerFunction(hello);
-      wasm.registerFunction(throwit);
-      // TAG: show imports registered
+      // wasm.registerFunction(hello);
+      // wasm.registerFunction(throwit);
       if (!wasm.makeInstance(fake)) {
         ferr << "Error: Failed to create instance." << ENDL;
         setExitCode(1);

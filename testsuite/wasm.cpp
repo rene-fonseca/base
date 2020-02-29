@@ -17,6 +17,7 @@
 #include <base/string/Format.h>
 #include <base/string/Parser.h>
 #include <base/LongInteger.h>
+#include <base/UnsignedInteger.h>
 #include <base/objectmodel/JSON.h>
 #include <base/Timer.h>
 
@@ -46,6 +47,8 @@ private:
   bool wasi = false;
   bool fake = false;
   bool useLog = false;
+  MemorySize maximumMemory = 0; // in Mb
+  MemorySize maximumStack = 0; // in Mb
 public:
   
   WASMApplication()
@@ -269,9 +272,11 @@ public:
     }
     WebAssembly wasm;
     wasm.setUseLog(useLog);
+    if (maximumMemory > 0) {
+      wasm.setMaximumMemoryUsage(maximumMemory * 1024 * 1024); // TAG: handle overflow
+    }
     
     // TAG: set stack limit
-    // TAG: add option to control memory - max limit
 
     Timer timer;
     if (!wasm.loadFile(path)) {
@@ -341,6 +346,19 @@ public:
         command = COMMAND_VERSION;
       } else if (argument == "--time") {
         time = true;
+      } else if (argument == "--memory LIMIT") {
+        if (!enu.hasNext()) {
+          ferr << "Error: " << "Expecting memory limit." << ENDL;
+          return false;
+        }
+        try {
+          maximumMemory = UnsignedInteger::parse(enu.next());
+        } catch (...) {
+          ferr << "Error: " << "Invalid memory limit." << ENDL;
+          return false;
+        }
+      //} else if (argument == "--stack LIMIT") {
+      //  maximumStack = 0;
       } else {
         if (!path) {
           path = argument;

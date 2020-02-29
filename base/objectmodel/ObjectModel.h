@@ -991,14 +991,38 @@ public:
   }
 };
 
+/** JSON string. */
+class JSONString {
+public:
+
+  R<ObjectModel::String> v;
+
+  JSONString(char _v);
+  
+  JSONString(wchar _v);
+  
+  JSONString(const char* _v);
+  
+  JSONString(const wchar* _v);
+  
+  JSONString(const String& _v);
+  
+  JSONString(const WideString& _v);
+  
+  inline operator R<ObjectModel::String>() noexcept
+  {
+    return v;
+  }
+};
+
 /** JSON name/value pair. */
 class JSONNameValue {
 public:
-    
-  R<ObjectModel::Value> n;
+  
+  R<ObjectModel::String> n;
   R<ObjectModel::Value> v;
-    
-  inline JSONNameValue(const JSONValue& _n, const JSONValue& _v)
+  
+  inline JSONNameValue(const JSONString& _n, const JSONValue& _v)
     : n(_n.v), v(_v.v)
   {
   }
@@ -1007,11 +1031,11 @@ public:
 /** JSON array. */
 class JSONArray {
 public:
-    
+  
   R<ObjectModel::Array> a;
   
   JSONArray();
-    
+
   JSONArray(std::initializer_list<JSONValue> _v);
 };
 
@@ -1027,9 +1051,19 @@ public:
   R<ObjectModel::Object> o;
     
   JSONObject();
-    
+  
   JSONObject(std::initializer_list<JSONNameValue> _v);
+  
+  inline operator R<ObjectModel::Object>() noexcept
+  {
+    return o;
+  }
 };
+
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const JSONObject& value)
+{
+  return stream << value.o;
+}
 
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
 inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const R<ObjectModel::Value>& v) \

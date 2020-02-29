@@ -1649,10 +1649,41 @@ JSONValue::JSONValue(std::initializer_list<JSONNameValue> _v)
 {
   R<ObjectModel::Object> o = new ObjectModel::Object();
   for (auto i : _v) {
-    // TAG: can we avoid cast
-    o->setValue(i.n.castChecked<ObjectModel::String>(), i.v);
+    o->setValue(i.n, i.v);
   }
   v = o;
+}
+
+JSONString::JSONString(char _v)
+{
+  const char string[] = {_v, 0};
+  v = new ObjectModel::String(string);
+}
+
+JSONString::JSONString(wchar _v)
+{
+  const wchar string[] = {_v, 0};
+  v = new ObjectModel::String(string);
+}
+
+JSONString::JSONString(const char* _v)
+{
+  v = new ObjectModel::String(_v);
+}
+
+JSONString::JSONString(const wchar* _v)
+{
+  v = new ObjectModel::String(_v);
+}
+  
+JSONString::JSONString(const String& _v)
+{
+  v = new ObjectModel::String(_v);
+}
+
+JSONString::JSONString(const WideString& _v)
+{
+  v = new ObjectModel::String(_v);
 }
 
 JSONArray::JSONArray()
@@ -1677,7 +1708,7 @@ JSONObject::JSONObject(std::initializer_list<JSONNameValue> _v)
 {
   o = new ObjectModel::Object();
   for (const auto& i : _v) {
-    o->setValue(i.n.castChecked<ObjectModel::String>(), i.v);
+    o->setValue(i.n, i.v);
   }
 }
 

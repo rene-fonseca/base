@@ -649,6 +649,17 @@ public:
     TEST_ASSERT(root3->getInteger("/k\"l", -1) == 6);
     TEST_ASSERT(root3->getInteger("/ ", -1) == 7);
     TEST_ASSERT(root3->getInteger("/m~0n", -1) == 8);
+  
+    JSONObject build{
+      {"positive int", 123},
+      {"negative int", -1},
+      {"bool", true},
+      {"string", "text"},
+      {"null", nullptr},
+      {"object", {{"name","value"}}},
+      {"array", JSONArray{1, "text", -2, 3, nullptr, false, {{"name", "value"}}}} // TAG: need to differentiate array and object
+    };
+    // fout << build << ENDL;
   }
 };
 

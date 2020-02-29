@@ -139,6 +139,12 @@ public:
   /** Dump all exported symbols in module. */
   void dump(const String& path, const String& pattern)
   {
+    if (!path) {
+      ferr << "Error: No module provided." << ENDL;
+      setExitCode(1);
+      return;
+    }
+
     if (!FileSystem::fileExists(path)) {
       setExitCode(1);
       ferr << "Error: Failed to load module." << ENDL;
@@ -249,6 +255,12 @@ public:
   /** Call symbol in module. */
   void run(const String& path, const String& id, const Array<AnyValue>& arguments, bool time)
   {
+    if (!path) {
+      ferr << "Error: No module provided." << ENDL;
+      setExitCode(1);
+      return;
+    }
+    
     if (!FileSystem::fileExists(path)) {
       ferr << "Error: Failed to load module." << ENDL;
       setExitCode(1);

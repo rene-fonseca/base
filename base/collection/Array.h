@@ -902,6 +902,20 @@ public:
     }
   }
 
+  /** Returns the first n items. */
+  Array head(MemorySize n) const
+  {
+    const MemorySize m = getSize();
+    return slice(0, minimum(m, n));
+  }
+
+  /** Returns the last n items. */
+  Array tail(MemorySize n) const
+  {
+    const MemorySize m = getSize();
+    return slice((m >= n) ? (m - n) : 0, m);
+  }
+
   /** Appends value. */
   inline Array& operator<<(const TYPE& value)
   {

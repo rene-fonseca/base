@@ -19,6 +19,7 @@
 #include <base/AnyValue.h>
 #include <base/io/InputStream.h>
 #include <base/io/OutputStream.h>
+#include <base/mem/Span.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -260,12 +261,22 @@ public:
     @param fake If, true dummy imports will be registered automatically.
   */
   bool makeInstance(bool fake = false);
+  // TAG: add support for setting modules - Array<Pair<String, Module> >
 
   // TAG: there needs to be resource config - e.g. threads limits
   /**
     Makes a WASI instance.
   */
   bool makeWASIInstance(InputStream* _stdin, OutputStream* _stdout, OutputStream* _stderr);
+
+  /** Read access memory. */
+  ConstSpan<uint8> getMemory() const;
+  
+  /** Write access memory. */
+  Span<uint8> getMemory();
+
+  /** Get memory as string. */
+  String getString(MemorySize address, MemorySize size) const;
   
   /** Returns the number of imported symbols. */
   MemorySize getNumberOfImports() const;
@@ -379,6 +390,13 @@ public:
 };
 
 template<>
+class WebAssembly::MapType<unsigned char> {
+public:
+
+  static constexpr Type type = TYPE_i32;
+};
+
+template<>
 class WebAssembly::MapType<short> {
 public:
 
@@ -406,7 +424,6 @@ public:
   static constexpr Type type = TYPE_i32;
 };
 
-#if 0
 template<>
 class WebAssembly::MapType<long> {
 public:
@@ -420,7 +437,6 @@ public:
 
   static constexpr Type type = TYPE_i32;
 };
-#endif
 
 template<>
 class WebAssembly::MapType<int64> {

@@ -424,6 +424,7 @@ public:
   static constexpr Type type = TYPE_i32;
 };
 
+#if 0
 template<>
 class WebAssembly::MapType<long> {
 public:
@@ -437,6 +438,7 @@ public:
 
   static constexpr Type type = TYPE_i32;
 };
+#endif
 
 template<>
 class WebAssembly::MapType<int64> {

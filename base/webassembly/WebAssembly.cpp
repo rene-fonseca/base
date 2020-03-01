@@ -37,66 +37,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME_WASI)
-
-__wasi_errno_t __wasi_args_get(uint8_t * * argv, uint8_t * argv_buf)
-{
-  return 0;
-}
-
-__wasi_errno_t __wasi_args_sizes_get(__wasi_size_t *argc, __wasi_size_t *argv_buf_size)
-{
-  return 0;
-}
-
-void __wasi_proc_exit(__wasi_exitcode_t rval)
-{
-  return;
-}
-
-__wasi_errno_t __wasi_fd_prestat_get(__wasi_fd_t fd, __wasi_prestat_t *buf)
-{
-  return 0;
-}
-
-__wasi_errno_t __wasi_fd_close(__wasi_fd_t fd)
-{
-  return 0;
-}
-
-__wasi_errno_t __wasi_fd_seek(
-  __wasi_fd_t fd,
-  __wasi_filedelta_t offset,
-  __wasi_whence_t whence,
-  __wasi_filesize_t *newoffset)
-{
-  return 0;
-}
-
-__wasi_errno_t __wasi_fd_write(
-  __wasi_fd_t fd,
-  const __wasi_ciovec_t *iovs,
-  size_t iovs_len,
-  __wasi_size_t *nwritten)
-{
-  return 0;
-}
-
-__wasi_errno_t __wasi_fd_fdstat_get(
-  __wasi_fd_t fd,
-  __wasi_fdstat_t *stat)
-{
-  return 0;
-}
-
-__wasi_errno_t __wasi_fd_prestat_dir_name(
-  __wasi_fd_t fd,
-  uint8_t * path,
-  __wasi_size_t path_len)
-{
-  return 0;
-}
-#endif
+class WASIContext;
 
 #if 0
 // https://github.com/WebAssembly/WASI/blob/master/phases/snapshot/witx/typenames.witx
@@ -104,11 +45,6 @@ __wasi_errno_t __wasi_fd_prestat_dir_name(
 // https://github.com/CraneStation/wasi-libc/blob/master/libc-bottom-half/headers/public/wasi/api.h
 // TAG: add security manifest
 // TAG: lookup each API - from imports - add auto generate manifest - allow to run with disapproved security slots
-
-int __wasi_fd_close(__wasi_fd_t fd)
-{
-  return -1;
-}
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
@@ -879,7 +815,7 @@ public:
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
   /** Registers WASI function. */
   template<typename RESULT, typename... ARGS>
-  void registerWASIFunction(RESULT (*func)(ARGS...),
+  void registerWASIFunction(RESULT (WASIContext::*function)(ARGS...),
                             const wasm_extern_t** dest,
                             wasm_importtype_vec_t src,
                             wasm_func_callback_with_env_t hook,
@@ -1158,7 +1094,6 @@ public:
     if (!name) {
       name = String(format() << id);
     }
-    writeFunction(fout, name, arguments, argumentsSize);
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
     if (id < exports.size) {
@@ -1699,8 +1634,31 @@ inline void toWASM(wasm_val_t& dest, TYPE v)
   _throw WebAssembly::WebAssemblyException("Unsupported type.");
 }
 
+#if 0
+template<>
+inline void toWASM<void>(wasm_val_t& dest, void v)
+{
+  dest.kind = WASM_I32;
+  dest.of.i32 = 0;
+}
+#endif
+
 template<>
 inline void toWASM<bool>(wasm_val_t& dest, bool v)
+{
+  dest.kind = WASM_I32;
+  dest.of.i32 = v;
+}
+
+template<>
+inline void toWASM<short>(wasm_val_t& dest, short v)
+{
+  dest.kind = WASM_I32;
+  dest.of.i32 = v;
+}
+
+template<>
+inline void toWASM<unsigned short>(wasm_val_t& dest, unsigned short v)
 {
   dest.kind = WASM_I32;
   dest.of.i32 = v;
@@ -1845,186 +1803,274 @@ inline TYPE toNativePointer(const wasm_val_t& v, WebAssembly::Handle::FunctionCo
   return reinterpret_cast<TYPE>((void*)context->read(slot, sizeof(typename std::remove_pointer<TYPE>::type)));
 }
 
-// TAG: add module info
-#define IMPL_WASI(NAME) \
-own wasm_trap_t* __wasiimpl_##NAME(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept \
-{ \
-  Profiler::Task profile(_COM_AZURE_DEV__BASE__STRINGIFY(NAME), "WASM"); \
-  WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env); \
-  if (!context) { \
-    return context->getTrap("Missing context."); \
-  } \
-  context->invocations++; \
-  auto& stream = fout; \
-  try { \
-    if (context->module) { \
-      stream << context->module << "!"; \
-    } \
-    stream << context->name << getValuesAsString(args, context->argSize); \
-    stream << " -> " << getValuesAsString(results, context->resultSize); \
-    stream << " INVOKES=" << context->invocations << ENDL; \
-  } catch (Exception& e) { \
-    return context->getTrap(e); \
-  } catch (...) { \
-    return context->getTrap("Unknown exception throw."); \
-  } \
-  return nullptr; \
-}
-
-#if 0
-own wasm_trap_t* __wasiimpl_fd_prestat_get(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
-{
-  // TAG: forward to module class
-
-}
-#endif
-
-  /** Converts to native value. */
-  template<typename TYPE>
-  class NativeValue {
-  private:
+/** Converts to native value. */
+template<typename TYPE>
+class NativeValue {
+private:
   
-    const wasm_val_t& v;
-  public:
-  
-    inline NativeValue(const wasm_val_t& _v)
-      : v(_v)
-    {
-    }
-  
-    inline operator TYPE() const
-    {
-      return toNative<TYPE>(v);
-    }
-  };
-
-  /** Converts to native value. */
-  template<typename TYPE>
-  class NativeValue<TYPE*> {
-  private:
-  
-    const wasm_val_t& v;
-  public:
-  
-    inline NativeValue(const wasm_val_t& _v)
-      : v(_v)
-    {
-    }
-  
-    inline operator TYPE() const
-    {
-      return toNativePointer<TYPE>(v, nullptr);
-    }
-  };
-
-  template<typename RESULT, typename... ARGS>
-  RESULT forwardX(RESULT (*func)(ARGS...), const wasm_val_t args[])
-  {
-    // TAG: add support for string
-    // TAG: need to index in args
-    return func(NativeValue<ARGS>(args)...);
-  }
-
-class WASIContext {
+  const wasm_val_t& v;
+  WebAssembly::Handle::FunctionContext* context = nullptr;
 public:
   
-  WebAssembly::Handle::FunctionContext* context = nullptr;
-  
-  WASIContext()
+  inline NativeValue(const wasm_val_t& _v, WebAssembly::Handle::FunctionContext* _context)
+    : v(_v), context(_context)
   {
   }
   
-  __wasi_errno_t fd_prestat_get(int32 fd, __wasi_prestat_t* prestat) noexcept
+  inline operator TYPE() const
   {
-    prestat->tag = __WASI_PREOPENTYPE_DIR;
-    prestat->u.dir.pr_name_len = 2;
-    return __WASI_ERRNO_NOTDIR /*__WASI_ERRNO_SUCCESS*/;
+    return toNative<TYPE>(v);
   }
 };
 
-own wasm_trap_t* __wasiimpl_fd_prestat_get(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
+/** Converts to native value. */
+template<typename TYPE>
+class NativeValue<TYPE*> {
+private:
+  
+  const wasm_val_t& v;
+  WebAssembly::Handle::FunctionContext* context = nullptr;
+public:
+  
+  inline NativeValue(const wasm_val_t& _v, WebAssembly::Handle::FunctionContext* _context)
+    : v(_v), context(_context)
+  {
+  }
+  
+  inline operator TYPE*() const
+  {
+    return toNativePointer<TYPE*>(v, context);
+  }
+};
+
+class WASIContext {
+private:
+
+  WebAssembly::Handle::FunctionContext* context = nullptr;
+  const wasm_val_t* args = nullptr;
+  MemorySize i = 0;
+  
+  inline void store(uint8* dest, const uint8* destEnd, const uint8* src, const uint8* srcEnd)
+  {
+    if ((destEnd - dest) >= (srcEnd - src)) {
+      while (dest != destEnd) {
+        *dest++ = *src++;
+      }
+    } else {
+      while (src != srcEnd) {
+        *dest++ = *src++;
+      }
+    }
+  }
+public:
+  
+  typedef base::uint32 __wasi_size_t;
+
+  // TAG: toNative must handle both WASM32 and WASM64
+  
+  inline WASIContext(WebAssembly::Handle::FunctionContext* _context, const wasm_val_t* _args) noexcept
+    : context(_context), args(_args)
+  {
+  }
+  
+  __wasi_errno_t args_get(uint8_t** argv, uint8_t* argv_buf)
+  {
+    if (!argv || !argv_buf) {
+      return __WASI_ERRNO_INVAL;
+    }
+    return __WASI_ERRNO_SUCCESS;
+  }
+
+  __wasi_errno_t args_sizes_get(__wasi_size_t *argc, __wasi_size_t *argv_buf_size)
+  {
+    if (!argc || !argv_buf_size) {
+      return __WASI_ERRNO_INVAL;
+    }
+    *argc = 0;
+    return __WASI_ERRNO_SUCCESS;
+  }
+
+  __wasi_errno_t fd_prestat_get(__wasi_fd_t fd, __wasi_prestat_t* prestat) noexcept
+  {
+    prestat->tag = __WASI_PREOPENTYPE_DIR;
+    prestat->u.dir.pr_name_len = 1;
+    if (fd > 10) {
+      return __WASI_ERRNO_NOENT;
+    }
+    return __WASI_ERRNO_SUCCESS; // __WASI_ERRNO_NOENT; // __WASI_ERRNO_NOTDIR;
+  }
+  
+  __wasi_errno_t fd_prestat_dir_name(__wasi_fd_t fd, uint8_t * _path, __wasi_size_t path_len)
+  {
+    if (!_path) {
+      return __WASI_ERRNO_INVAL;
+    }
+    const char* path = ".";
+    store(_path, _path + path_len, (const uint8*)path, (const uint8*)path + 2);
+    return __WASI_ERRNO_SUCCESS;
+  }
+  
+  __wasi_errno_t fd_seek(__wasi_fd_t fd, __wasi_filedelta_t offset, __wasi_whence_t whence, __wasi_filesize_t *newoffset) noexcept
+  {
+    return __WASI_ERRNO_SUCCESS;
+  }
+  
+  __wasi_errno_t fd_write(__wasi_fd_t fd, const __wasi_ciovec_t *iovs, __wasi_size_t iovs_len, __wasi_size_t *nwritten) noexcept
+  {
+    return __WASI_ERRNO_SUCCESS;
+  }
+  
+  __wasi_errno_t fd_read(__wasi_fd_t fd, const __wasi_ciovec_t *iovs, __wasi_size_t iovs_len, __wasi_size_t *nread) noexcept
+  {
+    return __WASI_ERRNO_SUCCESS;
+  }
+  
+  __wasi_errno_t fd_close(__wasi_fd_t fd)
+  {
+    return __WASI_ERRNO_SUCCESS;
+  }
+  
+  __wasi_errno_t fd_fdstat_get(__wasi_fd_t fd, __wasi_fdstat_t *stat)
+  {
+    if (!stat) {
+      return __WASI_ERRNO_INVAL;
+    }
+    stat->fs_filetype = __WASI_FILETYPE_DIRECTORY;
+    stat->fs_flags = 0;
+    stat->fs_rights_base = 0xffffffff;
+    stat->fs_rights_inheriting = 0;
+    return __WASI_ERRNO_SUCCESS;
+  }
+  
+  void proc_exit(int exitcode)
+  {
+    // TAG: raise trap
+    ::exit(exitcode);
+  }
+  
+  /** Returns the argument. */
+  inline const wasm_val_t& getArg()
+  {
+    /*
+    if (!(i < xxx) {
+      _throw WebAsseblyException("Missing argument.");
+    }
+    */
+    return args[i++];
+  }
+
+  template<typename RESULT, typename... ARGS>
+  wasm_val_t forwardToNative(RESULT (WASIContext::*function)(ARGS...))
+  {
+    wasm_val_t result;
+    toWASM(result, (this->*function)(NativeValue<ARGS>(getArg(), context)...));
+    return result;
+  }
+  
+  template<typename... ARGS>
+  void forwardToNative(void (WASIContext::*function)(ARGS...))
+  {
+    (this->*function)(NativeValue<ARGS>(getArg(), context)...);
+  }
+};
+
+template<typename... ARGS>
+own wasm_trap_t* WASIImpl_forward(void (WASIContext::*function)(ARGS...),
+                                  void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
 {
-  Profiler::Task profile("fd_prestat_get()", "WASM");
   WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
   if (!context) {
     return context->getTrap("Missing context.");
   }
+  Profiler::Task profile((context->module + "!" + context->name).native(), "WASM");
   context->invocations++;
   try {
-    WASIContext wasi;
-    __wasi_errno_t status = wasi.fd_prestat_get(toNative<int32>(args[0]), toNativePointer<__wasi_prestat_t*>(args[1], context));
-    toWASM(results[0], status);
-  
-    auto& stream = fout;
-    if (context->module) {
-      stream << context->module << "!";
+    if (sizeof...(ARGS) != context->argSize) {
+      _throw WebAssembly::WebAssemblyException("Mismatching arguments.");
     }
-    stream << context->name << getValuesAsString(args, context->argSize);
-    // TAG: is types correct for input or do we need to set explicitly
-    stream << " -> " << getValuesAsString(results, context->resultSize);
-    stream << " INVOKES=" << context->invocations << ENDL;
+    if (0 != context->resultSize) {
+      _throw WebAssembly::WebAssemblyException("Mismatching result.");
+    }
+    WASIContext wasi(context, args);
+    wasi.forwardToNative(function);
   } catch (Exception& e) {
     auto trap = context->getTrap(e);
     if (context->handle->getUseLog()) {
-      context->handle->writeLog("fd_prestat_get", false, args, context->argSize, trap);
+      context->handle->writeLog(context->name, false, args, context->argSize, trap);
     }
     return trap;
   } catch (...) {
     auto trap = context->getTrap("Unknown exception throw.");
     if (context->handle->getUseLog()) {
-      context->handle->writeLog("fd_prestat_get", false, args, context->argSize, trap);
+      context->handle->writeLog(context->name, false, args, context->argSize, trap);
     }
     return trap;
   }
   if (context->handle->getUseLog()) {
-    context->handle->writeLog("fd_prestat_get", false, args, context->argSize, results, context->resultSize);
+    context->handle->writeLog(context->name, false, args, context->argSize, results, context->resultSize);
   }
   return nullptr;
 }
 
-IMPL_WASI(args_sizes_get)
-IMPL_WASI(args_get)
+template<typename RESULT, typename... ARGS>
+own wasm_trap_t* WASIImpl_forward(RESULT (WASIContext::*function)(ARGS...),
+                                  void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
+{
+  WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
+  if (!context) {
+    return context->getTrap("Missing context.");
+  }
+  Profiler::Task profile((context->module + "!" + context->name).native(), "WASM");
+  context->invocations++;
+  try {
+    if (sizeof...(ARGS) != context->argSize) {
+      _throw WebAssembly::WebAssemblyException("Mismatching arguments.");
+    }
+    if (1 != context->resultSize) {
+      _throw WebAssembly::WebAssemblyException("Mismatching result.");
+    }
+    WASIContext wasi(context, args);
+    results[0] = wasi.forwardToNative(function);
+  } catch (Exception& e) {
+    auto trap = context->getTrap(e);
+    if (context->handle->getUseLog()) {
+      context->handle->writeLog(context->name, false, args, context->argSize, trap);
+    }
+    return trap;
+  } catch (...) {
+    auto trap = context->getTrap("Unknown exception throw.");
+    if (context->handle->getUseLog()) {
+      context->handle->writeLog(context->name, false, args, context->argSize, trap);
+    }
+    return trap;
+  }
+  if (context->handle->getUseLog()) {
+    context->handle->writeLog(context->name, false, args, context->argSize, results, context->resultSize);
+  }
+  return nullptr;
+}
 
-  own wasm_trap_t* __wasiimpl_proc_exit(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
-  {
-    Profiler::Task profile("proc_exit()", "WASM");
-    exit(toNative<int>(args[0]));
-    return nullptr;
-    // return context->getTrap("Force stop."); // TAG: wasmtime - need trap that cannot be caught
-  }
-  
-  own wasm_trap_t* __wasiimpl_fd_seek(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
-  {
-    Profiler::Task profile("fd_seek()", "WASM");
-    return nullptr;
-  }
- 
-  own wasm_trap_t* __wasiimpl_fd_write(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
-  {
-    Profiler::Task profile("fd_write()", "WASM");
-    return nullptr;
-  }
+#define IMPL_WASI(NAME) \
+own wasm_trap_t* WASIImpl_##NAME(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept \
+{ \
+  return WASIImpl_forward(&WASIContext::NAME, env, args, results); \
+}
 
-  own wasm_trap_t* __wasiimpl_fd_close(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
-  {
-    Profiler::Task profile("fd_close()", "WASM");
-    return nullptr;
-  }
-
-  own wasm_trap_t* __wasiimpl_fd_fdstat_get(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
-  {
-    Profiler::Task profile("fd_fdstat_get()", "WASM");
-    return nullptr;
-  }
-
-  own wasm_trap_t* __wasiimpl_fd_prestat_dir_name(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept
-  {
-    Profiler::Task profile("fd_prestat_dir_name()", "WASM");
-    return nullptr;
-  }
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME_WASI)
+  IMPL_WASI(proc_exit)
+  IMPL_WASI(args_sizes_get)
+  IMPL_WASI(args_get)
+  IMPL_WASI(fd_prestat_dir_name)
+  IMPL_WASI(fd_prestat_get)
+  IMPL_WASI(fd_fdstat_get)
+  IMPL_WASI(fd_read)
+  IMPL_WASI(fd_write)
+  IMPL_WASI(fd_seek)
+  IMPL_WASI(fd_close)
+#endif
   
 #define REGISTER_WASI(NAME) \
-  registerWASIFunction(__wasi_##NAME, dest, src, __wasiimpl_##NAME, "wasi_unstable", _COM_AZURE_DEV__BASE__STRINGIFY(NAME));
+  registerWASIFunction(&WASIContext::NAME, dest, src, WASIImpl_##NAME, "wasi_unstable", _COM_AZURE_DEV__BASE__STRINGIFY(NAME));
 
 void WebAssembly::Handle::registerWASIImports(const wasm_extern_t** dest, wasm_importtype_vec_t src)
 {
@@ -2032,12 +2078,13 @@ void WebAssembly::Handle::registerWASIImports(const wasm_extern_t** dest, wasm_i
   REGISTER_WASI(proc_exit);
   REGISTER_WASI(args_sizes_get);
   REGISTER_WASI(args_get);
-  REGISTER_WASI(fd_prestat_get);
   REGISTER_WASI(fd_prestat_dir_name);
+  REGISTER_WASI(fd_prestat_get);
   REGISTER_WASI(fd_fdstat_get);
-  REGISTER_WASI(fd_close);
+  REGISTER_WASI(fd_read);
   REGISTER_WASI(fd_write);
   REGISTER_WASI(fd_seek);
+  REGISTER_WASI(fd_close);
 #endif
 }
 
@@ -2049,32 +2096,15 @@ own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results
     return context->getTrap("Missing context.");
   }
   context->invocations++;
-  // TAG: colorize
-  auto& stream = fout;
   try {
-    if (context->module) {
-      stream << context->module << "!";
-    }
-    stream << context->name << getValuesAsString(args, context->argSize);
-    // TAG: is types correct for input or do we need to set explicitly
-    stream << " -> " << getValuesAsString(results, context->resultSize);
-    stream << " INVOKES=" << context->invocations << ENDL;
-  return context->getTrap("Force stop.");
-
-    MemorySize slot = 0;
-    if (slot) {
-      uint8* data = context->write(slot, 64);
-      MemoryDump dump(data, 64); // TAG: add slot as offset
-      // dump.setGlobalOffset((slot) & ~0xf);
-      // TAG: add ANSI support - highlight span support
-      fout << dump << ENDL;
-    }
-  
     for (MemorySize i = 0; i < context->resultSize; ++i) {
       wasm_val_t& v = results[i];
-      BASSERT(v.kind == WASM_I32); // TAG: temp test
       v.kind = WASM_I32;
       v.of.i32 = 0;
+    }
+
+    if (context->handle->getUseLog()) {
+      context->handle->writeLog(context->name, false, args, context->argSize, results, context->resultSize);
     }
   } catch (Exception& e) {
     return context->getTrap(e);

@@ -1958,20 +1958,6 @@ public:
     */
     return args[i++];
   }
-
-  template<typename RESULT, typename... ARGS>
-  wasm_val_t forwardToNative(RESULT (WASIContext::*function)(ARGS...))
-  {
-    wasm_val_t result;
-    toWASM(result, (this->*function)(NativeValue<ARGS>(getArg(), context)...));
-    return result;
-  }
-  
-  template<typename... ARGS>
-  void forwardToNative(void (WASIContext::*function)(ARGS...))
-  {
-    (this->*function)(NativeValue<ARGS>(getArg(), context)...);
-  }
 };
 
 template<typename... ARGS>
@@ -1985,14 +1971,14 @@ own wasm_trap_t* WASIImpl_forward(void (WASIContext::*function)(ARGS...),
   Profiler::Task profile((context->module + "!" + context->name).native(), "WASM");
   context->invocations++;
   try {
-    if (sizeof...(ARGS) != context->argSize) {
+    if (sizeof...(ARGS) != context->argSize) { // TAG: allow support for string literal
       _throw WebAssembly::WebAssemblyException("Mismatching arguments.");
     }
     if (0 != context->resultSize) {
       _throw WebAssembly::WebAssemblyException("Mismatching result.");
     }
     WASIContext wasi(context, args);
-    wasi.forwardToNative(function);
+    (wasi.*function)(NativeValue<ARGS>(wasi.getArg(), context)...);
   } catch (Exception& e) {
     auto trap = context->getTrap(e);
     if (context->handle->getUseLog()) {
@@ -2023,14 +2009,14 @@ own wasm_trap_t* WASIImpl_forward(RESULT (WASIContext::*function)(ARGS...),
   Profiler::Task profile((context->module + "!" + context->name).native(), "WASM");
   context->invocations++;
   try {
-    if (sizeof...(ARGS) != context->argSize) {
+    if (sizeof...(ARGS) != context->argSize) { // TAG: allow support for string literal
       _throw WebAssembly::WebAssemblyException("Mismatching arguments.");
     }
     if (1 != context->resultSize) {
       _throw WebAssembly::WebAssemblyException("Mismatching result.");
     }
     WASIContext wasi(context, args);
-    results[0] = wasi.forwardToNative(function);
+    toWASM(results[0], (wasi.*function)(NativeValue<ARGS>(wasi.getArg(), context)...));
   } catch (Exception& e) {
     auto trap = context->getTrap(e);
     if (context->handle->getUseLog()) {
@@ -2068,7 +2054,7 @@ own wasm_trap_t* WASIImpl_##NAME(void* env, const wasm_val_t args[], wasm_val_t 
   IMPL_WASI(fd_seek)
   IMPL_WASI(fd_close)
 #endif
-  
+
 #define REGISTER_WASI(NAME) \
   registerWASIFunction(&WASIContext::NAME, dest, src, WASIImpl_##NAME, "wasi_unstable", _COM_AZURE_DEV__BASE__STRINGIFY(NAME));
 

@@ -1852,7 +1852,7 @@ private:
   
   inline void store(uint8* dest, const uint8* destEnd, const uint8* src, const uint8* srcEnd)
   {
-    if ((destEnd - dest) >= (srcEnd - src)) {
+    if ((destEnd - dest) <= (srcEnd - src)) {
       while (dest != destEnd) {
         *dest++ = *src++;
       }

@@ -387,14 +387,14 @@ public:
         << id << getValuesAsString(args, argSize);
     writeLog(sos);
   }
-#endif
-  
+
   static wasm_engine_t* getGlobalEngine()
   {
     static Engine* _engine = new Engine();
     return _engine->engine;
   }
-  
+#endif
+
   Handle()
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)

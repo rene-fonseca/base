@@ -261,6 +261,9 @@ public:
   /** Sets the initial environment. */
   void setEnvironment(const Map<String, String>& environment);
 
+  /** Sets the initial environment. */
+  void setMountedFolders(const Map<String, String>& folders);
+
   /** Enables profiling. */
   void setUseProfiler(bool useProfiler);
 

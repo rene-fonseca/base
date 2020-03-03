@@ -291,6 +291,9 @@ private:
   Array<String> exportNames;
   MemorySize maximumMemoryUsage = 0;
   bool useLog = false;
+  Array<String> arguments;
+  Map<String, String> environment;
+  Map<String, String> folders;
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
   /** Returns string for given name. */
@@ -766,6 +769,21 @@ public:
   }
 #endif
   
+  void setArguments(const Array<String>& arguments)
+  {
+    this->arguments = arguments;
+  }
+
+  void setEnvironment(const Map<String, String>& environment)
+  {
+    this->environment = environment;
+  }
+
+  void setMountedFolders(const Map<String, String>& folders)
+  {
+    this->folders = folders;
+  }
+
   void setUseProfiler(bool useProfiler)
   {
   }
@@ -782,10 +800,6 @@ public:
     PrimitiveArray<const wasm_extern_t*> imports(_imports.size);
     for (MemorySize i = 0; i < imports.size(); ++i) {
       imports[i] = nullptr;
-    }
-    
-    if (wasi) {
-      registerWASIImports(imports.begin(), _imports);
     }
 
     if (fake) {
@@ -816,18 +830,90 @@ public:
     }
 #endif
 
-    // TAG: add support for WASI instance - waiting for wasi.h support
-    // TAG: add support for wasm text from memory
-    own wasm_trap_t* trap = nullptr;
-    instance = wasm_instance_new(store, module, imports, &trap);
-    if (trap) {
-      onTrap(trap);
+    
+    if (wasi) {
+      // registerWASIImports(imports.begin(), _imports);
+      
+      own wasi_config_t* config = wasi_config_new();
+      if (!config) {
+        _throw WebAssemblyException("Failed to initialize WASI config.");
+      }
+
+      Array<const char*> argv;
+      for (auto argument : arguments) {
+        argv.append(argument.native());
+      }
+      wasi_config_set_argv(config, arguments.getSize(), arguments ? &argv[0] : nullptr);
+
+      Array<const char*> enames;
+      Array<const char*> evalues;
+      for (auto nv : environment) {
+        enames.append(nv.getKey().native());
+        evalues.append(nv.getValue().native());
+      }
+      wasi_config_set_env(
+        config,
+        environment.getSize(),
+        enames ? &enames[0] : nullptr,
+        evalues ? &evalues[0] : nullptr
+      );
+      
+      // TAG: wasi - need to bind to Input/Output streams
+      wasi_config_inherit_stdin(config);
+      wasi_config_inherit_stdout(config);
+      wasi_config_inherit_stderr(config);
+
+      for (auto nv : folders) {
+        if (!wasi_config_preopen_dir(config, nv.getKey().native(), nv.getValue().native())) {
+          _throw WebAssemblyException("Failed to add folder.");
+        }
+      }
+      
+      own wasm_trap_t* trap = nullptr;
+      own wasi_instance_t* instance = wasi_instance_new(
+        store,
+        config,
+        &trap
+      );
+      wasi_config_delete(config);
+      if (trap) {
+        onTrap(trap);
+      }
+      
+      // register WASI imports
+      const wasm_extern_t** dest = imports.begin();
+      for (MemorySize i = 0; i < _imports.size; ++i) {
+        const wasm_importtype_t* import = _imports.data[i];
+        if (import) {
+          const wasm_name_t* _moduleName = wasm_importtype_module(import);
+          const String moduleName = _moduleName ? toString(*_moduleName) : String();
+          const wasm_name_t* _name = wasm_importtype_name(import);
+          const String name = _name ? toString(*_name) : String();
+          fout << (moduleName + "!" << name) << ":" << ENDL;
+          const wasm_extern_t* e = wasi_instance_bind_import(
+            instance,
+            import
+          );
+          if (!e) {
+            continue;
+          }
+          fout << "  " << e << ENDL;
+          *dest++ = e;
+        }
+      }
+
+    } else {
+      own wasm_trap_t* trap = nullptr;
+      instance = wasm_instance_new(store, module, imports, &trap);
+      if (trap) {
+        onTrap(trap);
+      }
     }
+
     // wasm_func_delete(hello_func);
     if (!instance) {
       return false;
     }
-    
     wasm_instance_exports(instance, &exports);
     
     // get memory
@@ -1521,12 +1607,20 @@ bool WebAssembly::loadAny(const String& bytes)
 
 void WebAssembly::setArguments(const Array<String>& arguments)
 {
-  _throw WebAssemblyException("Arguments not supported.");
+  auto handle = this->handle.cast<WebAssembly::Handle>();
+  return handle->setArguments(arguments);
 }
 
 void WebAssembly::setEnvironment(const Map<String, String>& environment)
 {
-  _throw WebAssemblyException("Environment not supported.");
+  auto handle = this->handle.cast<WebAssembly::Handle>();
+  return handle->setEnvironment(environment);
+}
+
+void WebAssembly::setMountedFolders(const Map<String, String>& folders)
+{
+  auto handle = this->handle.cast<WebAssembly::Handle>();
+  return handle->setMountedFolders(folders);
 }
 
 void WebAssembly::setUseProfiler(bool useProfiler)

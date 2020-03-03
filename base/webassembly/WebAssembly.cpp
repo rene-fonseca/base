@@ -1481,6 +1481,16 @@ bool WebAssembly::load(const uint8* wasm, MemorySize size)
   return handle->load(wasm, size);
 }
 
+bool WebAssembly::loadAny(const String& bytes)
+{
+  try {
+    return load(convertWATToWASM(bytes));
+  } catch (...) {
+    return load(bytes);
+  }
+  return false;
+}
+
 void WebAssembly::setArguments(const Array<String>& arguments)
 {
   _throw WebAssemblyException("Arguments not supported.");

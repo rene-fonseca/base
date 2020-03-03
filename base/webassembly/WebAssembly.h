@@ -226,6 +226,9 @@ public:
     return load(path.getBytes(), path.getLength());
   }
   
+  /** Loads the given WAT or WASM module in buffer. */
+  bool loadAny(const String& bytes);
+  
   enum WASMABI {
     WASM32,
     WASM64

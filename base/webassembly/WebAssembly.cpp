@@ -284,6 +284,7 @@ private:
   wasm_engine_t* engine = nullptr;
   wasm_store_t* store = nullptr;
   own wasm_instance_t* instance = nullptr;
+  own wasi_instance_t* wasiInstance = nullptr;
   own wasm_module_t* module = nullptr;
   own wasm_extern_vec_t exports = {0};
   wasm_memory_t* memory = nullptr;
@@ -869,12 +870,12 @@ public:
       }
       
       own wasm_trap_t* trap = nullptr;
-      own wasi_instance_t* instance = wasi_instance_new(
+      wasiInstance = wasi_instance_new(
         store,
         config,
         &trap
       );
-      wasi_config_delete(config);
+      // do NOT delete wasi_config_delete(config);
       if (trap) {
         onTrap(trap);
       }
@@ -888,15 +889,16 @@ public:
           const String moduleName = _moduleName ? toString(*_moduleName) : String();
           const wasm_name_t* _name = wasm_importtype_name(import);
           const String name = _name ? toString(*_name) : String();
-          fout << (moduleName + "!" << name) << ":" << ENDL;
+          // fout << (moduleName + "!" + name) << ":" << ENDL;
           const wasm_extern_t* e = wasi_instance_bind_import(
-            instance,
+            wasiInstance,
             import
           );
+          // TAG: wasmtime: always getting e==nullptr
           if (!e) {
             continue;
           }
-          fout << "  " << e << ENDL;
+          // fout << "  " << e << ENDL;
           *dest++ = e;
         }
       }
@@ -910,10 +912,13 @@ public:
     }
 
     // wasm_func_delete(hello_func);
-    if (!instance) {
+    if (!wasiInstance && !instance) {
       return false;
     }
-    wasm_instance_exports(instance, &exports);
+    // TAG: need a away to get instance from wasiInstance
+    if (instance) {
+      wasm_instance_exports(instance, &exports);
+    }
     
     // get memory
     for (size_t i = 0; i < exports.size; ++i) {

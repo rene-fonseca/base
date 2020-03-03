@@ -62,16 +62,16 @@ String getValuesAsString(const wasm_val_t args[], MemorySize size)
     }
     switch (arg.kind) {
     case WASM_I32:
-      sos << "i32: " << arg.of.i32 << " = " << HEX << arg.of.i32;
+      sos << "i32: " << arg.of.i32 << "=" << HEX << arg.of.i32;
       break;
     case WASM_I64:
-      sos << "i64: " << arg.of.i64 << " = " << HEX << arg.of.i64;
+      sos << "i64: " << arg.of.i64 << "=" << HEX << arg.of.i64;
       break;
     case WASM_F32:
-      sos << "f32: " << arg.of.f32 << " = " << FHEX << arg.of.f32;
+      sos << "f32: " << arg.of.f32 << "=" << FHEX << arg.of.f32;
       break;
     case WASM_F64:
-      sos << "f64: " << arg.of.f64 << " = " << FHEX << arg.of.f64;
+      sos << "f64: " << arg.of.f64 << "=" << FHEX << arg.of.f64;
       break;
     case WASM_ANYREF:
       sos << "<REF>"; // TAG: what can we show
@@ -1013,7 +1013,11 @@ public:
     s.externType = EXTERN_FUNCTION;
     if (f) {
       s.func = (void*)f;
-      s.functionType = getFunctionType(wasm_func_type(f));
+      own wasm_functype_t* functype = wasm_func_type(f);
+      if (functype) {
+        s.functionType = getFunctionType(functype);
+        wasm_functype_delete(functype);
+      }
     }
     return s;
   }
@@ -1239,8 +1243,16 @@ public:
       const size_t resultSize = wasm_func_result_arity(func);
       PrimitiveStackArray<wasm_val_t> args(size);
       PrimitiveStackArray<wasm_val_t> results(resultSize);
-      convert(args, args + size, arguments, argumentsSize);
-      // own wasm_functype_t* type = wasm_func_type(func);
+      if (size > 0) {
+        own wasm_functype_t* functype = wasm_func_type(func);
+        // const wasm_valtype_vec_t* rs = wasm_functype_results(functype);
+        const wasm_valtype_vec_t* ps = wasm_functype_params(functype);
+        if (INLINE_ASSERT(ps && (ps->size == size))) {
+          convert(args, args + size, *ps, arguments, argumentsSize);
+        }
+        wasm_functype_delete(functype);
+      }
+
       if (own wasm_trap_t* trap = wasm_func_call(func, args, results)) {
         if (getUseLog()) {
           writeLog(name, true, args, size, trap);
@@ -1269,6 +1281,61 @@ public:
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
   wasm_val_t* convert(wasm_val_t* dest, const AnyValue& value)
   {
+    // TAG: add support for string
+    // we do not know if signed or unsigned
+    switch (dest->kind) {
+    case WASM_I32:
+      if (!value.isInteger()) {
+        _throw WebAssemblyException("Expected i32.");
+      }
+      if (value.isUnsigned()) {
+        const uint64 v = value.getUnsignedLongLongInteger();
+        if (v > static_cast<uint64>(PrimitiveTraits<uint32>::MAXIMUM)) {
+          _throw WebAssemblyException("Expected i32.");
+        }
+        dest->of.i32 = static_cast<uint32>(v);
+      } else { // signed
+        const int64 v = value.getLongLongInteger();
+        if (v > static_cast<int64>(PrimitiveTraits<int32>::MAXIMUM)) {
+          _throw WebAssemblyException("Expected i32.");
+        } else if (v < static_cast<int64>(PrimitiveTraits<int32>::MINIMUM)) {
+          _throw WebAssemblyException("Expected i32.");
+        }
+        dest->of.i32 = static_cast<int32>(v);
+      }
+      ++dest;
+      break;
+    case WASM_I64:
+      if (!value.isInteger()) {
+        _throw WebAssemblyException("Expected i64.");
+      }
+      if (value.isUnsigned()) {
+        dest->of.i64 = value.getUnsignedLongLongInteger();
+      } else { // signed
+        dest->of.i64 = value.getLongLongInteger();
+      }
+      ++dest;
+      break;
+    case WASM_F32:
+      if (!value.isFloatingPoint()) {
+        _throw WebAssemblyException("Expected f32.");
+      }
+      dest->of.f32 = value.getFloat();
+      ++dest;
+      break;
+    case WASM_F64:
+      if (!value.isFloatingPoint()) {
+        _throw WebAssemblyException("Expected f64.");
+      }
+      dest->of.f64 = value.getDouble();
+      ++dest;
+      break;
+    default:
+      _throw WebAssemblyException("Unsupported type.");
+    }
+    return dest;
+
+#if 0
     switch (value.getRepresentation()) {
     case AnyValue::BOOLEAN:
       dest->kind = WASM_I32;
@@ -1327,15 +1394,19 @@ public:
       _throw NotSupported("Unsupported argument.");
     }
     return dest;
+#endif
   }
   
-   void convert(wasm_val_t* dest, const wasm_val_t* end, const AnyValue* arguments, MemorySize argumentsSize)
+  void convert(wasm_val_t* dest, const wasm_val_t* end,
+               const wasm_valtype_vec_t& types,
+               const AnyValue* arguments, MemorySize argumentsSize)
   {
     for (MemorySize i = 0; i < argumentsSize; ++i) {
       if (dest == end) {
         _throw WebAssemblyException("Arguments mismatch.");
       }
       const AnyValue& a = arguments[i];
+      dest->kind = wasm_valtype_kind(types.data[i]);
       dest = convert(dest, a);
     }
     if (dest != end) {

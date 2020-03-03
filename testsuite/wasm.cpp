@@ -45,6 +45,8 @@ private:
   String id;
   String pattern = "*";
   Array<AnyValue> callArguments;
+  Map<String, String> environment;
+  Map<String, String> folders;
   bool time = false;
   bool getJSON = false;
   bool wasi = false;
@@ -96,6 +98,8 @@ public:
          << indent(2) << "--version   Show the version" << EOL
          << indent(2) << "--run       Run WASM module" << EOL
          << indent(2) << "--convert   Convert WAT to WASM" << EOL
+         << indent(2) << "--env       Add environment variable" << EOL
+         << indent(2) << "--mount     Mount folder at path" << EOL
          << ENDL;
   }
 
@@ -379,6 +383,9 @@ public:
     if (maximumMemory > 0) {
       wasm.setMaximumMemoryUsage(maximumMemory * 1024 * 1024); // TAG: handle overflow
     }
+    // TAG: add support for arguments wasm.setArguments(arguments);
+    wasm.setEnvironment(environment);
+    wasm.setMountedFolders(folders);
     
     // TAG: set stack limit
     
@@ -422,7 +429,18 @@ public:
       fout << "Execution time: " << timer << ENDL;
     }
   }
-  
+
+  /** Returns name and value for string with = separator. */
+  static StringPair getNameValue(const String& text, char separator = '=')
+  {
+    auto index = text.indexOf(separator);
+    if (index >= 0) {
+      return StringPair(text.substring(index), text.substring(index + 1));
+    } else {
+      return StringPair(text);
+    }
+  }
+
   bool parseArguments()
   {
     bool gotFunction = false;
@@ -450,6 +468,22 @@ public:
       } else if (argument == "--json") {
         getJSON = true;
         command = COMMAND_DUMP;
+      } else if (argument == "--env") {
+        if (!enu.hasNext()) {
+          ferr << "Error: " << "Expecting environment variable NAME=VALUE." << ENDL;
+          return false;
+        }
+        String nv = enu.next();
+        StringPair p = getNameValue(nv);
+        environment.add(p.getFirst(), p.getSecond());
+      } else if (argument == "--mount") {
+        if (!enu.hasNext()) {
+          ferr << "Error: " << "Expecting FOLDER=MOUNT_POINT." << ENDL;
+          return false;
+        }
+        String nv = enu.next();
+        StringPair p = getNameValue(nv);
+        folders.add(p.getFirst(), p.getSecond());
       } else if (argument == "--version") {
         command = COMMAND_VERSION;
       } else if (argument == "--time") {

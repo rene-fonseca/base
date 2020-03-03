@@ -1729,9 +1729,8 @@ AnyValue WebAssembly::call(const String& id, const AnyValue* arguments, MemorySi
 AnyValue WebAssembly::call(const String& id, const Array<AnyValue>& arguments)
 {
   Profiler::Task profile("WebAssembly::call()", "WASM");
-  // TAG: add args
   auto handle = this->handle.cast<WebAssembly::Handle>();
-  // TAG: add Array::getFirst()
+  // TAG: add Array::getFirstReference()
   return handle->call(id, arguments ? &arguments[0] : nullptr, arguments.getSize());
 }
 

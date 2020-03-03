@@ -159,7 +159,7 @@ public:
     }
     if (!FileSystem::fileExists(src)) {
       setExitCode(1);
-      ferr << "Error: Failed to load module '%1'." % Subst(src) << ENDL;
+      ferr << "Error: Module '%1' does not exist." % Subst(src) << ENDL;
       return;
     }
     String wat;
@@ -197,7 +197,7 @@ public:
     }
     if (!FileSystem::fileExists(path)) {
       setExitCode(1);
-      ferr << "Error: Failed to load module '%1'." % Subst(path) << ENDL;
+      ferr << "Error: Module '%1' does not exist." % Subst(path) << ENDL;
       return;
     }
     
@@ -238,8 +238,18 @@ public:
       ferr << "Error: Failed to load module '%1'." % Subst(path) << ENDL;
       return;
     }
+
+    String bytes;
+    try {
+      bytes = File::readFile(path, File::ENCODING_RAW);
+    } catch (...) {
+      setExitCode(1);
+      ferr << "Error: Failed to load module '%1'." % Subst(path) << ENDL;
+      return;
+    }
+
     WebAssembly wasm;
-    if (!wasm.loadFile(path)) {
+    if (!wasm.loadAny(bytes)) {
       setExitCode(1);
       ferr << "Error: Failed to load and compile module." << ENDL;
       return;
@@ -350,10 +360,20 @@ public:
     }
     
     if (!FileSystem::fileExists(path)) {
-      ferr << "Error: Failed to load module." << ENDL;
+      ferr << "Error: Module '%1' does not exist." % Subst(path) << ENDL;
       setExitCode(1);
       return;
     }
+
+    String bytes;
+    try {
+      bytes = File::readFile(path, File::ENCODING_RAW);
+    } catch (...) {
+      setExitCode(1);
+      ferr << "Error: Failed to load module '%1'." % Subst(path) << ENDL;
+      return;
+    }
+
     WebAssembly wasm;
     wasm.setUseLog(useLog);
     if (maximumMemory > 0) {
@@ -361,9 +381,9 @@ public:
     }
     
     // TAG: set stack limit
-
+    
     Timer timer;
-    if (!wasm.loadFile(path)) {
+    if (!wasm.loadAny(bytes)) {
       ferr << "Error: Failed to load and compile module." << ENDL;
       setExitCode(1);
       return;

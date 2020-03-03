@@ -33,12 +33,14 @@ private:
     COMMAND_VERSION,
     COMMAND_HELP,
     COMMAND_DUMP,
-    COMMAND_RUN
+    COMMAND_RUN,
+    COMMAND_CONVERT
   };
   
   bool colorize = false;
   Command command = COMMAND_RUN;
   String path;
+  String destPath;
   String id;
   String pattern = "*";
   Array<AnyValue> callArguments;
@@ -81,7 +83,7 @@ public:
   void help()
   {
     version();
-    fout << "Usage: " << getFormalName() << " [OPTIONS] PATH [ID] [ARGS]" << EOL
+    fout << "Usage: " << getFormalName() << " [OPTIONS] PATH [DEST] [ID] [ARGS]" << EOL
          << EOL
          << "Options:" << EOL
          << indent(2) << "--help      This message" << EOL
@@ -92,6 +94,7 @@ public:
          << indent(2) << "--log       Enabled log" << EOL
          << indent(2) << "--version   Show the version" << EOL
          << indent(2) << "--run       Run WASM module" << EOL
+         << indent(2) << "--convert   Convert WAT to WASM" << EOL
          << ENDL;
   }
 
@@ -138,6 +141,49 @@ public:
       result->append(i);
     }
     return result;
+  }
+  
+  /** Convert WAT to WASM. */
+  void convertWAT2WASM(const String& src, const String& dest)
+  {
+    if (!src) {
+      ferr << "Error: No WAT module provided." << ENDL;
+      setExitCode(1);
+      return;
+    }
+    if (!dest) {
+      ferr << "Error: No WASM path provided." << ENDL;
+      setExitCode(1);
+      return;
+    }
+    if (!FileSystem::fileExists(src)) {
+      setExitCode(1);
+      ferr << "Error: Failed to load WAT module." << ENDL;
+      return;
+    }
+    String wat;
+    try {
+      wat = File::readFile(src);
+    } catch (...) {
+      setExitCode(1);
+      ferr << "Error: Failed read WAT." << ENDL;
+      return;
+    }
+    String wasm;
+    try {
+      wasm = WebAssembly::convertWATToWASM(wat);
+    } catch (...) {
+      setExitCode(1);
+      ferr << "Error: Failed to convert WAT to WASM." << ENDL;
+      return;
+    }
+    try {
+      File::createFile(dest, wasm);
+    } catch (...) {
+      setExitCode(1);
+      ferr << "Error: Failed write WASM." << ENDL;
+      return;
+    }
   }
   
   /** Dump all exported symbols in module. */
@@ -339,6 +385,8 @@ public:
         command = COMMAND_DUMP;
       } else if (argument == "--run") {
         command = COMMAND_RUN;
+      } else if (argument == "--convert") {
+        command = COMMAND_CONVERT;
       } else if (argument == "--json") {
         getJSON = true;
         command = COMMAND_DUMP;
@@ -362,6 +410,8 @@ public:
       } else {
         if (!path) {
           path = argument;
+        } else if ((command == COMMAND_CONVERT) && !destPath) {
+          destPath = argument;
         } else if (!gotFunction) {
           gotFunction = true;
           id = argument;
@@ -409,6 +459,9 @@ public:
       break;
     case COMMAND_DUMP:
       dump(path, pattern);
+      break;
+    case COMMAND_CONVERT:
+      convertWAT2WASM(path, destPath);
       break;
     default:
       if (!id) {

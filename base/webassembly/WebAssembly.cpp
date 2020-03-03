@@ -842,7 +842,7 @@ public:
       for (auto argument : arguments) {
         argv.append(argument.native());
       }
-      wasi_config_set_argv(config, arguments.getSize(), arguments ? &argv[0] : nullptr);
+      wasi_config_set_argv(config, arguments.getSize(), argv.getFirstReference());
 
       Array<const char*> enames;
       Array<const char*> evalues;
@@ -853,8 +853,8 @@ public:
       wasi_config_set_env(
         config,
         environment.getSize(),
-        enames ? &enames[0] : nullptr,
-        evalues ? &evalues[0] : nullptr
+        enames.getFirstReference(),
+        evalues.getFirstReference()
       );
       
       // TAG: wasi - need to bind to Input/Output streams
@@ -1730,15 +1730,14 @@ AnyValue WebAssembly::call(const String& id, const Array<AnyValue>& arguments)
 {
   Profiler::Task profile("WebAssembly::call()", "WASM");
   auto handle = this->handle.cast<WebAssembly::Handle>();
-  // TAG: add Array::getFirstReference()
-  return handle->call(id, arguments ? &arguments[0] : nullptr, arguments.getSize());
+  return handle->call(id, arguments.getFirstReference(), arguments.getSize());
 }
 
 AnyValue WebAssembly::call(unsigned int id, const Array<AnyValue>& arguments)
 {
   Profiler::Task profile("WebAssembly::call()", "WASM");
   auto handle = this->handle.cast<WebAssembly::Handle>();
-  return handle->call(id, arguments ? &arguments[0] : nullptr, arguments.getSize());
+  return handle->call(id, arguments.getFirstReference(), arguments.getSize());
 }
 
 WebAssembly::~WebAssembly()

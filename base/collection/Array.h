@@ -338,6 +338,18 @@ public:
     return getSize() == 0;
   }
 
+  /** Returns the pointer to the first item or nullptr if empty. */
+  inline TYPE* getFirstReference() noexcept
+  {
+    return (getSize() > 0) ? &getAt(0) : nullptr;
+  }
+
+  /** Returns the pointer to the first item or nullptr if empty. */
+  inline const TYPE* getFirstReference() const noexcept
+  {
+    return (getSize() > 0) ? &getAt(0) : nullptr;
+  }
+
   /** Returns the first element. */
   inline TYPE& getFirst()
   {

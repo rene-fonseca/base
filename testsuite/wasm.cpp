@@ -18,6 +18,7 @@
 #include <base/string/Parser.h>
 #include <base/LongInteger.h>
 #include <base/UnsignedInteger.h>
+#include <base/UnsignedLongInteger.h>
 #include <base/objectmodel/JSON.h>
 #include <base/Timer.h>
 
@@ -515,6 +516,13 @@ public:
           id = argument;
           pattern = argument;
         } else {
+          try {
+            uint64 value = UnsignedLongInteger::parse(argument);
+            callArguments.append(value);
+            continue;
+          } catch (...) {
+          }
+          
           Reference<ObjectModel::Value> v;
           try {
             v = JSON::parse(argument);

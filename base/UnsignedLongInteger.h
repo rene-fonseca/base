@@ -64,11 +64,18 @@ public:
 
     @param src The string representation.
     @param end The string representation.
-    @param accept Specifies the integer bases to accept. Default is ANY.
+    @param accept Specifies the integer bases to accept. Default is FLAG_DEFAULT.
   */
   static unsigned long long parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT);
 
-  static unsigned long long parse(const String& string, unsigned int flags = FLAG_DEFAULT) {
+  /**
+    Returns the value of the integer string representation.
+
+    @param string The string.
+    @param accept Specifies the integer bases to accept. Default is FLAG_DEFAULT.
+  */
+  static inline unsigned long long parse(const String& string, unsigned int flags = FLAG_DEFAULT)
+  {
     return parse(string.native(), string.native() + string.getLength(), flags);
   }
 

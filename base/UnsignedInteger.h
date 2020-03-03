@@ -77,7 +77,7 @@ public:
 
     @param src The string representation.
     @param end The string representation.
-    @param accept Specifies the integer bases to accept. Default is ANY.
+    @param accept Specifies the integer bases to accept. Default is FLAG_DEFAULT.
   */
   static Validified<unsigned int> parseNoThrow(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT) noexcept;
 

@@ -420,11 +420,15 @@ public:
     timer.start();
     try {
       auto result = wasm.call(id, arguments);
-      if (result.getReference() != AnyValue::VOID) {
+      if (result.getRepresentation() != AnyValue::VOID) {
         fout << result << ENDL;
       }
-    } catch (...) {
-      ferr << Format::subst("Error: Failed to call function '%1'.", id) << ENDL;
+    } catch (Exception& e) {
+      if (const char* message = e.getMessage()) {
+        ferr << Format::subst("Error: Failed to call function '%1' with error '%2'.", id, e.getMessage()) << ENDL;
+      } else {
+        ferr << Format::subst("Error: Failed to call function '%1'.", id) << ENDL;
+      }
       setExitCode(1);
     }
     if (time) {

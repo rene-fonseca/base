@@ -1107,6 +1107,7 @@ public:
       if (!e) {
         continue;
       }
+      result[i].index = i;
       wasm_externkind_t kind = wasm_extern_kind(e);
       switch (kind) {
       case WASM_EXTERN_FUNC:

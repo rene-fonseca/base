@@ -28,7 +28,10 @@
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
 #  include <base/platforms/backend/WASI.cpp>
 #  define _COM_AZURE_DEV__BASE__USE_WASMTIME_WASI
-#  include <wasm.h>
+#  define _COM_AZURE_DEV__BASE__USE_WASMTIME_VERSION "0.12" // wasmtime: get version from header
+#  include <wasmtime/wasm.h>
+#  include <wasmtime/wasi.h>
+#  include <wasmtime/wasmtime.h>
 #  define own
 #endif
 
@@ -383,12 +386,16 @@ public:
   }
 #endif
   
+  static wasm_engine_t* getGlobalEngine()
+  {
+    static Engine* _engine = new Engine();
+    return _engine->engine;
+  }
+  
   Handle()
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
-    static Engine* _engine = new Engine();
-
-    engine = _engine->engine;
+    engine = getGlobalEngine();
     if (!engine) {
       _throw ResourceException("Failed to initialize WASM.");
     }
@@ -399,10 +406,38 @@ public:
 #endif
   }
   
+  static String convertWATToWASM(const String& text)
+  {
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+    wasm_byte_vec_t wat;
+    clear(wat);
+    wat.size = text.getLength();
+    wat.data = (byte_t*)const_cast<uint8*>(text.getBytes());
+
+    wasm_byte_vec_t wasm;
+    wasm_engine_t* engine = getGlobalEngine();
+    wasm_message_t errorMessage;
+    if (!wasmtime_wat2wasm(
+           engine,
+           &wat,
+           &wasm,
+           &errorMessage)) {
+      // TAG: add support for line and column info
+      String msg = getMessage(errorMessage);
+      _throw WebAssemblyException("Invalid WebAssembly text.");
+    }
+    String result(wasm.data, wasm.size);
+    wasm_byte_vec_delete(&wasm);
+    return result;
+#else
+    return String();
+#endif
+  }
+  
   String getEngine()
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
-    return String("Wasmtime 0.8"); // TAG: wasmtime: get version from header
+    return String("Wasmtime " _COM_AZURE_DEV__BASE__USE_WASMTIME_VERSION);
 #else
     return String("WASM 1.0");
 #endif
@@ -486,20 +521,28 @@ public:
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+  
+  static String getMessage(const wasm_message_t& message)
+  {
+    MemorySize size = message.size;
+    if (size) {
+      // fout << MemoryDump((const uint8*)message.data, message.size) << ENDL;
+      // TAG: wasmtime: why do we get an extra null-terminator added - https://github.com/bytecodealliance/wasmtime/issues/994
+      while ((message.size > 0) && !message.data[message.size - 1]) {
+        --size;
+      }
+      return String(reinterpret_cast<const char*>(message.data), size);
+    }
+    return String();
+  }
+  
   String getTrapMessage(const wasm_trap_t* trap)
   {
     String msg;
     if (trap) {
       own wasm_message_t message;
       wasm_trap_message(trap, &message);
-      if (message.size) {
-        // fout << MemoryDump((const uint8*)message.data, message.size) << ENDL;
-        // TAG: wasmtime: why do we get an extra null-terminator added - https://github.com/bytecodealliance/wasmtime/issues/994
-        while ((message.size > 0) && !message.data[message.size - 1]) {
-          --message.size;
-        }
-        msg = String(reinterpret_cast<const char*>(message.data), message.size);
-      }
+      msg = getMessage(message);
     }
     return msg;
   }
@@ -1301,14 +1344,9 @@ String WebAssembly::getEngine()
   return handle->getEngine();
 }
 
-String WebAssembly::convertToText(const String& bytes)
+String WebAssembly::convertWATToWASM(const String& text)
 {
-  _throw WebAssemblyException("Unsupported conversion to WAT.");
-}
-
-String WebAssembly::convertToWASM(const String& text)
-{
-  _throw WebAssemblyException("Unsupported conversion to WASM.");
+  return WebAssembly::Handle::convertWATToWASM(text);
 }
 
 uint64 WebAssembly::getProcessingTime() const
@@ -1850,6 +1888,12 @@ private:
   const wasm_val_t* args = nullptr;
   MemorySize i = 0;
   
+  class FD {
+  public:
+  };
+  
+  Array<FD> fds;
+  
   inline void store(uint8* dest, const uint8* destEnd, const uint8* src, const uint8* srcEnd)
   {
     if ((destEnd - dest) <= (srcEnd - src)) {
@@ -1864,8 +1908,6 @@ private:
   }
 public:
   
-  typedef base::uint32 __wasi_size_t;
-
   // TAG: toNative must handle both WASM32 and WASM64
   
   inline WASIContext(WebAssembly::Handle::FunctionContext* _context, const wasm_val_t* _args) noexcept
@@ -1890,8 +1932,57 @@ public:
     return __WASI_ERRNO_SUCCESS;
   }
 
+  __wasi_errno_t environ_sizes_get(__wasi_size_t *argc, __wasi_size_t *argv_buf_size)
+  {
+    if (!argc || !argv_buf_size) {
+      return __WASI_ERRNO_INVAL;
+    }
+    *argc = 0;
+    return __WASI_ERRNO_SUCCESS;
+  }
+  
+  __wasi_errno_t clock_res_get(__wasi_clockid_t id, __wasi_timestamp_t *resolution)
+  {
+    if (!resolution) {
+      return __WASI_ERRNO_INVAL;
+    }
+    switch (id) {
+    case __WASI_CLOCKID_REALTIME:
+      *resolution = 1000;
+      return __WASI_ERRNO_SUCCESS;
+    case __WASI_CLOCKID_MONOTONIC:
+      *resolution = 1000;
+      return __WASI_ERRNO_SUCCESS;
+    // case __WASI_CLOCKID_THREAD_CPUTIME_ID:
+    }
+    return __WASI_ERRNO_INVAL;
+  }
+  
+  __wasi_errno_t clock_time_get(__wasi_clockid_t id, __wasi_timestamp_t precision, __wasi_timestamp_t *time)
+  {
+    if (!time) {
+      return __WASI_ERRNO_INVAL;
+    }
+    switch (id) {
+    case __WASI_CLOCKID_REALTIME:
+      *time = Timer::getRealNow() * 1000;
+      return __WASI_ERRNO_SUCCESS;
+    case __WASI_CLOCKID_MONOTONIC:
+      *time = Timer::getNow() * 1000;
+      return __WASI_ERRNO_SUCCESS;
+    // case __WASI_CLOCKID_THREAD_CPUTIME_ID:
+    }
+    return __WASI_ERRNO_INVAL;
+  }
+  
   __wasi_errno_t fd_prestat_get(__wasi_fd_t fd, __wasi_prestat_t* prestat) noexcept
   {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
+    if (!prestat) {
+      return __WASI_ERRNO_INVAL;
+    }
     prestat->tag = __WASI_PREOPENTYPE_DIR;
     prestat->u.dir.pr_name_len = 1;
     if (fd > 10) {
@@ -1902,6 +1993,9 @@ public:
   
   __wasi_errno_t fd_prestat_dir_name(__wasi_fd_t fd, uint8_t * _path, __wasi_size_t path_len)
   {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
     if (!_path) {
       return __WASI_ERRNO_INVAL;
     }
@@ -1910,28 +2004,111 @@ public:
     return __WASI_ERRNO_SUCCESS;
   }
   
+  __wasi_errno_t fd_sync(__wasi_fd_t fd)
+  {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
+    return __WASI_ERRNO_SUCCESS;
+  }
+  
+  __wasi_errno_t fd_advise(__wasi_fd_t fd, __wasi_filesize_t offset, __wasi_filesize_t len, __wasi_advice_t advice)
+  {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
+    return __WASI_ERRNO_SUCCESS;
+  }
+  
+  __wasi_errno_t fd_allocate(__wasi_fd_t fd, __wasi_filesize_t offset, __wasi_filesize_t len)
+  {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
+    return __WASI_ERRNO_SUCCESS;
+  }
+  
+  __wasi_errno_t fd_fdstat_set_rights(__wasi_fd_t fd, __wasi_rights_t fs_rights_base, __wasi_rights_t fs_rights_inheriting)
+  {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
+    return __WASI_ERRNO_SUCCESS;
+  }
+
+  __wasi_errno_t fd_tell(__wasi_fd_t fd, __wasi_filesize_t *offset)
+  {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
+    if (!offset) {
+      return __WASI_ERRNO_INVAL;
+    }
+    return __WASI_ERRNO_SUCCESS;
+  }
+
   __wasi_errno_t fd_seek(__wasi_fd_t fd, __wasi_filedelta_t offset, __wasi_whence_t whence, __wasi_filesize_t *newoffset) noexcept
   {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
+    if (!newoffset) {
+      return __WASI_ERRNO_INVAL;
+    }
     return __WASI_ERRNO_SUCCESS;
   }
   
   __wasi_errno_t fd_write(__wasi_fd_t fd, const __wasi_ciovec_t *iovs, __wasi_size_t iovs_len, __wasi_size_t *nwritten) noexcept
   {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
+    if (!iovs || !nwritten) {
+      return __WASI_ERRNO_INVAL;
+    }
     return __WASI_ERRNO_SUCCESS;
   }
   
   __wasi_errno_t fd_read(__wasi_fd_t fd, const __wasi_ciovec_t *iovs, __wasi_size_t iovs_len, __wasi_size_t *nread) noexcept
   {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
+    if (!iovs || !nread) {
+      return __WASI_ERRNO_INVAL;
+    }
+    return __WASI_ERRNO_SUCCESS;
+  }
+  
+  __wasi_errno_t fd_datasync(__wasi_fd_t fd)
+  {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
+    return __WASI_ERRNO_SUCCESS;
+  }
+  
+  __wasi_errno_t fd_fdstat_set_flags(__wasi_fd_t fd, __wasi_fdflags_t flags)
+  {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
     return __WASI_ERRNO_SUCCESS;
   }
   
   __wasi_errno_t fd_close(__wasi_fd_t fd)
   {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
     return __WASI_ERRNO_SUCCESS;
   }
   
   __wasi_errno_t fd_fdstat_get(__wasi_fd_t fd, __wasi_fdstat_t *stat)
   {
+    if (false) {
+      return __WASI_ERRNO_BADF;
+    }
     if (!stat) {
       return __WASI_ERRNO_INVAL;
     }
@@ -2041,6 +2218,8 @@ own wasm_trap_t* WASIImpl_##NAME(void* env, const wasm_val_t args[], wasm_val_t 
 { \
   return WASIImpl_forward(&WASIContext::NAME, env, args, results); \
 }
+
+// cat base/platforms/backend/wasi_api.h | sed -n '/__wasi_errno_t .*/p'
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME_WASI)
   IMPL_WASI(proc_exit)

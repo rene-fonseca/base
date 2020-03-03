@@ -396,7 +396,7 @@ public:
       return;
     }
     if (time) {
-      fout << "Load time: " << timer << ENDL;
+      fout << "Compile time: " << timer << ENDL;
     }
     timer.start();
     if (wasi) {
@@ -415,12 +415,14 @@ public:
       }
     }
     if (time) {
-      fout << "Compile time: " << timer << ENDL;
+      fout << "Link time: " << timer << ENDL;
     }
     timer.start();
     try {
       auto result = wasm.call(id, arguments);
-      fout << result << ENDL;
+      if (result.getReference() != AnyValue::VOID) {
+        fout << result << ENDL;
+      }
     } catch (...) {
       ferr << Format::subst("Error: Failed to call function '%1'.", id) << ENDL;
       setExitCode(1);

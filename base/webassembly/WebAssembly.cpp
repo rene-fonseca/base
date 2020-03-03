@@ -531,7 +531,7 @@ public:
     if (size) {
       // fout << MemoryDump((const uint8*)message.data, message.size) << ENDL;
       // TAG: wasmtime: why do we get an extra null-terminator added - https://github.com/bytecodealliance/wasmtime/issues/994
-      while ((message.size > 0) && !message.data[message.size - 1]) {
+      while ((size > 0) && !message.data[size - 1]) {
         --size;
       }
       return String(reinterpret_cast<const char*>(message.data), size);
@@ -541,13 +541,12 @@ public:
   
   String getTrapMessage(const wasm_trap_t* trap)
   {
-    String msg;
     if (trap) {
       own wasm_message_t message;
       wasm_trap_message(trap, &message);
-      msg = getMessage(message);
+      return getMessage(message);
     }
-    return msg;
+    return String();
   }
   
   [[noreturn]] void onTrap(own wasm_trap_t* trap)

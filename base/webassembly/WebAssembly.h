@@ -229,6 +229,15 @@ public:
   /** Loads the given WAT or WASM module in buffer. */
   bool loadAny(const String& bytes);
   
+  enum Format {
+    FORMAT_UNSPECIFIED,
+    FORMAT_WAT,
+    FORMAT_WASM
+  };
+
+  /** Returns the format for the given buffer. Only looks at header. */
+  Format getFormat(const String& bytes);
+
   enum WASMABI {
     WASM32,
     WASM64

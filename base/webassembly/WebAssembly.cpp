@@ -1481,14 +1481,42 @@ bool WebAssembly::load(const uint8* wasm, MemorySize size)
   return handle->load(wasm, size);
 }
 
+WebAssembly::Format WebAssembly::getFormat(const String& bytes)
+{
+  if (bytes.getLength() >= 4) {
+    static const char MAGIC[4] = {0x00, 0x61, 0x73, 0x6d};
+    bool gotMagic = true;
+    for (MemorySize i = 0; i < getArraySize(MAGIC); ++i) {
+      if (bytes[i] != MAGIC[i]) {
+        gotMagic = false;
+        break;
+      }
+    }
+    if (gotMagic) {
+      return FORMAT_WASM;
+    }
+  }
+ 
+  if (bytes.getLength() > 1) {
+    if (bytes[0] == '(') {
+      return FORMAT_WAT;
+    }
+  }
+
+  return FORMAT_UNSPECIFIED;
+}
+
 bool WebAssembly::loadAny(const String& bytes)
 {
-  try {
-    return load(convertWATToWASM(bytes));
-  } catch (...) {
+  Format format = getFormat(bytes);
+  switch (format) {
+  case FORMAT_WASM:
     return load(bytes);
+  case FORMAT_WAT:
+    return load(convertWATToWASM(bytes));
+  default:
+    return false;
   }
-  return false;
 }
 
 void WebAssembly::setArguments(const Array<String>& arguments)

@@ -139,7 +139,8 @@ public:
   /**
     Returns the internal representation of the value.
   */
-  inline Representation getRepresentation() const noexcept {
+  inline Representation getRepresentation() const noexcept
+  {
     return representation;
   }
   

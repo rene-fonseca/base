@@ -475,22 +475,20 @@ public:
           ferr << "Error: " << "Expecting environment variable NAME=VALUE." << ENDL;
           return false;
         }
-        String nv = enu.next();
-        StringPair p = getNameValue(nv);
+        StringPair p = getNameValue(enu.next());
         environment.add(p.getFirst(), p.getSecond());
       } else if (argument == "--mount") {
         if (!enu.hasNext()) {
           ferr << "Error: " << "Expecting FOLDER=MOUNT_POINT." << ENDL;
           return false;
         }
-        String nv = enu.next();
-        StringPair p = getNameValue(nv);
+        StringPair p = getNameValue(enu.next());
         folders.add(p.getFirst(), p.getSecond());
       } else if (argument == "--version") {
         command = COMMAND_VERSION;
       } else if (argument == "--time") {
         time = true;
-      } else if (argument == "--memory LIMIT") {
+      } else if (argument == "--memory") {
         if (!enu.hasNext()) {
           ferr << "Error: " << "Expecting memory limit." << ENDL;
           return false;

@@ -273,6 +273,9 @@ public:
       root->setValue(o.createString("imports"), getSymbolTable(o, imports));
     } else {
       fout << "IMPORTS:" << EOL;
+      if (!imports) {
+        fout << "  " << "NONE" << EOL;
+      }
       for (const auto& s : imports) {
         if (Parser::doesMatchPattern(pattern, s.name)) {
           fout << "  " << "[" << s.index << "] ";
@@ -327,6 +330,9 @@ public:
       }
     } else {
       fout << "EXPORTS:" << EOL;
+      if (!exports) {
+        fout << "  " << "NONE" << EOL;
+      }
       for (const auto& s : exports) {
         if (Parser::doesMatchPattern(pattern, s.name)) {
           fout << "  " << "[" << s.index << "] ";

@@ -33,6 +33,7 @@ private:
     COMMAND_VERSION,
     COMMAND_HELP,
     COMMAND_DUMP,
+    COMMAND_FORMAT,
     COMMAND_RUN,
     COMMAND_CONVERT
   };
@@ -158,7 +159,7 @@ public:
     }
     if (!FileSystem::fileExists(src)) {
       setExitCode(1);
-      ferr << "Error: Failed to load WAT module." << ENDL;
+      ferr << "Error: Failed to load module '%1'." % Subst(src) << ENDL;
       return;
     }
     String wat;
@@ -186,6 +187,43 @@ public:
     }
   }
   
+  /** Dump format for file. */
+  void dumpFormat(const String& path)
+  {
+    if (!path) {
+      ferr << "Error: No module provided." << ENDL;
+      setExitCode(1);
+      return;
+    }
+    if (!FileSystem::fileExists(path)) {
+      setExitCode(1);
+      ferr << "Error: Failed to load module '%1'." % Subst(path) << ENDL;
+      return;
+    }
+    
+    String bytes;
+    try {
+      bytes = File::readFile(path, File::ENCODING_RAW);
+    } catch (...) {
+      setExitCode(1);
+      ferr << "Error: Failed to load module '%1'." % Subst(path) << ENDL;
+      return;
+    }
+    
+    switch (WebAssembly::getFormat(bytes)) {
+    case WebAssembly::FORMAT_WASM:
+      fout << "application/wasm" << ENDL;
+      break;
+    case WebAssembly::FORMAT_WAT:
+      fout << "text/webassembly" << ENDL;
+      break;
+    default:
+      fout << "application/octet-stream" << ENDL;
+      setExitCode(1);
+      break;
+    }
+  }
+  
   /** Dump all exported symbols in module. */
   void dump(const String& path, const String& pattern)
   {
@@ -197,7 +235,7 @@ public:
 
     if (!FileSystem::fileExists(path)) {
       setExitCode(1);
-      ferr << "Error: Failed to load module." << ENDL;
+      ferr << "Error: Failed to load module '%1'." % Subst(path) << ENDL;
       return;
     }
     WebAssembly wasm;
@@ -383,6 +421,8 @@ public:
       } else if (argument == "--dump") {
         getJSON = false;
         command = COMMAND_DUMP;
+      } else if (argument == "--format") {
+        command = COMMAND_FORMAT;
       } else if (argument == "--run") {
         command = COMMAND_RUN;
       } else if (argument == "--convert") {
@@ -459,6 +499,9 @@ public:
       break;
     case COMMAND_DUMP:
       dump(path, pattern);
+      break;
+    case COMMAND_FORMAT:
+      dumpFormat(path);
       break;
     case COMMAND_CONVERT:
       convertWAT2WASM(path, destPath);

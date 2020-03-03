@@ -1498,7 +1498,7 @@ WebAssembly::Format WebAssembly::getFormat(const String& bytes)
   }
  
   if (bytes.getLength() > 1) {
-    if (bytes[0] == '(') {
+    if (bytes[0] == '(') { // TAG: can we use startsWith "(module"
       return FORMAT_WAT;
     }
   }

@@ -236,7 +236,7 @@ public:
   };
 
   /** Returns the format for the given buffer. Only looks at header. */
-  Format getFormat(const String& bytes);
+  static Format getFormat(const String& bytes);
 
   enum WASMABI {
     WASM32,

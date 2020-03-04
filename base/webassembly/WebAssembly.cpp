@@ -890,17 +890,16 @@ public:
           const wasm_name_t* _name = wasm_importtype_name(import);
           const String name = _name ? toString(*_name) : String();
           // fout << (moduleName + "!" + name) << ":" << ENDL;
-          const wasm_extern_t* e = wasi_instance_bind_import(
+          const wasm_extern_t* e = wasi_instance_bind_import( // wasmtime: has hardcoded module
             wasiInstance,
             import
           );
-          // TAG: wasmtime: always getting e==nullptr
-          if (!e) {
-            continue;
+          if (e) {
+            // fout << "  " << e << ENDL;
+            *dest = e;
           }
-          // fout << "  " << e << ENDL;
-          *dest++ = e;
         }
+        ++dest;
       }
 
     } else {

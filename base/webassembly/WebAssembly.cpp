@@ -31,6 +31,7 @@
 #  define _COM_AZURE_DEV__BASE__USE_WASMTIME_VERSION "0.12" // wasmtime: get version from header
 #  include <wasmtime/wasm.h>
 #  include <wasmtime/wasi.h>
+#  define own
 #  include <wasmtime/wasmtime.h>
 #  define own
 #endif

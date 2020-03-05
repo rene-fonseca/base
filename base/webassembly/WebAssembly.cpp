@@ -26,8 +26,8 @@
 // #undef _COM_AZURE_DEV__BASE__USE_WASMTIME
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
-#  include <base/platforms/backend/WASI.cpp>
-#  define _COM_AZURE_DEV__BASE__USE_WASMTIME_WASI
+// #  include <base/platforms/backend/WASI.cpp>
+// #  define _COM_AZURE_DEV__BASE__USE_WASMTIME_WASI
 #  define _COM_AZURE_DEV__BASE__USE_WASMTIME_VERSION "0.12" // wasmtime: get version from header
 #  include <wasmtime/wasm.h>
 #  include <wasmtime/wasi.h>
@@ -2119,7 +2119,8 @@ public:
     : context(_context), args(_args)
   {
   }
-  
+
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME_WASI)
   __wasi_errno_t args_get(uint8_t** argv, uint8_t* argv_buf)
   {
     if (!argv || !argv_buf) {
@@ -2329,6 +2330,7 @@ public:
     // TAG: raise trap
     ::exit(exitcode);
   }
+#endif
   
   /** Returns the argument. */
   inline const wasm_val_t& getArg()

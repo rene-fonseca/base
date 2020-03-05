@@ -358,12 +358,12 @@ public:
   
   // TAG: we could also add call on Function object if it has link to instance
   
-  /** Calls function. */
+  /** Calls function with given arguments. */
   template<typename RESULT, typename... ARGS>
-  RESULT callFunction(const String& id, ARGS... args)
+  RESULT invoke(const String& id, ARGS... args)
   {
     WASMValue _args[] = { WASMValue(args)..., WASMValue() };
-    return call(id, _args, getArraySize(_args) - 1);
+    return call(id, _args, getArraySize(_args) - 1).template getValue<RESULT>();
   }
 
   /** Returns function type as string. */

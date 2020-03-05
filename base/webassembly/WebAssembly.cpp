@@ -1594,10 +1594,19 @@ String WebAssembly::toString(const FunctionType& functionType, const String& nam
 
 String WebAssembly::toString(const Symbol& s, bool colorize)
 {
-  if (s.name) {
-    return toString(s.functionType, s.name, s.moduleName, colorize);
-  } else {
-    return toString(s.functionType, format() << s.index, s.moduleName, colorize);
+  switch (s.externType) {
+  case EXTERN_FUNCTION:
+    if (s.name) {
+      return toString(s.functionType, s.name, s.moduleName, colorize);
+    } else {
+      return toString(s.functionType, format() << s.index, s.moduleName, colorize);
+    }
+  case EXTERN_GLOBAL:
+    return "GLOBAL";
+  case EXTERN_TABLE:
+    return "TABLE";
+  case EXTERN_MEMORY:
+    return format() << "MEMORY SIZE=" << s.memorySize;
   }
 }
 

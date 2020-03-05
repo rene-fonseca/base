@@ -1608,6 +1608,7 @@ String WebAssembly::toString(const Symbol& s, bool colorize)
   case EXTERN_MEMORY:
     return format() << "MEMORY SIZE=" << s.memorySize;
   }
+  return String();
 }
 
 WebAssembly::FunctionType WebAssembly::getFunctionType(unsigned int id)

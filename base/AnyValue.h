@@ -575,12 +575,93 @@ public:
     Sets the value as a reference.
   */
   void setReference(const AnyReference& value) noexcept;
+
+  /** Returns value as given type. */
+  template<typename TYPE>
+  TYPE getValue() const;
   
   /**
     Returns the literal for for given representation.
   */
   static const char* getTypeAsId(Representation representation);
 };
+
+template<>
+inline void AnyValue::getValue<void>() const
+{
+}
+
+template<>
+inline char AnyValue::getValue<char>() const
+{
+  return getChar();
+}
+
+template<>
+inline short AnyValue::getValue<short>() const
+{
+  return getShortInteger();
+}
+
+template<>
+inline unsigned short AnyValue::getValue<unsigned short>() const
+{
+  return getUnsignedShortInteger();
+}
+
+template<>
+inline int AnyValue::getValue<int>() const
+{
+  return getInteger();
+}
+
+template<>
+inline unsigned int AnyValue::getValue<unsigned int>() const
+{
+  return getUnsignedInteger();
+}
+
+template<>
+inline int64 AnyValue::getValue<int64>() const
+{
+  return getLongLongInteger();
+}
+
+template<>
+inline uint64 AnyValue::getValue<uint64>() const
+{
+  return getUnsignedLongLongInteger();
+}
+
+template<>
+inline float AnyValue::getValue<float>() const
+{
+  return getFloat();
+}
+
+template<>
+inline double AnyValue::getValue<double>() const
+{
+  return getDouble();
+}
+
+template<>
+inline long double AnyValue::getValue<long double>() const
+{
+  return getLongDouble();
+}
+
+template<>
+inline String AnyValue::getValue<String>() const
+{
+  return getString();
+}
+
+template<>
+inline WideString AnyValue::getValue<WideString>() const
+{
+  return getWideString();
+}
 
 /**
   Writes any-value object to format output stream.

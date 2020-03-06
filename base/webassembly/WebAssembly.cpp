@@ -349,14 +349,14 @@ private:
   public:
   
     void* func = nullptr;
-    WebAssembly::Type result = TYPE_UNSPECIFIED;
-    Array<WebAssembly::Type> arguments;
+    WASMFunction func2 = nullptr;
+    FunctionType type;
     String name;
     bool nothrow = false;
   };
 
   /** Registered import functions. */
-  Array<ImportFunction> imports;
+  Array<ImportFunction> imports2;
   /** Function contexts. */
   Array<FunctionContext*> functionContexts;
 public:
@@ -369,6 +369,15 @@ public:
   inline void setUseLog(bool _useLog) noexcept
   {
     useLog = _useLog;
+  }
+  
+  void registerFunctionImpl(WASMFunction func, const FunctionType& type, const String& name)
+  {
+    ImportFunction f;
+    f.type = type;
+    f.name = name;
+    f.func2 = func;
+    imports2.append(f);
   }
 
   void registerFunctionImpl(
@@ -384,16 +393,15 @@ public:
     }
 
     ImportFunction f;
-    f.result = result;
-    f.arguments.setSize(argsSize);
-    // copy(&f.arguments[0], args, args + argsSize);
+    f.type.results.append(result);
+    f.type.arguments.setSize(argsSize);
     for (MemorySize i = 0; i < argsSize; ++i) {
-      f.arguments[i] = args[i];
+      f.type.arguments[i] = args[i];
     }
     f.name = name;
     f.func = func;
     f.nothrow = nothrow;
-    imports.append(f);
+    imports2.append(f);
   }
   
   void writeLog(const String& text)
@@ -769,6 +777,46 @@ public:
     }
   }
 
+  /** Adds imports. Does NOT overwrite imports. */
+  void registerImports(const wasm_extern_t** dest, wasm_importtype_vec_t src, const Array<ImportFunction>& lookup)
+  {
+    for (MemorySize i = 0; i < src.size; ++i) {
+      const wasm_importtype_t* import = src.data[i];
+      if (!import) {
+        continue;
+      }
+      if (dest[i]) { // already registered
+        continue;
+      }
+      const wasm_name_t* _moduleName = wasm_importtype_module(import);
+      // wasmtime: should this be a URN that is registered
+      const String moduleName = _moduleName ? toString(*_moduleName) : String();
+      const wasm_name_t* _name = wasm_importtype_name(import);
+      const String name = _name ? toString(*_name) : String();
+      // TAG: find module/name
+      if (name != lookup.begin()->name) {
+        continue;
+      }
+      const wasm_externtype_t* externType = wasm_importtype_type(import);
+      wasm_externkind_t kind = wasm_externtype_kind(externType);
+      switch (kind) {
+      case WASM_EXTERN_FUNC:
+        {
+          const wasm_functype_t* functype = wasm_externtype_as_functype_const(externType);
+          FunctionContext* functionContext = new FunctionContext(this, functype);
+          functionContext->module = moduleName;
+          functionContext->name = name;
+          functionContexts.append(functionContext);
+          own wasm_func_t* hook_func = wasm_func_new_with_env(store, functype, fakeHook, functionContext, nullptr);
+          dest[i] = wasm_func_as_extern(hook_func);
+        }
+        break;
+      default:
+        BASSERT(!"Unsupported import.");
+      }
+    }
+  }
+  
   /** Adds dummy imports. Does NOT overwrite imports. */
   void registerFakeImports(const wasm_extern_t** dest, wasm_importtype_vec_t src)
   {
@@ -1745,6 +1793,12 @@ WebAssembly::FunctionType WebAssembly::getFunctionType(unsigned int id)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
   return handle->getFunctionType(id);
+}
+
+void WebAssembly::registerFunction(WASMFunction func, const FunctionType& type, const String& name)
+{
+  auto handle = this->handle.cast<WebAssembly::Handle>();
+  return handle->registerFunctionImpl(func, type, name);
 }
 
 void WebAssembly::registerFunctionImpl(

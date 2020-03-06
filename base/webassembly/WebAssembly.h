@@ -215,7 +215,7 @@ public:
   typedef void (*WASMFunction)(void* context, WASMValue* arguments, WASMValue* results);
   
   /** Registers global function. */
-  void registerFunction(WASMFunction func, FunctionType type);
+  void registerFunction(WASMFunction func, const FunctionType& type, const String& name);
 
   /** Registers global function. */
   void registerFunctionImpl(void* func, Type result, const Type* args, unsigned int argsSize, const String& name, bool nothrow);

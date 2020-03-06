@@ -2714,6 +2714,12 @@ public:
   TEST_PROJECT("base/webassembly");
   TEST_TIMEOUT_MS(30 * 1000);
 
+  static void func1(void* context, WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
+  {
+    fout << "Hello, World!" << ENDL;
+    // TAG: forward to native function
+  }
+
   static void hello()
   {
     fout << "Hello, World!" << ENDL;
@@ -2723,10 +2729,33 @@ public:
   {
     WebAssembly wasm;
     TEST_ASSERT(wasm.isSupported());
-    // wasm.registerFunction(hello, "hello");
-    // TAG: add support for text wasm
-    // wasm.loadWAT();
-    // wasm.call("add");
+    String description = wasm.getEngine();
+    TEST_ASSERT(description);
+    
+    const char* addWAT = R"WAT((module
+      (type (;0;) (func (param i32 i32) (result i32)))
+      (func $add (type 0) (param i32 i32) (result i32)
+        get_local 1
+        get_local 0
+        i32.add)
+      (memory 1)
+      (export "memory" (memory 0))
+      (export "add" (func $add))
+    ))WAT";
+
+    TEST_ASSERT(wasm.getFormat(addWAT) == WebAssembly::FORMAT_WAT);
+    TEST_ASSERT(wasm.loadAny(addWAT));
+    wasm.registerFunction(func1, nullptr, WebAssembly::FunctionType(), "hello", "");
+    // wasm.registerFunction(hello, nullptr, WebAssembly::FunctionType(), "hello", "");
+    TEST_ASSERT(wasm.makeInstance());
+    auto imports = wasm.getImports();
+    TEST_ASSERT(!imports);
+
+    auto exports = wasm.getExports();
+    TEST_ASSERT(exports.getSize() == 2);
+
+    int result = wasm.invoke<int>("add", -1234, 4567);
+    TEST_ASSERT(result == 3333);
   }
 };
 

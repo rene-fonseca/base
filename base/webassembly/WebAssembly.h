@@ -587,4 +587,6 @@ public:
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const WebAssembly::Symbol& value);
 
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const WebAssembly::FunctionType& value);
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

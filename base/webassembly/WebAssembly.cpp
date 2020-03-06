@@ -1996,6 +1996,12 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const WebAssembly::Sy
   return stream << WebAssembly::toString(value);
 }
 
+FormatOutputStream& operator<<(FormatOutputStream& stream, const WebAssembly::FunctionType& value)
+{
+  FormatOutputStream::PushContext push(stream);
+  return stream << WebAssembly::toString(value);
+}
+
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
 
 typedef uint32 WASM_MemorySize;

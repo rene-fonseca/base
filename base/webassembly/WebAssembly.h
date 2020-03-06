@@ -351,8 +351,23 @@ public:
   /** Returns function reference. */
   WebAssemblyFunction getFunction(const String& id);
   
-  // TAG: we could also add call on Function object if it has link to instance
-  
+  /** Get function type from given function pointer. */
+  template<typename RESULT, typename... ARGS>
+  static FunctionType getFunctionType(RESULT (*)(ARGS... args))
+  {
+    FunctionType ft;
+    Type resultType = MapType<RESULT>::type;
+    if (resultType != TYPE_UNSPECIFIED) {
+      ft.results.append(resultType);
+    }
+    const Type types[] = { MapType<ARGS>::type..., TYPE_UNSPECIFIED };
+    ft.arguments.setSize(sizeof...(ARGS));
+    for (MemorySize i = 0; i < sizeof...(ARGS); ++i) {
+      ft.arguments.setAt(i, types[i]);
+    }
+    return ft;
+  }
+
   /** Calls function with given arguments. */
   template<typename RESULT, typename... ARGS>
   RESULT invoke(const String& id, ARGS... args)

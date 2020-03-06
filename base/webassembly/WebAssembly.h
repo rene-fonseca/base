@@ -120,6 +120,25 @@ public:
     EXTERN_MEMORY
   };
   
+  /** WASM value. */
+  class WASMValue {
+  public:
+    
+    Type type = TYPE_i32;
+    union {
+      int32 i32;
+      int64 i64;
+      float f32;
+      double f64;
+    };
+
+    WASMValue();
+    WASMValue(int32);
+    WASMValue(int64);
+    WASMValue(float);
+    WASMValue(double);
+  };
+
   /** Description for symbol. */
   class _COM_AZURE_DEV__BASE__API Symbol {
   public:
@@ -191,6 +210,12 @@ public:
   {
     return sizeof...(TYPES);
   }
+
+  /** Extern WASM function. */
+  typedef void (*WASMFunction)(void* context, WASMValue* arguments, WASMValue* results);
+  
+  /** Registers global function. */
+  void registerFunction(WASMFunction func, FunctionType type);
 
   /** Registers global function. */
   void registerFunctionImpl(void* func, Type result, const Type* args, unsigned int argsSize, const String& name, bool nothrow);
@@ -304,6 +329,9 @@ public:
   /** Calls the entry function without arguments. */
   void callEntry();
 
+  /** Calls the function with the given id and arguments and results. */
+  void call(unsigned int id, const WASMValue* arguments, WASMValue* results);
+
   /** Calls the function with the given id and arguments. */
   AnyValue call(const String& id, const AnyValue* arguments, MemorySize size);
 
@@ -321,26 +349,6 @@ public:
 
   /** Returns function reference. */
   WebAssemblyFunction getFunction(const String& id);
-
-  /** WASM value. */
-  class WASMValue {
-  private:
-    
-    Type type = TYPE_i32;
-    union {
-      int32 i32;
-      int64 i64;
-      float f32;
-      double f64;
-    };
-  public:
-
-    WASMValue();
-    WASMValue(int32);
-    WASMValue(int64);
-    WASMValue(float);
-    WASMValue(double);
-  };
   
   // TAG: we could also add call on Function object if it has link to instance
   
@@ -375,7 +383,7 @@ class _COM_AZURE_DEV__BASE__API WebAssemblyFunction {
 private:
   
   WebAssembly wa;
-  MemoryDiff id = -1;
+  int id = -1;
 public:
   
   /** Initializes function. */
@@ -384,14 +392,36 @@ public:
   /** Initializes function. */
   WebAssemblyFunction(WebAssembly wa, const String& id);
 
+  /** Initializes function. */
+  WebAssemblyFunction(WebAssembly wa, unsigned int id);
+
   /** Returns the type of the function. */
   WebAssembly::FunctionType getType();
+  
+  /** Calls function. */
+  inline void call(const WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
+  {
+    wa.call(id, arguments, results);
+  }
   
   /** Calls function. */
   template<typename RESULT, typename... ARGS>
   inline RESULT invoke(ARGS... args)
   {
     return wa.invoke<RESULT>(id, args...);
+  }
+  
+  /** Calls function. */
+  template<typename RESULT, typename... ARGS>
+  inline RESULT operator()(ARGS... args)
+  {
+    return wa.invoke<RESULT>(id, args...);
+  }
+  
+  /** Calls function. */
+  inline void operator()(const WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
+  {
+    wa.call(id, arguments, results);
   }
 };
 

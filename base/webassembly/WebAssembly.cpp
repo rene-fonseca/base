@@ -161,6 +161,11 @@ WebAssemblyFunction::WebAssemblyFunction(WebAssembly _wa, const String& _id)
 {
 }
 
+WebAssemblyFunction::WebAssemblyFunction(WebAssembly _wa, unsigned int _id)
+  : wa(_wa), id(_id)
+{
+}
+
 WebAssembly::FunctionType WebAssemblyFunction::getType()
 {
   return wa.getFunctionType(id);
@@ -1257,6 +1262,59 @@ public:
     return stream;
   }
 
+  void call(unsigned int id, const WASMValue* _arguments, WASMValue* _results)
+  {
+    String name = exportNames[id];
+    if (!name) {
+      name = String(format() << id);
+    }
+
+#if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+    if (id < exports.size) {
+      wasm_extern_t* e = exports.data[id];
+      wasm_externkind_t kind = wasm_extern_kind(e);
+      if (kind != WASM_EXTERN_FUNC) {
+        _throw WebAssemblyException("Not a function.");
+      }
+      const wasm_func_t* func = wasm_extern_as_func(e);
+      if (!func) {
+        _throw WebAssemblyException("Not a function.");
+      }
+
+      const size_t size = wasm_func_param_arity(func);
+      const size_t resultSize = wasm_func_result_arity(func);
+      PrimitiveStackArray<wasm_val_t> args(size);
+      PrimitiveStackArray<wasm_val_t> results(resultSize);
+      if (size > 0) {
+        own wasm_functype_t* functype = wasm_func_type(func);
+        // const wasm_valtype_vec_t* rs = wasm_functype_results(functype);
+        const wasm_valtype_vec_t* ps = wasm_functype_params(functype);
+        if (INLINE_ASSERT(ps && (ps->size == size))) {
+          for (MemorySize i = 0; i < size; ++i) {
+            convert(args[i], _arguments[i]);
+          }
+        }
+        wasm_functype_delete(functype);
+      }
+
+      if (own wasm_trap_t* trap = wasm_func_call(func, args, results)) {
+        if (getUseLog()) {
+          writeLog(name, true, args, size, trap);
+        }
+        onTrap(trap);
+      }
+      if (getUseLog()) {
+        writeLog(name, true, args, size, results, resultSize);
+      }
+      for (MemorySize i = 0; i < resultSize; ++i) {
+        convert(_results[i], results[i]);
+      }
+      return;
+    }
+#endif
+    _throw WebAssemblyException("No such function.");
+  }
+
   AnyValue call(MemorySize id, const AnyValue* arguments, MemorySize argumentsSize)
   {
     String name = exportNames[id];
@@ -1307,10 +1365,58 @@ public:
   
   void callEntry()
   {
-    call(0, nullptr, 0);
+    call(0, nullptr, nullptr);
   }
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+  void convert(wasm_val_t& dest, const WebAssembly::WASMValue& src)
+  {
+    switch (src.type) {
+    case WebAssembly::TYPE_i32:
+      dest.kind = WASM_I32;
+      dest.of.i32 = src.i32;
+      break;
+    case WebAssembly::TYPE_i64:
+      dest.kind = WASM_I64;
+      dest.of.i64 = src.i64;
+      break;
+    case WebAssembly::TYPE_f32:
+      dest.kind = WASM_F32;
+      dest.of.f32 = src.f32;
+      break;
+    case WebAssembly::TYPE_f64:
+      dest.kind = WASM_F64;
+      dest.of.f64 = src.f64;
+      break;
+    default:
+      _throw WebAssemblyException("Unsupported type.");
+    }
+  }
+  
+  void convert(WebAssembly::WASMValue& dest, const wasm_val_t& src)
+  {
+    switch (src.kind) {
+    case WASM_I32:
+      dest.type = WebAssembly::TYPE_i32;
+      dest.i32 = src.of.i32;
+      break;
+    case WASM_I64:
+      dest.type = WebAssembly::TYPE_i64;
+      dest.i64 = src.of.i64;
+      break;
+    case WASM_F32:
+      dest.type = WebAssembly::TYPE_f32;
+      dest.f32 = src.of.f32;
+      break;
+    case WASM_F64:
+      dest.type = WebAssembly::TYPE_f64;
+      dest.f64 = src.of.f64;
+      break;
+    default:
+      _throw WebAssemblyException("Unsupported type.");
+    }
+  }
+
   wasm_val_t* convert(wasm_val_t* dest, const AnyValue& value)
   {
     // TAG: add support for string
@@ -1834,6 +1940,13 @@ void WebAssembly::callEntry()
   Profiler::Task profile("WebAssembly::call()", "WASM");
   auto handle = this->handle.cast<WebAssembly::Handle>();
   return handle->callEntry();
+}
+
+void WebAssembly::call(unsigned int id, const WASMValue* arguments, WASMValue* results)
+{
+  Profiler::Task profile("WebAssembly::call()", "WASM");
+  auto handle = this->handle.cast<WebAssembly::Handle>();
+  handle->call(id, arguments, results);
 }
 
 AnyValue WebAssembly::call(const String& id, const AnyValue* arguments, MemorySize argumentsSize)

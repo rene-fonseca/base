@@ -55,6 +55,7 @@ private:
   bool useLog = false;
   MemorySize maximumMemory = 0; // in Mb
   MemorySize maximumStack = 0; // in Mb
+  Array<StringPair> importModules;
 public:
   
   WASMApplication()
@@ -90,17 +91,18 @@ public:
     fout << "Usage: " << getFormalName() << " [OPTIONS] PATH [DEST] [ID] [ARGS]" << EOL
          << EOL
          << "Options:" << EOL
-         << indent(2) << "--help      This message" << EOL
-         << indent(2) << "--fake      Register fake imports" << EOL
-         << indent(2) << "--json      Get WASM module info as JSON" << EOL
-         << indent(2) << "--wasi      Use WASI mode" << EOL
-         << indent(2) << "--dump      Dumps info about the WASM module" << EOL
-         << indent(2) << "--log       Enabled log" << EOL
-         << indent(2) << "--version   Show the version" << EOL
-         << indent(2) << "--run       Run WASM module" << EOL
-         << indent(2) << "--convert   Convert WAT to WASM" << EOL
-         << indent(2) << "--env       Add environment variable" << EOL
-         << indent(2) << "--mount     Mount folder at path" << EOL
+         << indent(2) << "--help              This message" << EOL
+         << indent(2) << "--fake              Register fake imports" << EOL
+         << indent(2) << "--json              Get WASM module info as JSON" << EOL
+         << indent(2) << "--wasi              Use WASI mode" << EOL
+         << indent(2) << "--dump              Dumps info about the WASM module" << EOL
+         << indent(2) << "--log               Enabled log" << EOL
+         << indent(2) << "--version           Show the version" << EOL
+         << indent(2) << "--run               Run WASM module" << EOL
+         << indent(2) << "--convert           Convert WAT to WASM" << EOL
+         << indent(2) << "--env NAME=VALUE    Add environment variable" << EOL
+         << indent(2) << "--mount PATH=PATH   Mount folder at path" << EOL
+         << indent(2) << "--import NAME=PATH  Use exports from module" << EOL
          << ENDL;
   }
 
@@ -262,8 +264,6 @@ public:
 
     const auto imports = wasm.getImports();
 
-    // TAG: how can we bind 2 modules together - imports from 1 use exports from the other
-
     ObjectModel o;
     auto root = o.createObject();
 
@@ -278,23 +278,8 @@ public:
       }
       for (const auto& s : imports) {
         if (Parser::doesMatchPattern(pattern, s.name)) {
-          fout << "  " << "[" << s.index << "] ";
-          switch (s.externType) {
-          case WebAssembly::EXTERN_FUNCTION:
-            fout << "FUNCTION " << WebAssembly::toString(s, colorize) << ENDL;
-            break;
-          case WebAssembly::EXTERN_GLOBAL:
-            fout << "GLOBAL " << s.name << ENDL;
-            break;
-          case WebAssembly::EXTERN_TABLE:
-            fout << "TABLE " << s.name << ENDL;
-            break;
-          case WebAssembly::EXTERN_MEMORY:
-            fout << "MEMORY " << s.name << ENDL;
-            break;
-          default:
-            fout << "?" << " " << s.name << ENDL;
-          }
+          fout << "  " << "[" << s.index << "] "
+               << WebAssembly::toString(s, colorize) << ENDL;
         }
       }
     }
@@ -361,6 +346,24 @@ public:
     }
   }
 
+  class BindContext {
+  public:
+    
+    WebAssemblyFunction function;
+  };
+  
+  // TAG: how can we handle memory access - read and write access - need descriptive IDL to specific what is memory
+  
+  /** Callback from WASM. Forwards to other WASM function. */
+  static void bind(void* context, const WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
+  {
+    if (BindContext* bind = reinterpret_cast<BindContext*>(context)) {
+      bind->function(arguments, results);
+    } else {
+      _throw WebAssembly::WebAssemblyException("Calling unbound function.");
+    }
+  }
+  
   /** Call symbol in module. */
   void run(const String& path, const String& id, const Array<AnyValue>& arguments, bool time)
   {
@@ -406,6 +409,33 @@ public:
       fout << "Compile time: " << timer << ENDL;
     }
     timer.start();
+    
+    // TAG: imports should be resolved recursively - but there is no info per imported module
+    Array<Pair<String, WebAssembly> > importWASM;
+    for (auto np : importModules) {
+      String bytes;
+      try {
+        bytes = File::readFile(np.getSecond(), File::ENCODING_RAW);
+      } catch (...) {
+        setExitCode(1);
+        ferr << "Error: Failed to load module '%1'." % Subst(path) << ENDL;
+        return;
+      }
+
+      WebAssembly wasm;
+      if (!wasm.loadAny(bytes)) {
+        ferr << "Error: Failed to load and compile module '%1'." % Subst(path) << ENDL;
+        setExitCode(1);
+        return;
+      }
+      if (!wasm.makeInstance()) { // TAG: add support for wasi at some point
+        ferr << "Error: Failed to link module '%1'." % Subst(path) << ENDL;
+        setExitCode(1);
+        return;
+      }
+      importWASM.append(Pair<String, WebAssembly>(np.getFirst(), wasm));
+    }
+    
     if (wasi) {
       if (!wasm.makeWASIInstance(nullptr, nullptr, nullptr)) {
         ferr << "Error: Failed to create instance." << ENDL;
@@ -413,6 +443,46 @@ public:
         return;
       }
     } else {
+      
+      // TAG: move to separate method
+      // TAG: allow to read from JSON manifest
+      // bind exports to imports
+      auto imports = wasm.getImports();
+      for (auto& imported : imports) {
+        if (imported.externType != WebAssembly::EXTERN_FUNCTION) {
+          continue;
+        }
+        fout << "IMPORT: " << "[" << imported.index << "] "
+             << WebAssembly::toString(imported, colorize) << ENDL;
+        bool found = false;
+        for (auto& mw : importWASM) {
+          auto& moduleName = mw.getFirst();
+          auto wasm = mw.getSecond();
+          auto exports = wasm.getExports();
+          for (auto& exported : exports) {
+            if (imported.name != exported.name) {
+              continue;
+            }
+            if (exported.externType != WebAssembly::EXTERN_FUNCTION) {
+              continue;
+            }
+            if (imported.functionType != exported.functionType) {
+              continue;
+            }
+            fout << "EXPORT " << "[" << exported.index << "] "
+                 << WebAssembly::toString(exported, colorize) << ENDL;
+            // wasm.registerFunction();
+            // break;
+            found = true;
+          }
+        }
+        if (!found) {
+          ferr << "Error: Failed to bind import '%1'." % Subst(WebAssembly::toString(imported, colorize)) << ENDL;
+          setExitCode(1);
+          return;
+        }
+      }
+      
       // wasm.registerFunction(hello);
       // wasm.registerFunction(throwit);
       if (!wasm.makeInstance(fake)) {
@@ -512,6 +582,12 @@ public:
         }
       //} else if (argument == "--stack LIMIT") {
       //  maximumStack = 0;
+      } else if (argument == "--import") {
+        if (!enu.hasNext()) {
+          ferr << "Error: " << "Expecting module to import." << ENDL;
+          return false;
+        }
+        importModules.append(enu.next());
       } else {
         if (!path) {
           path = argument;

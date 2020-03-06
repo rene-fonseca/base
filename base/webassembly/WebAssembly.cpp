@@ -2725,6 +2725,12 @@ public:
     fout << "Hello, World!" << ENDL;
   }
 
+  static float func2(int arg1, double arg2, uint64 arg3)
+  {
+    fout << "Hello, World!" << ENDL;
+    return -0.0f;
+  }
+
   void run() override
   {
     WebAssembly wasm;
@@ -2744,18 +2750,62 @@ public:
     ))WAT";
 
     TEST_ASSERT(wasm.getFormat(addWAT) == WebAssembly::FORMAT_WAT);
-    TEST_ASSERT(wasm.loadAny(addWAT));
-    wasm.registerFunction(func1, nullptr, WebAssembly::FunctionType(), "hello", "");
-    // wasm.registerFunction(hello, nullptr, WebAssembly::FunctionType(), "hello", "");
-    TEST_ASSERT(wasm.makeInstance());
-    auto imports = wasm.getImports();
-    TEST_ASSERT(!imports);
+    String binary = WebAssembly::convertWATToWASM(addWAT);
+    if (TEST_INLINE_ASSERT(wasm.isValid(binary))) {
+      TEST_ASSERT(wasm.load(binary));
+      wasm.registerFunction(func1, nullptr, WebAssembly::FunctionType(), "hello", "");
+      // wasm.registerFunction(hello, nullptr, WebAssembly::FunctionType(), "hello", "");
+      TEST_ASSERT(wasm.makeInstance());
+      auto imports = wasm.getImports();
+      TEST_ASSERT(!imports);
 
-    auto exports = wasm.getExports();
-    TEST_ASSERT(exports.getSize() == 2);
+      auto exports = wasm.getExports();
+      TEST_ASSERT(exports.getSize() == 2);
 
-    int result = wasm.invoke<int>("add", -1234, 4567);
-    TEST_ASSERT(result == 3333);
+      int result = wasm.invoke<int>("add", -1234, 4567);
+      TEST_ASSERT(result == 3333);
+    }
+    
+    const char* importWAT = R"WAT((module
+      (import "internal" "write" (func $write (param i32 i32) (result i32)))
+      (type (;0;) (func (param i32 i32) (result i32)))
+      (data (i32.const 8) "Hello World\n")
+      (memory 1)
+      (export "memory" (memory 0))
+    ))WAT";
+
+#if 0
+    (func $main (export "_start")
+      (i32.store (i32.const 0) (i32.const 8)) ;; start of string
+      (i32.store (i32.const 4) (i32.const 12)) ;; length of string
+      ;;(call $write
+      ;;  (i32.const 0)
+      ;;  (i32.const 1)
+      ;;)
+      drop ;; Discard result
+    )
+#endif
+    
+    {
+      WebAssembly wasm2;
+      String binary = WebAssembly::convertWATToWASM(importWAT);
+      if (TEST_INLINE_ASSERT(wasm2.isValid(binary))) {
+        TEST_ASSERT(wasm2.load(binary));
+
+        auto imports = wasm2.getImports();
+        TEST_ASSERT(imports.getSize() == 1);
+        // fout << imports << ENDL;
+      
+        auto ft = WebAssembly::getFunctionType(func2);
+        // fout << ft << ENDL;
+
+        // TAG: get function type from native
+        wasm2.registerFunction(func1, nullptr, WebAssembly::FunctionType(), "write", "internal");
+        TEST_ASSERT(wasm2.makeInstance());
+        auto exports = wasm2.getExports();
+        TEST_ASSERT(exports.getSize() == 1);
+      }
+    }
   }
 };
 

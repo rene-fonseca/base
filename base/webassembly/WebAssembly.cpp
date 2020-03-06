@@ -51,6 +51,31 @@ class WASIContext;
 // TAG: lookup each API - from imports - add auto generate manifest - allow to run with disapproved security slots
 #endif
 
+WebAssembly::WASMValue::WASMValue()
+  : type(TYPE_i32), i32(0)
+{
+}
+
+WebAssembly::WASMValue::WASMValue(int32 value)
+  : type(TYPE_i32), i32(value)
+{
+}
+
+WebAssembly::WASMValue::WASMValue(int64 value)
+  : type(TYPE_i64), i64(value)
+{
+}
+
+WebAssembly::WASMValue::WASMValue(float value)
+  : type(TYPE_f32), f32(value)
+{
+}
+
+WebAssembly::WASMValue::WASMValue(double value)
+  : type(TYPE_f64), f64(value)
+{
+}
+
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
 String getValuesAsString(const wasm_val_t args[], MemorySize size)
 {
@@ -2519,6 +2544,11 @@ own wasm_trap_t* hello(const wasm_val_t args[], wasm_val_t results[]) noexcept
 // auto detect dead-lock / timeout
 // probe features supported for WASM engine
 #endif
+
+bool WebAssembly::FunctionType::operator==(const FunctionType& type) const noexcept
+{
+  return (results == type.results) && (arguments == type.arguments);
+}
 
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
 // TAG: wasmtime: get version from header

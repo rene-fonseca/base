@@ -102,6 +102,15 @@ public:
 
     Array<Type> arguments;
     Array<Type> results;
+    
+    /** Returns true if equal. */
+    bool operator==(const FunctionType& type) const noexcept;
+    
+    /** Returns true if not equal. */
+    inline bool operator!=(const FunctionType& type) const noexcept
+    {
+      return !operator==(type);
+    }
   };
 
   enum ExternType {
@@ -313,7 +322,6 @@ public:
   /** Returns function reference. */
   WebAssemblyFunction getFunction(const String& id);
 
-#if 0
   /** WASM value. */
   class WASMValue {
   private:
@@ -322,11 +330,9 @@ public:
     union {
       int32 i32;
       int64 i64;
-      float f;
-      double d;
-      unsigned int function;
+      float f32;
+      double f64;
     };
-    String s;
   public:
 
     WASMValue();
@@ -334,14 +340,7 @@ public:
     WASMValue(int64);
     WASMValue(float);
     WASMValue(double);
-    WASMValue(const char* string);
-    WASMValue(const wchar* string);
-    WASMValue(const String& string);
-    WASMValue(const WideString& string);
   };
-#endif
-  
-  typedef AnyValue WASMValue;
   
   // TAG: we could also add call on Function object if it has link to instance
   
@@ -349,7 +348,7 @@ public:
   template<typename RESULT, typename... ARGS>
   RESULT invoke(const String& id, ARGS... args)
   {
-    WASMValue _args[] = { WASMValue(args)..., WASMValue() };
+    AnyValue _args[] = { AnyValue(args)..., AnyValue() };
     return call(id, _args, getArraySize(_args) - 1).template getValue<RESULT>();
   }
 

@@ -114,12 +114,9 @@ String getValuesAsString(const wasm_val_t args[], MemorySize size)
 }
 
 own wasm_trap_t* bindToImplementation(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept;
-// TAG: add support for forwarding hook to allow tracking
+own wasm_trap_t* forwardCallback(void* env, const wasm_val_t args[], wasm_val_t _results[]) noexcept;
 own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept;
-
 own wasm_trap_t* hook(void* env, const wasm_val_t args[], wasm_val_t results[]) noexcept;
-
-own wasm_trap_t* hello(const wasm_val_t args[], wasm_val_t results[]) noexcept;
 #endif
 
 bool WebAssembly::isSupported() noexcept
@@ -200,6 +197,10 @@ public:
     MemorySize resultSize = 0;
     String module;
     String name;
+    
+    WASMFunction func;
+    void* context = nullptr;
+    
     PreferredAtomicCounter invocations;
     
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
@@ -348,15 +349,15 @@ private:
   class ImportFunction {
   public:
   
-    void* func = nullptr;
-    WASMFunction func2 = nullptr;
+    WASMFunction func = nullptr;
+    void* context = nullptr;
     FunctionType type;
+    String module;
     String name;
-    bool nothrow = false;
   };
 
   /** Registered import functions. */
-  Array<ImportFunction> imports2;
+  Array<ImportFunction> importFunctions;
   /** Function contexts. */
   Array<FunctionContext*> functionContexts;
 public:
@@ -371,37 +372,16 @@ public:
     useLog = _useLog;
   }
   
-  void registerFunctionImpl(WASMFunction func, const FunctionType& type, const String& name)
+  void registerFunctionImpl(WASMFunction func, void* context,
+                            const FunctionType& type, const String& name, const String& module)
   {
     ImportFunction f;
     f.type = type;
     f.name = name;
-    f.func2 = func;
-    imports2.append(f);
-  }
-
-  void registerFunctionImpl(
-    void* func, Type result, const Type* args, unsigned int argsSize, const String& name, bool nothrow)
-  {
-    if (!func) {
-      _throw NullPointer();
-    }
-    if (argsSize != 0) {
-      if (!args) {
-        _throw NullPointer();
-      }
-    }
-
-    ImportFunction f;
-    f.type.results.append(result);
-    f.type.arguments.setSize(argsSize);
-    for (MemorySize i = 0; i < argsSize; ++i) {
-      f.type.arguments[i] = args[i];
-    }
-    f.name = name;
+    f.module = module;
     f.func = func;
-    f.nothrow = nothrow;
-    imports2.append(f);
+    f.context = context;
+    importFunctions.append(f);
   }
   
   void writeLog(const String& text)
@@ -793,30 +773,30 @@ public:
       const String moduleName = _moduleName ? toString(*_moduleName) : String();
       const wasm_name_t* _name = wasm_importtype_name(import);
       const String name = _name ? toString(*_name) : String();
-      // TAG: find module/name
-      if (name != lookup.begin()->name) {
-        continue;
-      }
       const wasm_externtype_t* externType = wasm_importtype_type(import);
       wasm_externkind_t kind = wasm_externtype_kind(externType);
-      switch (kind) {
-      case WASM_EXTERN_FUNC:
-        {
-          const wasm_functype_t* functype = wasm_externtype_as_functype_const(externType);
-          FunctionContext* functionContext = new FunctionContext(this, functype);
-          functionContext->module = moduleName;
-          functionContext->name = name;
-          functionContexts.append(functionContext);
-          own wasm_func_t* hook_func = wasm_func_new_with_env(store, functype, fakeHook, functionContext, nullptr);
-          dest[i] = wasm_func_as_extern(hook_func);
+      if (kind == WASM_EXTERN_FUNC) {
+        const wasm_functype_t* functype = wasm_externtype_as_functype_const(externType);
+        for (const auto& importFunction : lookup) {
+          if ((importFunction.name == name) && (importFunction.module == moduleName)) {
+            FunctionContext* functionContext = new FunctionContext(this, functype);
+            functionContext->func = importFunction.func;
+            functionContext->context = importFunction.context;
+            functionContext->module = moduleName;
+            functionContext->name = name;
+            functionContexts.append(functionContext);
+
+            own wasm_func_t* hook = wasm_func_new_with_env(store, functype, forwardCallback, functionContext, nullptr);
+            dest[i] = wasm_func_as_extern(hook);
+            break;
+          }
         }
-        break;
-      default:
+      } else {
         BASSERT(!"Unsupported import.");
       }
     }
   }
-  
+
   /** Adds dummy imports. Does NOT overwrite imports. */
   void registerFakeImports(const wasm_extern_t** dest, wasm_importtype_vec_t src)
   {
@@ -886,35 +866,23 @@ public:
     for (MemorySize i = 0; i < imports.size(); ++i) {
       imports[i] = nullptr;
     }
-
+    
+    if ((_imports.size > 0) && importFunctions) {
+      registerImports(imports.begin(), _imports, importFunctions);
+    }
+    
     if (fake) {
       registerFakeImports(imports.begin(), _imports);
     }
     
 #if 0
-    #if 0
-      wasm_valtype_t* ps[n] = {p1, ...};
-      wasm_valtype_t* rs[m] = {r1, ...};
-      wasm_valtype_vec_t params, results;
-      wasm_valtype_vec_new(&params, getArraySize(ps), ps);
-      wasm_valtype_vec_new(&results, getArraySize(rs), rs);
-      own wasm_functype_t* = wasm_functype_new(&params, &results);
-    #endif
-    
-    if (!fake) {
       own wasm_functype_t* hello_type = wasm_functype_new_0_0();
       FunctionContext* functionContext = new FunctionContext(this, 0, 0);
       functionContexts.append(functionContext);
       own wasm_func_t* hook_func = wasm_func_new_with_env(store, hello_type, hook, functionContext, nullptr);
       // own wasm_func_t* hello_func = wasm_func_new(store, hello_type, hello);
       wasm_functype_delete(hello_type);
-      // TAG: add template to bind global function/static function
-      for (MemorySize i = 0; i < _imports.size; ++i) {
-        imports[i] = wasm_func_as_extern(hook_func);
-      }
-    }
 #endif
-
     
     if (wasi) {
       // registerWASIImports(imports.begin(), _imports);
@@ -1795,17 +1763,11 @@ WebAssembly::FunctionType WebAssembly::getFunctionType(unsigned int id)
   return handle->getFunctionType(id);
 }
 
-void WebAssembly::registerFunction(WASMFunction func, const FunctionType& type, const String& name)
+void WebAssembly::registerFunction(WASMFunction func, void* context,
+                                   const FunctionType& type, const String& name, const String& module)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
-  return handle->registerFunctionImpl(func, type, name);
-}
-
-void WebAssembly::registerFunctionImpl(
-  void* func, Type result, const Type* args, unsigned int argsSize, const String& name, bool nothrow)
-{
-  auto handle = this->handle.cast<WebAssembly::Handle>();
-  return handle->registerFunctionImpl(func, result, args, argsSize, name, nothrow);
+  return handle->registerFunctionImpl(func, context, type, name, module);
 }
 
 bool WebAssembly::loadFile(const String& path)
@@ -2682,7 +2644,6 @@ own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results
       v.kind = WASM_I32;
       v.of.i32 = 0;
     }
-
     if (context->handle->getUseLog()) {
       context->handle->writeLog(context->name, false, args, context->argSize, results, context->resultSize);
     }
@@ -2694,11 +2655,33 @@ own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results
   return nullptr;
 }
 
-own wasm_trap_t* hello(const wasm_val_t args[], wasm_val_t results[]) noexcept
+own wasm_trap_t* forwardCallback(void* env, const wasm_val_t args[], wasm_val_t _results[]) noexcept
 {
-  Profiler::Task profile("WebAssembly::callback()", "WASM");
-  // no access to store so we cannot make trap
-  fout << "hello(): Hello, World!" << ENDL;
+  Profiler::Task profile("WebAssembly::callback()", "WASM"); // TAG: add module!name()
+  WebAssembly::Handle::FunctionContext* context = reinterpret_cast<WebAssembly::Handle::FunctionContext*>(env);
+  if (!context) {
+    return context->getTrap("Missing context.");
+  }
+  context->invocations++;
+  try {
+    auto handle = context->handle;
+    PrimitiveStackArray<WebAssembly::WASMValue> arguments(context->argSize);
+    PrimitiveStackArray<WebAssembly::WASMValue> results(context->resultSize);
+    for (MemorySize i = 0; i < context->resultSize; ++i) {
+      handle->convert(arguments[i], args[i]);
+    }
+    context->func(context->context, arguments ? arguments : nullptr, results ? results : nullptr);
+    for (MemorySize i = 0; i < context->resultSize; ++i) {
+      handle->convert(_results[i], results[i]);
+    }
+    if (handle->getUseLog()) {
+      handle->writeLog(context->name, false, args, context->argSize, _results, context->resultSize);
+    }
+  } catch (Exception& e) {
+    return context->getTrap(e);
+  } catch (...) {
+    return context->getTrap("Unknown exception throw.");
+  }
   return nullptr;
 }
 #endif
@@ -2740,10 +2723,10 @@ public:
   {
     WebAssembly wasm;
     TEST_ASSERT(wasm.isSupported());
-    wasm.registerFunction(hello, "hello");
+    // wasm.registerFunction(hello, "hello");
     // TAG: add support for text wasm
-    // wasm.load();
-    // wasm.call()
+    // wasm.loadWAT();
+    // wasm.call("add");
   }
 };
 

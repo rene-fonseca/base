@@ -215,20 +215,21 @@ public:
   typedef void (*WASMFunction)(void* context, WASMValue* arguments, WASMValue* results);
   
   /** Registers global function. */
-  void registerFunction(WASMFunction func, const FunctionType& type, const String& name);
+  void registerFunction(WASMFunction func, void* context, const FunctionType& type, const String& name, const String& module);
 
-  /** Registers global function. */
-  void registerFunctionImpl(void* func, Type result, const Type* args, unsigned int argsSize, const String& name, bool nothrow);
-
+#if 0
   /** Registers global function. */
   template<typename RESULT, typename... ARGS>
-  void registerFunction(RESULT (*func)(ARGS...), const String& name = String())
+  void registerFunction(RESULT (*func)(ARGS...), const String& name = String(), const String& module = String())
   {
     const Type resultType = MapType<RESULT>::type;
     const Type types[] = { MapType<ARGS>::type..., TYPE_UNSPECIFIED };
-    registerFunctionImpl((void*)func, resultType, types, getArraySize(types) - 1, name, noexcept(func));
+    registerFunctionImpl(
+      (void*)func, resultType, types, getArraySize(types) - 1, name, module, noexcept(func)
+    );
   }
-
+#endif
+  
   /** Loads the given WASM module. */
   bool loadFile(const String& path);
 

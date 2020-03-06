@@ -23,6 +23,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+class WebAssemblyFunction;
+
 /**
   WebAssembly integration.
 */
@@ -102,26 +104,6 @@ public:
     Array<Type> results;
   };
 
-  /** Function. */
-  class _COM_AZURE_DEV__BASE__API Function {
-  private:
-    
-    unsigned int functionReference = 0;
-  public:
-    
-    Function();
-    
-    // FunctionType getType();
-    
-#if 0
-    /** Calls function. */
-    template<typename RESULT, typename... ARGS>
-    RESULT call(ARGS... args);
-#endif
-    
-    ~Function();
-  };
-
   enum ExternType {
     EXTERN_FUNCTION,
     EXTERN_GLOBAL,
@@ -139,7 +121,6 @@ public:
     ExternType externType = EXTERN_FUNCTION;
 
     // function type
-    Function f;
     void* func = nullptr;
     FunctionType functionType;
     
@@ -308,6 +289,9 @@ public:
   /** Returns information about the given name. */
   Symbol getSymbol(const String& name);
 
+  /** Returns the function index for the given name. */
+  MemorySize getFunctionIndex(const String& id) const;
+  
   /** Calls the entry function without arguments. */
   void callEntry();
 
@@ -325,6 +309,9 @@ public:
 
   /** Calls the exported function with the given id and arguments. */
   AnyValue call(unsigned int id, const Array<AnyValue>& arguments);
+
+  /** Returns function reference. */
+  WebAssemblyFunction getFunction(const String& id);
 
 #if 0
   /** WASM value. */
@@ -379,12 +366,34 @@ public:
   FunctionType getFunctionType(unsigned int id);
 
   /** Returns function reference. */
-  Function getFunction(unsigned int id);
-  
-  /** Calls the exported function with the given id and arguments. */
-  AnyValue call(Function func, const Array<AnyValue>& arguments);
+  WebAssemblyFunction getFunction(unsigned int id);
 
   ~WebAssembly();
+};
+
+/** Function reference. */
+class _COM_AZURE_DEV__BASE__API WebAssemblyFunction {
+private:
+  
+  WebAssembly wa;
+  MemoryDiff id = -1;
+public:
+  
+  /** Initializes function. */
+  WebAssemblyFunction();
+
+  /** Initializes function. */
+  WebAssemblyFunction(WebAssembly wa, const String& id);
+
+  /** Returns the type of the function. */
+  WebAssembly::FunctionType getType();
+  
+  /** Calls function. */
+  template<typename RESULT, typename... ARGS>
+  inline RESULT invoke(ARGS... args)
+  {
+    return wa.invoke<RESULT>(id, args...);
+  }
 };
 
 template<>

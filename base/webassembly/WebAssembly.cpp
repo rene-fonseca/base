@@ -127,12 +127,18 @@ const char* WebAssembly::toString(Type type) noexcept
   }
 }
 
-WebAssembly::Function::Function()
+WebAssemblyFunction::WebAssemblyFunction()
 {
 }
 
-WebAssembly::Function::~Function()
+WebAssemblyFunction::WebAssemblyFunction(WebAssembly _wa, const String& _id)
+  : wa(_wa), id(wa.getFunctionIndex(_id))
 {
+}
+
+WebAssembly::FunctionType WebAssemblyFunction::getType()
+{
+  return wa.getFunctionType(id);
 }
 
 class WebAssembly::Handle : public ReferenceCountedObject {
@@ -1274,11 +1280,6 @@ public:
     _throw WebAssemblyException("No such function.");
   }
   
-  AnyValue call(WebAssembly::Function f, const AnyValue* arguments, MemorySize argumentsSize)
-  {
-    _throw WebAssemblyException("Invalid function");
-  }
-  
   void callEntry()
   {
     call(0, nullptr, 0);
@@ -1454,11 +1455,10 @@ public:
 #endif
   
   // TAG: use wasm_name_new_from_string
-  
-  AnyValue call(const String& id, const AnyValue* arguments, MemorySize argumentsSize)
+
+  MemorySize getFunctionIndex(const String& id) const
   {
     MemorySize index = 0;
-
     if (id) {
       Validified<unsigned int> _index = UnsignedInteger::parseNoThrow(id, UnsignedInteger::DEC);
       if (_index.isValid()) {
@@ -1471,10 +1471,9 @@ public:
         index = i;
       }
     }
-    
-    return call(index, arguments, argumentsSize);
+    return index;
   }
-  
+
   ~Handle()
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
@@ -1799,6 +1798,12 @@ void WebAssembly::setUseLog(bool useLog)
   handle->setUseLog(useLog);
 }
 
+MemorySize WebAssembly::getFunctionIndex(const String& id) const
+{
+  auto handle = this->handle.cast<WebAssembly::Handle>();
+  return handle->getFunctionIndex(id);
+}
+
 void WebAssembly::callEntry()
 {
   Profiler::Task profile("WebAssembly::call()", "WASM");
@@ -1810,14 +1815,14 @@ AnyValue WebAssembly::call(const String& id, const AnyValue* arguments, MemorySi
 {
   Profiler::Task profile("WebAssembly::call()", "WASM");
   auto handle = this->handle.cast<WebAssembly::Handle>();
-  return handle->call(id, arguments, argumentsSize);
+  return handle->call(handle->getFunctionIndex(id), arguments, argumentsSize);
 }
 
 AnyValue WebAssembly::call(const String& id, const Array<AnyValue>& arguments)
 {
   Profiler::Task profile("WebAssembly::call()", "WASM");
   auto handle = this->handle.cast<WebAssembly::Handle>();
-  return handle->call(id, arguments.getFirstReference(), arguments.getSize());
+  return handle->call(handle->getFunctionIndex(id), arguments.getFirstReference(), arguments.getSize());
 }
 
 AnyValue WebAssembly::call(unsigned int id, const Array<AnyValue>& arguments)

@@ -675,13 +675,14 @@ public:
     clear(binary);
     binary.size = size;
     binary.data = (byte_t*)const_cast<uint8*>(wasm);
-    module = wasm_module_new(store, &binary);
-    // wasm_byte_vec_delete(&binary);
  
     if (!wasm_module_validate(store, &binary)) {
       return false;
     }
 
+    module = wasm_module_new(store, &binary);
+    // wasm_byte_vec_delete(&binary);
+ 
 #if 0
     own wasm_importtype_vec_t _imports;
     wasm_module_imports(module, &_imports);
@@ -709,7 +710,7 @@ public:
       // wasm_externkind_t kind = wasm_externtype_kind(type);
       // dumpExtern(i, (wasm_extern_t*)e, name);
     }
-        
+    
     return true;
 #else
     return false;

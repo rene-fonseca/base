@@ -35,6 +35,7 @@ private:
     COMMAND_HELP,
     COMMAND_DUMP,
     COMMAND_FORMAT,
+    COMMAND_VALIDATE,
     COMMAND_RUN,
     COMMAND_CONVERT
   };
@@ -53,6 +54,7 @@ private:
   bool wasi = false;
   bool fake = false;
   bool useLog = false;
+  WebAssembly::Format format = WebAssembly::FORMAT_UNSPECIFIED;
   MemorySize maximumMemory = 0; // in Mb
   MemorySize maximumStack = 0; // in Mb
   Array<StringPair> importModules;
@@ -91,18 +93,19 @@ public:
     fout << "Usage: " << getFormalName() << " [OPTIONS] PATH [DEST] [ID] [ARGS]" << EOL
          << EOL
          << "Options:" << EOL
-         << indent(2) << "--help              This message" << EOL
-         << indent(2) << "--fake              Register fake imports" << EOL
-         << indent(2) << "--json              Get WASM module info as JSON" << EOL
-         << indent(2) << "--wasi              Use WASI mode" << EOL
-         << indent(2) << "--dump              Dumps info about the WASM module" << EOL
-         << indent(2) << "--log               Enabled log" << EOL
-         << indent(2) << "--version           Show the version" << EOL
-         << indent(2) << "--run               Run WASM module" << EOL
-         << indent(2) << "--convert           Convert WAT to WASM" << EOL
-         << indent(2) << "--env NAME=VALUE    Add environment variable" << EOL
-         << indent(2) << "--mount PATH=PATH   Mount folder at path" << EOL
-         << indent(2) << "--import NAME=PATH  Use exports from module" << EOL
+         << indent(2) << "--help                    This message" << EOL
+         << indent(2) << "--fake                    Register fake imports" << EOL
+         << indent(2) << "--json                    Get WASM module info as JSON" << EOL
+         << indent(2) << "--wasi                    Use WASI mode" << EOL
+         << indent(2) << "--dump                    Dumps info about the WASM module" << EOL
+         << indent(2) << "--log                     Enabled log" << EOL
+         << indent(2) << "--version                 Show the version" << EOL
+         << indent(2) << "--run                     Run WASM module" << EOL
+         << indent(2) << "--validate=WASM|WAT|ANY   Validate file format" << EOL
+         << indent(2) << "--convert                 Convert WAT to WASM" << EOL
+         << indent(2) << "--env NAME=VALUE          Add environment variable" << EOL
+         << indent(2) << "--mount PATH=PATH         Mount folder at path" << EOL
+         << indent(2) << "--import NAME=PATH        Use exports from module" << EOL
          << ENDL;
   }
 
@@ -230,7 +233,43 @@ public:
       break;
     }
   }
-  
+
+  /** Validates file. */
+  void validate(const String& path)
+  {
+    if (!path) {
+      ferr << "Error: No module provided." << ENDL;
+      setExitCode(1);
+      return;
+    }
+    if (!FileSystem::fileExists(path)) {
+      setExitCode(1);
+      ferr << "Error: Module '%1' does not exist." % Subst(path) << ENDL;
+      return;
+    }
+    
+    String bytes;
+    try {
+      bytes = File::readFile(path, File::ENCODING_RAW);
+    } catch (...) {
+      setExitCode(1);
+      ferr << "Error: Failed to load module '%1'." % Subst(path) << ENDL;
+      return;
+    }
+    
+    switch (WebAssembly::getFormat(bytes)) {
+    case WebAssembly::FORMAT_WASM:
+      setExitCode(((format == WebAssembly::FORMAT_WASM) || (format == WebAssembly::FORMAT_UNSPECIFIED)) ? 0 : 1);
+      break;
+    case WebAssembly::FORMAT_WAT:
+      setExitCode(((format == WebAssembly::FORMAT_WAT) || (format == WebAssembly::FORMAT_UNSPECIFIED)) ? 0 : 1);
+      break;
+    default:
+      setExitCode(1);
+      break;
+    }
+  }
+
   /** Dump all exported symbols in module. */
   void dump(const String& path, const String& pattern)
   {
@@ -544,6 +583,23 @@ public:
         command = COMMAND_DUMP;
       } else if (argument == "--format") {
         command = COMMAND_FORMAT;
+      } else if (argument == "--validate") {
+        command = COMMAND_VALIDATE;
+        if (!enu.hasNext()) {
+          ferr << "Error: " << "Expecting format WASM|WAT|ANY." << ENDL;
+          return false;
+        }
+        String value = enu.next();
+        if (value == "WASM") {
+          format = WebAssembly::FORMAT_WASM;
+        } else if (value == "WASM") {
+          format = WebAssembly::FORMAT_WAT;
+        } else if (value == "WASM") {
+          format = WebAssembly::FORMAT_UNSPECIFIED;
+        } else {
+          ferr << "Error: " << "Expecting format WASM|WAT|ANY." << ENDL;
+          return false;
+        }
       } else if (argument == "--run") {
         command = COMMAND_RUN;
       } else if (argument == "--convert") {
@@ -587,7 +643,7 @@ public:
           ferr << "Error: " << "Expecting module to import." << ENDL;
           return false;
         }
-        importModules.append(enu.next());
+        importModules.append(getNameValue(enu.next()));
       } else {
         if (!path) {
           path = argument;
@@ -650,6 +706,9 @@ public:
       break;
     case COMMAND_FORMAT:
       dumpFormat(path);
+      break;
+    case COMMAND_VALIDATE:
+      validate(path);
       break;
     case COMMAND_CONVERT:
       convertWAT2WASM(path, destPath);

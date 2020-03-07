@@ -101,11 +101,11 @@ public:
          << indent(2) << "--log                     Enabled log" << EOL
          << indent(2) << "--version                 Show the version" << EOL
          << indent(2) << "--run                     Run WASM module" << EOL
-         << indent(2) << "--validate=WASM|WAT|ANY   Validate file format" << EOL
+         << indent(2) << "--validate WASM|WAT|ANY   Validate file format" << EOL
          << indent(2) << "--convert                 Convert WAT to WASM" << EOL
          << indent(2) << "--env NAME=VALUE          Add environment variable" << EOL
          << indent(2) << "--mount PATH=PATH         Mount folder at path" << EOL
-         << indent(2) << "--import NAME=PATH        Use exports from module" << EOL
+         << indent(2) << "--import MODULE=PATH      Use exports from module" << EOL
          << ENDL;
   }
 
@@ -477,8 +477,11 @@ public:
           if (imported.functionType != exported.functionType) {
             continue;
           }
-          fout << "BIND TO EXPORT " << "[" << exported.index << "] "
-               << moduleName << " " << WebAssembly::toString(exported, colorize) << ENDL;
+          if (useLog) {
+            fout << "BIND TO EXPORT " << "[" << exported.index << "] "
+                 << moduleName << " " << WebAssembly::toString(exported, colorize) << ENDL;
+          }
+          // TAG: add WebAssembly::Context - to allow automatic destruction
           BindContext* bindContext = new BindContext();
           bindContext->function = WebAssemblyFunction(wasmLibrary, imported.name);
           wasm.registerFunction(

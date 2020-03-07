@@ -191,78 +191,6 @@ public:
       _throw WebAssemblyException("Unsupported type.");
     }
     */
-
-    template<>
-    inline bool toNative<bool>() const
-    {
-      if (type != TYPE_i32) {
-        _throw WebAssembly::WebAssemblyException("Not compatible with <bool> type.");
-      }
-      return i32 != 0;
-    }
-
-    template<>
-    inline int toNative<int>() const
-    {
-      if (type != TYPE_i32) {
-        _throw WebAssembly::WebAssemblyException("Not compatible with <int> type.");
-      }
-      return static_cast<int>(i32);
-    }
-
-    template<>
-    inline unsigned int toNative<unsigned int>() const
-    {
-      if (type != TYPE_i32) {
-        _throw WebAssembly::WebAssemblyException("Not compatible with <unsigned int> type.");
-      }
-      return static_cast<unsigned int>(i32);
-    }
-
-    template<>
-    inline int64 toNative<int64>() const
-    {
-      if (type != TYPE_i64) {
-        _throw WebAssembly::WebAssemblyException("Not compatible with <int64> type.");
-      }
-      return static_cast<int64>(i64);
-    }
-
-    template<>
-    inline uint64 toNative<uint64>() const
-    {
-      if (type != TYPE_i64) {
-        _throw WebAssembly::WebAssemblyException("Not compatible with <uint64> type.");
-      }
-      return static_cast<uint64>(i64);
-    }
-
-    template<>
-    inline float toNative<float>() const
-    {
-      if (type != TYPE_f32) {
-        _throw WebAssembly::WebAssemblyException("Not compatible with <float> type.");
-      }
-      return static_cast<float>(f32);
-    }
-
-    template<>
-    inline double toNative<double>() const
-    {
-      if (type != TYPE_f64) {
-        _throw WebAssembly::WebAssemblyException("Not compatible with <double> type.");
-      }
-      return static_cast<double>(f64);
-    }
-
-    template<>
-    inline long double toNative<long double>() const
-    {
-      if (type != TYPE_f64) {
-        _throw WebAssembly::WebAssemblyException("Not compatible with <long double> type.");
-      }
-      return static_cast<long double>(f64);
-    }
   };
 
   /** Description for symbol. */
@@ -765,6 +693,78 @@ public:
   static constexpr Type type = TYPE_i32;
   static constexpr MemorySize SIZE = sizeof(TYPE);
 };
+
+template<>
+inline bool WebAssembly::WASMValue::toNative<bool>() const
+{
+  if (type != TYPE_i32) {
+    _throw WebAssembly::WebAssemblyException("Not compatible with <bool> type.");
+  }
+  return i32 != 0;
+}
+
+template<>
+inline int WebAssembly::WASMValue::toNative<int>() const
+{
+  if (type != TYPE_i32) {
+    _throw WebAssembly::WebAssemblyException("Not compatible with <int> type.");
+  }
+  return static_cast<int>(i32);
+}
+
+template<>
+inline unsigned int WebAssembly::WASMValue::toNative<unsigned int>() const
+{
+  if (type != TYPE_i32) {
+    _throw WebAssembly::WebAssemblyException("Not compatible with <unsigned int> type.");
+  }
+  return static_cast<unsigned int>(i32);
+}
+
+template<>
+inline int64 WebAssembly::WASMValue::toNative<int64>() const
+{
+  if (type != TYPE_i64) {
+    _throw WebAssembly::WebAssemblyException("Not compatible with <int64> type.");
+  }
+  return static_cast<int64>(i64);
+}
+
+template<>
+inline uint64 WebAssembly::WASMValue::toNative<uint64>() const
+{
+  if (type != TYPE_i64) {
+    _throw WebAssembly::WebAssemblyException("Not compatible with <uint64> type.");
+  }
+  return static_cast<uint64>(i64);
+}
+
+template<>
+inline float WebAssembly::WASMValue::toNative<float>() const
+{
+  if (type != TYPE_f32) {
+    _throw WebAssembly::WebAssemblyException("Not compatible with <float> type.");
+  }
+  return static_cast<float>(f32);
+}
+
+template<>
+inline double WebAssembly::WASMValue::toNative<double>() const
+{
+  if (type != TYPE_f64) {
+    _throw WebAssembly::WebAssemblyException("Not compatible with <double> type.");
+  }
+  return static_cast<double>(f64);
+}
+
+template<>
+inline long double WebAssembly::WASMValue::toNative<long double>() const
+{
+  if (type != TYPE_f64) {
+    _throw WebAssembly::WebAssemblyException("Not compatible with <long double> type.");
+  }
+  return static_cast<long double>(f64);
+}
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const WebAssembly::Symbol& value);
 

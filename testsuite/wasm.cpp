@@ -405,13 +405,96 @@ public:
   // TAG: how can we handle memory access - read and write access - need descriptive IDL to specific what is memory
   
   /** Callback from WASM. Forwards to other WASM function. */
-  static void bind(void* context, const WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
+  static void bindToLibrary(void* context, WebAssembly& wasm,
+                            const WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
   {
     if (BindContext* bind = reinterpret_cast<BindContext*>(context)) {
       bind->function(arguments, results);
     } else {
       _throw WebAssembly::WebAssemblyException("Calling unbound function.");
     }
+  }
+  
+  Array<Pair<String, WebAssembly> > loadWASMLibraries(bool& success)
+  {
+    // TAG: imports should be resolved recursively - but there is no info per imported module
+    Array<Pair<String, WebAssembly> > result;
+    for (auto np : importModules) {
+      String bytes;
+      try {
+        bytes = File::readFile(np.getSecond(), File::ENCODING_RAW);
+      } catch (...) {
+        setExitCode(1);
+        ferr << "Error: Failed to load module '%1'." % Subst(path) << ENDL;
+        success = false;
+        return result;
+      }
+
+      WebAssembly wasm;
+      if (!wasm.loadAny(bytes)) {
+        ferr << "Error: Failed to load and compile module '%1'." % Subst(path) << ENDL;
+        setExitCode(1);
+        success = false;
+        return result;
+      }
+      if (!wasm.makeInstance()) { // TAG: add support for wasi at some point
+        ferr << "Error: Failed to link module '%1'." % Subst(path) << ENDL;
+        setExitCode(1);
+        success = false;
+        return result;
+      }
+      result.append(Pair<String, WebAssembly>(np.getFirst(), wasm));
+    }
+    return result;
+  }
+  
+  /** Bind imports to libraries. */
+  bool bindImports(WebAssembly& wasm, const Array<Pair<String, WebAssembly> >& importWASM)
+  {
+    // TAG: allow to read from JSON manifest
+    auto imports = wasm.getImports();
+    for (auto& imported : imports) {
+      if (imported.externType != WebAssembly::EXTERN_FUNCTION) {
+        continue;
+      }
+      // fout << "IMPORT: " << "[" << imported.index << "] "
+      //     << WebAssembly::toString(imported, colorize) << ENDL;
+      bool found = false;
+      for (auto& mw : importWASM) {
+        auto& moduleName = mw.getFirst();
+        if (imported.moduleName != moduleName) {
+          continue;
+        }
+        auto wasmLibrary = mw.getSecond();
+        auto exports = wasmLibrary.getExports();
+        for (auto& exported : exports) {
+          if (imported.name != exported.name) {
+            continue;
+          }
+          if (exported.externType != WebAssembly::EXTERN_FUNCTION) {
+            continue;
+          }
+          if (imported.functionType != exported.functionType) {
+            continue;
+          }
+          fout << "BIND TO EXPORT " << "[" << exported.index << "] "
+               << moduleName << " " << WebAssembly::toString(exported, colorize) << ENDL;
+          BindContext* bindContext = new BindContext();
+          bindContext->function = WebAssemblyFunction(wasmLibrary, imported.name);
+          wasm.registerFunction(
+            bindToLibrary, bindContext, imported.functionType, imported.name, imported.moduleName
+          );
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        ferr << "Error: Failed to bind import '%1'." % Subst(WebAssembly::toString(imported, colorize)) << ENDL;
+        setExitCode(1);
+        return false;
+      }
+    }
+    return true;
   }
   
   /** Call symbol in module. */
@@ -460,30 +543,10 @@ public:
     }
     timer.start();
     
-    // TAG: imports should be resolved recursively - but there is no info per imported module
-    Array<Pair<String, WebAssembly> > importWASM;
-    for (auto np : importModules) {
-      String bytes;
-      try {
-        bytes = File::readFile(np.getSecond(), File::ENCODING_RAW);
-      } catch (...) {
-        setExitCode(1);
-        ferr << "Error: Failed to load module '%1'." % Subst(path) << ENDL;
-        return;
-      }
-
-      WebAssembly wasm;
-      if (!wasm.loadAny(bytes)) {
-        ferr << "Error: Failed to load and compile module '%1'." % Subst(path) << ENDL;
-        setExitCode(1);
-        return;
-      }
-      if (!wasm.makeInstance()) { // TAG: add support for wasi at some point
-        ferr << "Error: Failed to link module '%1'." % Subst(path) << ENDL;
-        setExitCode(1);
-        return;
-      }
-      importWASM.append(Pair<String, WebAssembly>(np.getFirst(), wasm));
+    bool success = true;
+    Array<Pair<String, WebAssembly> > importWASM = loadWASMLibraries(success);
+    if (!success) {
+      return;
     }
     
     if (wasi) {
@@ -494,47 +557,11 @@ public:
       }
     } else {
       
-      // TAG: move to separate method
-      // TAG: allow to read from JSON manifest
       // bind exports to imports
-      auto imports = wasm.getImports();
-      for (auto& imported : imports) {
-        if (imported.externType != WebAssembly::EXTERN_FUNCTION) {
-          continue;
-        }
-        fout << "IMPORT: " << "[" << imported.index << "] "
-             << WebAssembly::toString(imported, colorize) << ENDL;
-        bool found = false;
-        for (auto& mw : importWASM) {
-          auto& moduleName = mw.getFirst();
-          auto wasm = mw.getSecond();
-          auto exports = wasm.getExports();
-          for (auto& exported : exports) {
-            if (imported.name != exported.name) {
-              continue;
-            }
-            if (exported.externType != WebAssembly::EXTERN_FUNCTION) {
-              continue;
-            }
-            if (imported.functionType != exported.functionType) {
-              continue;
-            }
-            fout << "EXPORT " << "[" << exported.index << "] "
-                 << WebAssembly::toString(exported, colorize) << ENDL;
-            // wasm.registerFunction();
-            // break;
-            found = true;
-          }
-        }
-        if (!found) {
-          ferr << "Error: Failed to bind import '%1'." % Subst(WebAssembly::toString(imported, colorize)) << ENDL;
-          setExitCode(1);
-          return;
-        }
+      if (!bindImports(wasm, importWASM)) {
+        return;
       }
       
-      // wasm.registerFunction(hello);
-      // wasm.registerFunction(throwit);
       if (!wasm.makeInstance(fake)) {
         ferr << "Error: Failed to create instance." << ENDL;
         setExitCode(1);
@@ -568,7 +595,7 @@ public:
   {
     auto index = text.indexOf(separator);
     if (index >= 0) {
-      return StringPair(text.substring(index), text.substring(index + 1));
+      return StringPair(text.substring(0, index), text.substring(index + 1));
     } else {
       return StringPair(text);
     }

@@ -43,7 +43,7 @@ public:
   {
     auto index = text.indexOf(separator);
     if (index >= 0) {
-      return StringPair(text.substring(index), text.substring(index + 1));
+      return StringPair(text.substring(0, index), text.substring(index + 1));
     } else {
       return StringPair(text);
     }
@@ -54,7 +54,7 @@ public:
   {
     auto index = text.indexOf(separator);
     if (index >= 0) {
-      return StringPair(text.substring(index), text.substring(index + 1));
+      return StringPair(text.substring(0, index), text.substring(index + 1));
     } else {
       return StringPair(text, _default);
     }

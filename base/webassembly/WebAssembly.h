@@ -265,6 +265,13 @@ public:
     return sizeof...(TYPES);
   }
 
+  /** Function context base class. */
+  class _COM_AZURE_DEV__BASE__API FunctionContext {
+  public:
+
+    ~FunctionContext();
+  };
+
   /** Extern WASM function. */
   typedef void (*WASMFunction)(void* context, WebAssembly& wasm, const WASMValue* arguments, WASMValue* results);
   

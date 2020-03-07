@@ -80,6 +80,10 @@ WebAssembly::FunctionType::FunctionType()
 {
 }
 
+WebAssembly::FunctionContext::~FunctionContext()
+{
+}
+
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
 String getValuesAsString(const wasm_val_t args[], MemorySize size)
 {

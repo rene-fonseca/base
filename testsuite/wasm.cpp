@@ -230,7 +230,6 @@ public:
     default:
       fout << "application/octet-stream" << ENDL;
       setExitCode(1);
-      break;
     }
   }
 
@@ -257,16 +256,28 @@ public:
       return;
     }
     
-    switch (WebAssembly::getFormat(bytes)) {
-    case WebAssembly::FORMAT_WASM:
-      setExitCode(((format == WebAssembly::FORMAT_WASM) || (format == WebAssembly::FORMAT_UNSPECIFIED)) ? 0 : 1);
-      break;
-    case WebAssembly::FORMAT_WAT:
-      setExitCode(((format == WebAssembly::FORMAT_WAT) || (format == WebAssembly::FORMAT_UNSPECIFIED)) ? 0 : 1);
-      break;
-    default:
+    try {
+      WebAssembly wasm;
+      switch (WebAssembly::getFormat(bytes)) {
+      case WebAssembly::FORMAT_WASM:
+        if (!((format == WebAssembly::FORMAT_WASM) || (format == WebAssembly::FORMAT_UNSPECIFIED))) {
+          setExitCode(1);
+          return;
+        }
+        setExitCode(wasm.isValid(bytes) ? 0 : 1);
+        break;
+      case WebAssembly::FORMAT_WAT:
+        if (!((format == WebAssembly::FORMAT_WAT) || (format == WebAssembly::FORMAT_UNSPECIFIED))) {
+          setExitCode(1);
+          return;
+        }
+        setExitCode(wasm.isValid(WebAssembly::convertWATToWASM(bytes)) ? 0 : 1);
+        break;
+      default:
+        setExitCode(1);
+      }
+    } catch (...) {
       setExitCode(1);
-      break;
     }
   }
 

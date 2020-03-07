@@ -2734,7 +2734,8 @@ public:
 
   static bool func2Called;
   
-  static void func1(void* context, WebAssembly& wasm, WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
+  static void func1(void* context, WebAssembly& wasm,
+                    const WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
   {
     wasm.forward(func2, arguments, results);
   }
@@ -2746,7 +2747,8 @@ public:
     return 123;
   }
 
-  static void func3(void* context, WebAssembly& wasm, WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
+  static void func3(void* context, WebAssembly& wasm,
+                    const WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
   {
     TEST_CLASS(WebAssembly)* object = reinterpret_cast<TEST_CLASS(WebAssembly)*>(context);
     wasm.forward(&TEST_CLASS(WebAssembly)::func4, object, arguments, results);

@@ -338,7 +338,7 @@ public:
   }
 
   /** Extern WASM function. */
-  typedef void (*WASMFunction)(void* context, WebAssembly& wasm, WASMValue* arguments, WASMValue* results);
+  typedef void (*WASMFunction)(void* context, WebAssembly& wasm, const WASMValue* arguments, WASMValue* results);
   
   /** Registers global function. */
   void registerFunction(WASMFunction func, void* context,

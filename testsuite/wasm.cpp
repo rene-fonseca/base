@@ -396,7 +396,8 @@ public:
     }
   }
 
-  class BindContext {
+  /** function binding context. */
+  class BindContext : public WebAssembly::FunctionContext {
   public:
     
     WebAssemblyFunction function;
@@ -405,13 +406,11 @@ public:
   // TAG: how can we handle memory access - read and write access - need descriptive IDL to specific what is memory
   
   /** Callback from WASM. Forwards to other WASM function. */
-  static void bindToLibrary(void* context, WebAssembly& wasm,
+  static void bindToLibrary(AnyReference context, WebAssembly& wasm,
                             const WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
   {
-    if (BindContext* bind = reinterpret_cast<BindContext*>(context)) {
+    if (R<BindContext> bind = context.castChecked<BindContext>()) {
       bind->function(arguments, results);
-    } else {
-      _throw WebAssembly::WebAssemblyException("Calling unbound function.");
     }
   }
   
@@ -482,7 +481,7 @@ public:
                  << moduleName << " " << WebAssembly::toString(exported, colorize) << ENDL;
           }
           // TAG: add WebAssembly::Context - to allow automatic destruction
-          BindContext* bindContext = new BindContext();
+          R<BindContext> bindContext = new BindContext();
           bindContext->function = WebAssemblyFunction(wasmLibrary, imported.name);
           wasm.registerFunction(
             bindToLibrary, bindContext, imported.functionType, imported.name, imported.moduleName

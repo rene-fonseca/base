@@ -266,22 +266,22 @@ public:
   }
 
   /** Function context base class. */
-  class _COM_AZURE_DEV__BASE__API FunctionContext {
+  class _COM_AZURE_DEV__BASE__API FunctionContext : public ReferenceCountedObject {
   public:
 
     ~FunctionContext();
   };
 
   /** Extern WASM function. */
-  typedef void (*WASMFunction)(void* context, WebAssembly& wasm, const WASMValue* arguments, WASMValue* results);
+  typedef void (*WASMFunction)(AnyReference context, WebAssembly& wasm, const WASMValue* arguments, WASMValue* results);
   
   /** Registers global function. */
-  void registerFunction(WASMFunction func, void* context,
+  void registerFunction(WASMFunction func, AnyReference context,
                         const FunctionType& type, const String& name, const String& module = String());
 
   /** Registers global function. */
   template<typename RESULT, typename... ARGS>
-  void registerFunction(WASMFunction func, void* context,
+  void registerFunction(WASMFunction func, AnyReference context,
                         RESULT (*functype)(ARGS...), const String& name, const String& module = String())
   {
     registerFunction(

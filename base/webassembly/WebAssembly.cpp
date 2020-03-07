@@ -207,7 +207,7 @@ public:
     String name;
     
     WASMFunction func;
-    void* context = nullptr;
+    AnyReference context;
     
     PreferredAtomicCounter invocations;
     
@@ -358,7 +358,7 @@ private:
   public:
   
     WASMFunction func = nullptr;
-    void* context = nullptr;
+    AnyReference context;
     FunctionType type;
     String module;
     String name;
@@ -380,7 +380,7 @@ public:
     useLog = _useLog;
   }
   
-  void registerFunctionImpl(WASMFunction func, void* context,
+  void registerFunctionImpl(WASMFunction func, AnyReference context,
                             const FunctionType& type, const String& name, const String& module)
   {
     ImportFunction f;
@@ -1772,7 +1772,7 @@ WebAssembly::FunctionType WebAssembly::getFunctionType(unsigned int id)
   return handle->getFunctionType(id);
 }
 
-void WebAssembly::registerFunction(WASMFunction func, void* context,
+void WebAssembly::registerFunction(WASMFunction func, AnyReference context,
                                    const FunctionType& type, const String& name, const String& module)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
@@ -2738,7 +2738,7 @@ public:
 
   static bool func2Called;
   
-  static void func1(void* context, WebAssembly& wasm,
+  static void func1(AnyReference context, WebAssembly& wasm,
                     const WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
   {
     wasm.forward(func2, arguments, results);
@@ -2751,7 +2751,7 @@ public:
     return 123;
   }
 
-  static void func3(void* context, WebAssembly& wasm,
+  static void func3(AnyReference context, WebAssembly& wasm,
                     const WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
   {
     TEST_CLASS(WebAssembly)* object = reinterpret_cast<TEST_CLASS(WebAssembly)*>(context);

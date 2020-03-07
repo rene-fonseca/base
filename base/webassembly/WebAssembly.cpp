@@ -319,6 +319,23 @@ private:
     Engine()
     {
       engine = wasm_engine_new(); // 1 per process
+      
+#if 0
+      own wasm_config_t* config = wasm_config_new();
+
+      wasmtime_config_debug_info_set(config, true);
+      wasmtime_config_wasm_threads_set(config, true);
+      wasmtime_config_wasm_reference_types_set(config, true);
+      wasmtime_config_wasm_simd_set(config, true);
+      wasmtime_config_wasm_bulk_memory_set(config, true);
+      wasmtime_config_wasm_multi_value_set(config, true);
+      wasmtime_config_strategy_set(config, WASMTIME_STRATEGY_AUTO);
+      wasmtime_config_cranelift_debug_verifier_set(config, true);
+      wasmtime_config_cranelift_opt_level_set(config, WASMTIME_OPT_LEVEL_SPEED_AND_SIZE);
+      
+      engine = wasm_engine_new_with_config(config);
+      // wasm_config_delete(config); // wasmtime: missing symbol
+#endif
     }
     
     ~Engine()

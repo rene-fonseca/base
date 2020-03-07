@@ -76,6 +76,10 @@ WebAssembly::WASMValue::WASMValue(double value)
 {
 }
 
+WebAssembly::FunctionType::FunctionType()
+{
+}
+
 #if defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
 String getValuesAsString(const wasm_val_t args[], MemorySize size)
 {
@@ -2661,6 +2665,11 @@ own wasm_trap_t* fakeHook(void* env, const wasm_val_t args[], wasm_val_t results
   return nullptr;
 }
 
+inline void setHandle(WebAssembly& wasm, const AnyReference& _handle)
+{
+  wasm.handle = _handle;
+}
+
 own wasm_trap_t* forwardCallback(void* env, const wasm_val_t args[], wasm_val_t _results[]) noexcept
 {
   Profiler::Task profile("WebAssembly::callback()", "WASM"); // TAG: add module!name()
@@ -2673,10 +2682,12 @@ own wasm_trap_t* forwardCallback(void* env, const wasm_val_t args[], wasm_val_t 
     auto handle = context->handle;
     PrimitiveStackArray<WebAssembly::WASMValue> arguments(context->argSize);
     PrimitiveStackArray<WebAssembly::WASMValue> results(context->resultSize);
-    for (MemorySize i = 0; i < context->resultSize; ++i) {
+    for (MemorySize i = 0; i < context->argSize; ++i) {
       handle->convert(arguments[i], args[i]);
     }
-    context->func(context->context, arguments ? arguments : nullptr, results ? results : nullptr);
+    WebAssembly wasm;
+    setHandle(wasm, handle);
+    context->func(context->context, wasm, arguments ? arguments : nullptr, results ? results : nullptr);
     for (MemorySize i = 0; i < context->resultSize; ++i) {
       handle->convert(_results[i], results[i]);
     }
@@ -2720,10 +2731,30 @@ public:
   TEST_PROJECT("base/webassembly");
   TEST_TIMEOUT_MS(30 * 1000);
 
-  static void func1(void* context, WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
+  static bool func2Called;
+  
+  static void func1(void* context, WebAssembly& wasm, WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
+  {
+    wasm.forward(func2, arguments, results);
+  }
+
+  static int func2(int arg1, int arg2)
+  {
+    // fout << "Hello, World!" << ENDL;
+    func2Called = true;
+    return 123;
+  }
+
+  static void func3(void* context, WebAssembly& wasm, WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
+  {
+    TEST_CLASS(WebAssembly)* object = reinterpret_cast<TEST_CLASS(WebAssembly)*>(context);
+    wasm.forward(&TEST_CLASS(WebAssembly)::func4, object, arguments, results);
+  }
+
+  float func4(int arg1, double arg2, uint64 arg3)
   {
     fout << "Hello, World!" << ENDL;
-    // TAG: forward to native function
+    return -0.0f;
   }
 
   static void hello()
@@ -2731,16 +2762,13 @@ public:
     fout << "Hello, World!" << ENDL;
   }
 
-  static float func2(int arg1, double arg2, uint64 arg3)
-  {
-    fout << "Hello, World!" << ENDL;
-    return -0.0f;
-  }
-
   void run() override
   {
     WebAssembly wasm;
-    TEST_ASSERT(wasm.isSupported());
+    if (!TEST_INLINE_ASSERT(WebAssembly::isSupported())) {
+      return;
+    }
+    
     String description = wasm.getEngine();
     TEST_ASSERT(description);
     
@@ -2759,8 +2787,7 @@ public:
     String binary = WebAssembly::convertWATToWASM(addWAT);
     if (TEST_INLINE_ASSERT(wasm.isValid(binary))) {
       TEST_ASSERT(wasm.load(binary));
-      wasm.registerFunction(func1, nullptr, WebAssembly::FunctionType(), "hello", "");
-      // wasm.registerFunction(hello, nullptr, WebAssembly::FunctionType(), "hello", "");
+      wasm.registerFunction(func1, nullptr, func2, "hello", "");
       TEST_ASSERT(wasm.makeInstance());
       auto imports = wasm.getImports();
       TEST_ASSERT(!imports);
@@ -2778,19 +2805,16 @@ public:
       (data (i32.const 8) "Hello World\n")
       (memory 1)
       (export "memory" (memory 0))
+      (func $main (export "_start")
+        (i32.store (i32.const 0) (i32.const 8)) ;; start of string
+        (i32.store (i32.const 4) (i32.const 12)) ;; length of string
+        (call $write
+          (i32.const 0)
+          (i32.const 1)
+        )
+        drop
+      )
     ))WAT";
-
-#if 0
-    (func $main (export "_start")
-      (i32.store (i32.const 0) (i32.const 8)) ;; start of string
-      (i32.store (i32.const 4) (i32.const 12)) ;; length of string
-      ;;(call $write
-      ;;  (i32.const 0)
-      ;;  (i32.const 1)
-      ;;)
-      drop ;; Discard result
-    )
-#endif
     
     {
       WebAssembly wasm2;
@@ -2805,15 +2829,22 @@ public:
         auto ft = WebAssembly::getFunctionType(func2);
         // fout << ft << ENDL;
 
-        // TAG: get function type from native
-        wasm2.registerFunction(func1, nullptr, WebAssembly::FunctionType(), "write", "internal");
+        wasm2.registerFunction(func1, nullptr, WebAssembly::FunctionType(func2), "write", "internal");
+        wasm2.registerFunction(
+          func1, this, WebAssembly::FunctionType(&TEST_CLASS(WebAssembly)::func4), "func4", "internal"
+        );
         TEST_ASSERT(wasm2.makeInstance());
         auto exports = wasm2.getExports();
-        TEST_ASSERT(exports.getSize() == 1);
+        TEST_ASSERT(exports.getSize() == 2);
+        // fout << exports << ENDL;
+        wasm2.call("_start");
+        TEST_ASSERT(func2Called);
       }
     }
   }
 };
+
+bool TEST_CLASS(WebAssembly)::func2Called = false;
 
 TEST_REGISTER(WebAssembly);
 

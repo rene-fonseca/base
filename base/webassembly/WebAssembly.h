@@ -30,6 +30,7 @@ class WebAssemblyFunction;
 */
 
 class _COM_AZURE_DEV__BASE__API WebAssembly : public Object {
+  friend void setHandle(WebAssembly& wasm, const AnyReference&);
 public:
 
   class Handle;
@@ -103,6 +104,38 @@ public:
     Array<Type> arguments;
     Array<Type> results;
     
+    FunctionType();
+    
+    /** Get function type from given function pointer. */
+    template<typename RESULT, typename... ARGS>
+    FunctionType(RESULT (*)(ARGS... args))
+    {
+      Type resultType = MapType<RESULT>::type;
+      if (resultType != TYPE_UNSPECIFIED) {
+        results.append(resultType);
+      }
+      const Type types[] = { MapType<ARGS>::type..., TYPE_UNSPECIFIED };
+      arguments.setSize(sizeof...(ARGS));
+      for (MemorySize i = 0; i < sizeof...(ARGS); ++i) {
+        arguments.setAt(i, types[i]);
+      }
+    }
+
+    /** Get function type from given function pointer. */
+    template<class TYPE, typename RESULT, typename... ARGS>
+    FunctionType(RESULT (TYPE::*)(ARGS... args))
+    {
+      Type resultType = MapType<RESULT>::type;
+      if (resultType != TYPE_UNSPECIFIED) {
+        results.append(resultType);
+      }
+      const Type types[] = { MapType<ARGS>::type..., TYPE_UNSPECIFIED };
+      arguments.setSize(sizeof...(ARGS));
+      for (MemorySize i = 0; i < sizeof...(ARGS); ++i) {
+        arguments.setAt(i, types[i]);
+      }
+    }
+
     /** Returns true if equal. */
     bool operator==(const FunctionType& type) const noexcept;
     
@@ -132,11 +165,104 @@ public:
       double f64;
     };
 
+    /** Initialize value. */
     WASMValue();
+
+    /** Initialize value. */
     WASMValue(int32);
+
+    /** Initialize value. */
     WASMValue(int64);
+
+    /** Initialize value. */
     WASMValue(float);
+
+    /** Initialize value. */
     WASMValue(double);
+
+    /** Returns native type. */
+    template<typename TYPE>
+    TYPE toNative() const;
+    
+    /*
+    template<typename TYPE>
+    inline TYPE toNative() const
+    {
+      _throw WebAssemblyException("Unsupported type.");
+    }
+    */
+
+    template<>
+    inline bool toNative<bool>() const
+    {
+      if (type != TYPE_i32) {
+        _throw WebAssembly::WebAssemblyException("Not compatible with <bool> type.");
+      }
+      return i32 != 0;
+    }
+
+    template<>
+    inline int toNative<int>() const
+    {
+      if (type != TYPE_i32) {
+        _throw WebAssembly::WebAssemblyException("Not compatible with <int> type.");
+      }
+      return static_cast<int>(i32);
+    }
+
+    template<>
+    inline unsigned int toNative<unsigned int>() const
+    {
+      if (type != TYPE_i32) {
+        _throw WebAssembly::WebAssemblyException("Not compatible with <unsigned int> type.");
+      }
+      return static_cast<unsigned int>(i32);
+    }
+
+    template<>
+    inline int64 toNative<int64>() const
+    {
+      if (type != TYPE_i64) {
+        _throw WebAssembly::WebAssemblyException("Not compatible with <int64> type.");
+      }
+      return static_cast<int64>(i64);
+    }
+
+    template<>
+    inline uint64 toNative<uint64>() const
+    {
+      if (type != TYPE_i64) {
+        _throw WebAssembly::WebAssemblyException("Not compatible with <uint64> type.");
+      }
+      return static_cast<uint64>(i64);
+    }
+
+    template<>
+    inline float toNative<float>() const
+    {
+      if (type != TYPE_f32) {
+        _throw WebAssembly::WebAssemblyException("Not compatible with <float> type.");
+      }
+      return static_cast<float>(f32);
+    }
+
+    template<>
+    inline double toNative<double>() const
+    {
+      if (type != TYPE_f64) {
+        _throw WebAssembly::WebAssemblyException("Not compatible with <double> type.");
+      }
+      return static_cast<double>(f64);
+    }
+
+    template<>
+    inline long double toNative<long double>() const
+    {
+      if (type != TYPE_f64) {
+        _throw WebAssembly::WebAssemblyException("Not compatible with <long double> type.");
+      }
+      return static_cast<long double>(f64);
+    }
   };
 
   /** Description for symbol. */
@@ -212,23 +338,22 @@ public:
   }
 
   /** Extern WASM function. */
-  typedef void (*WASMFunction)(void* context, WASMValue* arguments, WASMValue* results);
+  typedef void (*WASMFunction)(void* context, WebAssembly& wasm, WASMValue* arguments, WASMValue* results);
   
   /** Registers global function. */
-  void registerFunction(WASMFunction func, void* context, const FunctionType& type, const String& name, const String& module);
+  void registerFunction(WASMFunction func, void* context,
+                        const FunctionType& type, const String& name, const String& module = String());
 
-#if 0
   /** Registers global function. */
   template<typename RESULT, typename... ARGS>
-  void registerFunction(RESULT (*func)(ARGS...), const String& name = String(), const String& module = String())
+  void registerFunction(WASMFunction func, void* context,
+                        RESULT (*functype)(ARGS...), const String& name, const String& module = String())
   {
-    const Type resultType = MapType<RESULT>::type;
-    const Type types[] = { MapType<ARGS>::type..., TYPE_UNSPECIFIED };
-    registerFunctionImpl(
-      (void*)func, resultType, types, getArraySize(types) - 1, name, module, noexcept(func)
+    registerFunction(
+      func, context,
+      getFunctionType(functype), name, module
     );
   }
-#endif
   
   /** Loads the given WASM module. */
   bool loadFile(const String& path);
@@ -390,6 +515,62 @@ public:
 
   /** Returns function reference. */
   WebAssemblyFunction getFunction(unsigned int id);
+
+  class Arguments {
+  public:
+    
+    const WASMValue* src = nullptr;
+    
+    inline Arguments(const WASMValue* arguments) noexcept
+      : src(arguments)
+    {
+    }
+    
+    inline const WASMValue* next() noexcept
+    {
+      return src++;
+    }
+  };
+  
+  template<typename... ARGS>
+  void forward(void (*function)(ARGS...),
+               const WASMValue* _arguments, WASMValue* results)
+  {
+    // TAG: add support for memory
+    Arguments arguments(_arguments);
+    (*function)(arguments.next()->toNative<ARGS>()...);
+  }
+  
+  template<typename RESULT, typename... ARGS>
+  void forward(RESULT (*function)(ARGS...),
+               const WASMValue* _arguments, WASMValue* results)
+  {
+    // TAG: add support for memory
+    Arguments arguments(_arguments);
+    RESULT result = (*function)(arguments.next()->toNative<ARGS>()...);
+    *results++ = result;
+  }
+
+  template<class TYPE, typename... ARGS>
+  void forward(void (*function)(ARGS...),
+               TYPE* object,
+               const WASMValue* _arguments, WASMValue* results)
+  {
+    // TAG: add support for memory
+    Arguments arguments(_arguments);
+    (object->*function)(arguments.next()->toNative<ARGS>()...);
+  }
+  
+  template<class TYPE, typename RESULT, typename... ARGS>
+  void forward(RESULT (TYPE::*function)(ARGS...),
+               TYPE* object,
+               const WASMValue* _arguments, WASMValue* results)
+  {
+    // TAG: add support for memory
+    Arguments arguments(_arguments);
+    RESULT result = (object->*function)(arguments.next()->toNative<ARGS>()...);
+    *results++ = result;
+  }
 
   ~WebAssembly();
 };

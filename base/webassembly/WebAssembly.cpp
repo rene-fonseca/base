@@ -2712,7 +2712,7 @@ own wasm_trap_t* forwardCallback(void* env, const wasm_val_t args[], wasm_val_t 
     setHandle(wasm, handle);
     if (context->func) {
       context->func(context->context, wasm, arguments ? arguments : nullptr, results ? results : nullptr);
-    } else if (auto callback = context.cast<WASMCallback>()) {
+    } else if (auto callback = context->context.cast<WebAssembly::WASMCallback>()) {
       (*callback)(wasm, arguments ? arguments : nullptr, results ? results : nullptr);
     } else {
       return context->getTrap("No function bound.");
@@ -2778,7 +2778,8 @@ public:
   static void func3(AnyReference context, WebAssembly& wasm,
                     const WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
   {
-    TEST_CLASS(WebAssembly)* object = reinterpret_cast<TEST_CLASS(WebAssembly)*>(context);
+    void* c = context.castChecked<WebAssembly::OpaqueContext>()->context;
+    TEST_CLASS(WebAssembly)* object = reinterpret_cast<TEST_CLASS(WebAssembly)*>(c);
     wasm.forward(&TEST_CLASS(WebAssembly)::func4, object, arguments, results);
   }
 
@@ -2862,7 +2863,7 @@ public:
 
         wasm2.registerFunction(func1, nullptr, WebAssembly::FunctionType(func2), "write", "internal");
         wasm2.registerFunction(
-          func1, this, WebAssembly::FunctionType(&TEST_CLASS(WebAssembly)::func4), "func4", "internal"
+          func1, nullptr, WebAssembly::FunctionType(&TEST_CLASS(WebAssembly)::func4), "func4", "internal"
         );
         TEST_ASSERT(wasm2.makeInstance());
         auto exports = wasm2.getExports();

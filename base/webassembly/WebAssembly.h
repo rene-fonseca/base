@@ -272,6 +272,13 @@ public:
     ~FunctionContext();
   };
 
+  /** Opaque context. */
+  class _COM_AZURE_DEV__BASE__API OpaqueContext : public FunctionContext {
+  public:
+
+    void* context = nullptr;
+  };
+
   /** Callback. */
   class WASMCallback : public WebAssembly::FunctionContext {
   public:

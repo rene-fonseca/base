@@ -406,7 +406,7 @@ public:
   // TAG: how can we handle memory access - read and write access - need descriptive IDL to specific what is memory
   
   /** Callback from WASM. Forwards to other WASM function. */
-  static void bindToLibrary(AnyReference context, WebAssembly& wasm,
+  static void bindToLibrary(AnyReference context, WebAssembly& source,
                             const WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results)
   {
     if (R<BindContext> bind = context.castChecked<BindContext>()) {

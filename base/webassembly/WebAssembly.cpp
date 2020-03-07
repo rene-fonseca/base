@@ -391,6 +391,17 @@ public:
     f.context = context;
     importFunctions.append(f);
   }
+
+  void registerFunctionImpl(R<WASMCallback> callback,
+    const FunctionType& type, const String& name, const String& module)
+  {
+    ImportFunction f;
+    f.type = type;
+    f.name = name;
+    f.module = module;
+    f.context = callback;
+    importFunctions.append(f);
+  }
   
   void writeLog(const String& text)
   {
@@ -1779,6 +1790,13 @@ void WebAssembly::registerFunction(WASMFunction func, AnyReference context,
   return handle->registerFunctionImpl(func, context, type, name, module);
 }
 
+void WebAssembly::registerCallback(
+  R<WASMCallback> callback, const FunctionType& type, const String& name, const String& module)
+{
+  auto handle = this->handle.cast<WebAssembly::Handle>();
+  return handle->registerFunctionImpl(callback, type, name, module);
+}
+
 bool WebAssembly::loadFile(const String& path)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
@@ -2692,7 +2710,13 @@ own wasm_trap_t* forwardCallback(void* env, const wasm_val_t args[], wasm_val_t 
     }
     WebAssembly wasm;
     setHandle(wasm, handle);
-    context->func(context->context, wasm, arguments ? arguments : nullptr, results ? results : nullptr);
+    if (context->func) {
+      context->func(context->context, wasm, arguments ? arguments : nullptr, results ? results : nullptr);
+    } else if (auto callback = context.cast<WASMCallback>()) {
+      (*callback)(wasm, arguments ? arguments : nullptr, results ? results : nullptr);
+    } else {
+      return context->getTrap("No function bound.");
+    }
     for (MemorySize i = 0; i < context->resultSize; ++i) {
       handle->convert(_results[i], results[i]);
     }

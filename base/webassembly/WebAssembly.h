@@ -272,6 +272,15 @@ public:
     ~FunctionContext();
   };
 
+  /** Callback. */
+  class WASMCallback : public WebAssembly::FunctionContext {
+  public:
+
+    virtual void operator()(
+      WebAssembly& source, const WebAssembly::WASMValue* arguments, WebAssembly::WASMValue* results
+    ) = 0;
+  };
+
   /** Extern WASM function. */
   typedef void (*WASMFunction)(AnyReference context, WebAssembly& wasm, const WASMValue* arguments, WASMValue* results);
   
@@ -289,7 +298,11 @@ public:
       getFunctionType(functype), name, module
     );
   }
-  
+
+  /** Registers global callback. */
+  void registerCallback(
+    R<WASMCallback> callack, const FunctionType& type, const String& name, const String& module = String());
+
   /** Loads the given WASM module. */
   bool loadFile(const String& path);
 

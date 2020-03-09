@@ -96,7 +96,8 @@ public:
     command = COMMAND_ERROR;
   }
   
-  void parseArguments() noexcept {
+  void parseArguments() noexcept
+  {
     bool pathSpecified = false;
     
     Array<String> arguments = getArguments();
@@ -152,7 +153,8 @@ public:
          << ENDL;
   }
   
-  void dump() noexcept {
+  void dump() noexcept
+  {
     if (!FileSystem::fileExists(path)) {
       ferr << "Error: " << "Source does not exist." << ENDL;
       setExitCode(EXIT_CODE_ERROR);
@@ -247,7 +249,8 @@ public:
     }
   }
   
-  ~ElfInfoApplication() noexcept {
+  ~ElfInfoApplication() noexcept
+  {
   }
 };
 

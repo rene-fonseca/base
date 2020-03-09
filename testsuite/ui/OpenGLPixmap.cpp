@@ -243,37 +243,45 @@ public:
   double scale = 1;
 public:
     
-  inline View() noexcept {
+  inline View() noexcept
+  {
     resetParameters();
   }
       
-  inline void resetParameters() noexcept {
+  inline void resetParameters() noexcept
+  {
     setTranslation(Vector3D<double>(0, 0, 0));
     setRotation(Vector3D<double>(0, 0, 0));
     setScale(1);
   }
     
-  inline const Vector3D<double>& getTranslation() const noexcept {
+  inline const Vector3D<double>& getTranslation() const noexcept
+  {
     return translation;
   }
     
-  inline void setTranslation(const Vector3D<double>& translation) noexcept {
+  inline void setTranslation(const Vector3D<double>& translation) noexcept
+  {
     this->translation = translation;
   }
     
-  inline const Vector3D<double>& getRotation() const noexcept {
+  inline const Vector3D<double>& getRotation() const noexcept
+  {
     return rotation;
   }
     
-  inline void setRotation(const Vector3D<double>& rotation) noexcept {
+  inline void setRotation(const Vector3D<double>& rotation) noexcept
+  {
     this->rotation = rotation;
   }
     
-  inline double getScale() const noexcept {
+  inline double getScale() const noexcept
+  {
     return scale;
   }
       
-  inline void setScale(double scale) noexcept {
+  inline void setScale(double scale) noexcept
+  {
     this->scale = scale;
   }
 };
@@ -708,7 +716,8 @@ public:
       Literal literal;
     };
     
-    void onMouseMove(const Position& position, unsigned int state) noexcept {
+    void onMouseMove(const Position& position, unsigned int state) noexcept
+    {
       const Position difference = position - mouseButtonPosition;
       if (verbosity >= Verbosity::ALL_MOUSE_EVENTS) {
         fout << "Mouse motion event: " << position << ENDL;
@@ -762,12 +771,14 @@ public:
 //         }
     }
 
-    void onMouseScope(bool scope) noexcept {
+    void onMouseScope(bool scope) noexcept
+    {
       fout << "Event: mouse scope "
            << (scope ? MESSAGE("INSIDE SCOPE") : MESSAGE("OUT OF SCOPE")) << ENDL;
     }
     
-    void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) noexcept {
+    void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) noexcept
+    {
       static const Flag STATES[] = {
         {Mouse::LEFT, MESSAGE("LEFT")},
         {Mouse::MIDDLE, MESSAGE("MIDDLE")},
@@ -867,7 +878,8 @@ public:
     }
     
     void onMouseWheel(
-      const Position& position, int delta, unsigned int buttons) noexcept {
+      const Position& position, int delta, unsigned int buttons) noexcept
+    {
       if (verbosity >= Verbosity::ACTIVE_MOUSE_EVENTS) {
         fout << "Mouse wheel" << ENDL;
       }
@@ -875,7 +887,8 @@ public:
     }
     
     void onKey(
-      unsigned int key, unsigned int flags, unsigned int modifiers) noexcept {
+      unsigned int key, unsigned int flags, unsigned int modifiers) noexcept
+    {
       if (flags & Key::PRESSED) {
         if (flags & Key::DEAD) {
           return;
@@ -981,11 +994,13 @@ public:
       }
     }
     
-    void onIdle() noexcept {
+    void onIdle() noexcept
+    {
       onDisplay();
     }
     
-    bool onClose() noexcept {
+    bool onClose() noexcept
+    {
       fout << "Event: close " << ENDL;
       MessageDialog dialog(MESSAGE("Quit"), MESSAGE("Do you really wan't to quit?"), MessageDialog::QUESTION);
       dialog.execute();

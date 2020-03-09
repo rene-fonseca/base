@@ -70,17 +70,20 @@ public:
     progress = false;
   }
 
-  void onTermination() noexcept {
+  void onTermination() noexcept
+  {
     fout << ENDL;
   }
   
-  void error(const String& message) {
+  void error(const String& message)
+  {
     ferr << "Error: " << message << ENDL;
     setExitCode(EXIT_CODE_ERROR);
     command = COMMAND_ERROR;
   }
   
-  void parseArguments() {
+  void parseArguments()
+  {
     bool sourceSpecified = false;
     bool destinationSpecified = false;
     

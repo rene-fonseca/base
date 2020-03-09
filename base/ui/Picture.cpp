@@ -16,15 +16,18 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Picture::Picture(Window& owner)
-  : Widget(owner) {
+  : Widget(owner)
+{
 }
 
-void Picture::setBitmap(const Bitmap& bitmap) {
+void Picture::setBitmap(const Bitmap& bitmap)
+{
   this->bitmap = bitmap;
   invalidate();
 }
 
-void Picture::onDisplay() noexcept {
+void Picture::onDisplay() noexcept
+{
   // TAG: handle dimension != picture dimension
   // TAG: binding point?
   

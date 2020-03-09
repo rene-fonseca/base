@@ -99,6 +99,7 @@ public:
   /** Returns true if open. */
   bool isOpen() const noexcept;
 
+  /** Closes stream. */
   void close();
 
   /**

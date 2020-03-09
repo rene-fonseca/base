@@ -79,7 +79,8 @@ protected:
   /**
     Returns the elements of the vector for modification.
   */
-  inline TYPE* getElements() {
+  inline TYPE* getElements()
+  {
     if (elements.isMultiReferenced()) { // do we have the elements for our self
       elements = new ReferenceCountedAllocator<TYPE>(*elements); // make copy of the elements
     }
@@ -89,14 +90,16 @@ protected:
   /**
     Returns the elements of the vector for read-only.
   */
-  inline const TYPE* getElements() const noexcept {
+  inline const TYPE* getElements() const noexcept
+  {
     return elements->getElements();
   }
 
   /**
     Returns the elements of the vector for read-only.
   */
-  inline const TYPE* getReadOnlyElements() const noexcept {
+  inline const TYPE* getReadOnlyElements() const noexcept
+  {
     return elements->getElements();
   }
 
@@ -109,7 +112,8 @@ protected:
 public:
 
   /** Gets the size of the vector. */
-  inline unsigned int getSize() const noexcept {
+  inline unsigned int getSize() const noexcept
+  {
     return elements->getSize();
   }
 public:
@@ -160,7 +164,9 @@ public:
 
     @param copy The vector to be copied.
   */
-  inline Vector(const Vector& copy) noexcept : elements(copy.elements) {
+  inline Vector(const Vector& copy) noexcept
+    : elements(copy.elements)
+  {
   }
 
   /**
@@ -175,42 +181,48 @@ public:
   /**
     Returns the first element of the allocator as a modifying array.
   */
-  inline Iterator getBeginIterator() noexcept {
+  inline Iterator getBeginIterator() noexcept
+  {
     return elements->getBeginIterator();
   }
 
   /**
     Returns the end of the allocator as a modifying array.
   */
-  inline Iterator getEndIterator() noexcept {
+  inline Iterator getEndIterator() noexcept
+  {
     return elements->getEndIterator();
   }
 
   /**
     Returns the first element of the allocator as a non-modifying array.
   */
-  inline ReadIterator getBeginIterator() const noexcept {
+  inline ReadIterator getBeginIterator() const noexcept
+  {
     return elements->getBeginIterator();
   }
 
   /**
     Returns the end of the allocator as a non-modifying array.
   */
-  inline ReadIterator getEndIterator() const noexcept {
+  inline ReadIterator getEndIterator() const noexcept
+  {
     return elements->getEndIterator();
   }
 
   /**
     Returns a modifying enumerator of the array.
   */
-  inline Enumerator getEnumerator() noexcept {
+  inline Enumerator getEnumerator() noexcept
+  {
     return elements->getEnumerator();
   }
 
   /**
     Returns a non-modifying enumerator of the array.
   */
-  inline ReadEnumerator getReadEnumerator() const noexcept {
+  inline ReadEnumerator getReadEnumerator() const noexcept
+  {
     return elements->getReadEnumerator();
   }
 
@@ -240,7 +252,8 @@ public:
 
     @param index The index of the desired element.
   */
-  inline Element operator[](unsigned int index) {
+  inline Element operator[](unsigned int index)
+  {
     return Element(*this, index);
   }
 
@@ -327,7 +340,8 @@ public:
 
     @param value The value to be added.
   */
-  inline Vector& operator+=(const Vector& value) {
+  inline Vector& operator+=(const Vector& value)
+  {
     return add(value);
   }
 
@@ -336,7 +350,8 @@ public:
 
     @param value The value to be subtracted.
   */
-  inline Vector& operator-=(const Vector& value) {
+  inline Vector& operator-=(const Vector& value)
+  {
     return subtract(value);
   }
 
@@ -345,7 +360,8 @@ public:
 
     @param value The multiplicator.
   */
-  inline Vector& operator*=(const TYPE& value) noexcept {
+  inline Vector& operator*=(const TYPE& value) noexcept
+  {
     return multiply(value);
   }
 
@@ -354,21 +370,24 @@ public:
 
     @param value The divisor.
   */
-  inline Vector& operator/=(const TYPE& value) noexcept {
+  inline Vector& operator/=(const TYPE& value) noexcept
+  {
     return divide(value);
   }
 
   /**
     Unary plus.
   */
-  inline Vector operator+() const noexcept {
+  inline Vector operator+() const noexcept
+  {
     return plus();
   }
 
   /**
     Unary minus.
   */
-  inline Vector operator-() const noexcept {
+  inline Vector operator-() const noexcept
+  {
     return minus();
   }
 

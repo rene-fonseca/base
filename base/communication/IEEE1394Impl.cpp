@@ -27,7 +27,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-IEEE1394Impl* IEEE1394Impl::getDefault() noexcept {
+IEEE1394Impl* IEEE1394Impl::getDefault() noexcept
+{
   return new _COM_AZURE_DEV__BASE__IEEE_1394_IMPL();
 }
 

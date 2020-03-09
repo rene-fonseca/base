@@ -80,7 +80,8 @@ public:
     }
   }
   
-  ~LinkApplication() noexcept {
+  ~LinkApplication() noexcept
+  {
   }
 };
 

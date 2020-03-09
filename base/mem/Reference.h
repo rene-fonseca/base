@@ -425,7 +425,7 @@ private:
   AnyReference object;
 public:
   
-  GarbageCollect(AnyReference _object) noexcept
+  inline GarbageCollect(AnyReference _object) noexcept
     : object(_object) {
   }
 

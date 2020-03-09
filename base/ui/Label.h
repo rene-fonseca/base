@@ -64,14 +64,16 @@ public:
   /**
     Returns the text format.
   */
-  unsigned int getTextFormat() const noexcept {
+  unsigned int getTextFormat() const noexcept
+  {
     return textFormat;
   }
 
   /**
     Sets the text format.
   */
-  void setTextFormat(unsigned int textFormat) noexcept {
+  void setTextFormat(unsigned int textFormat) noexcept
+  {
     this->textFormat = textFormat;
     invalidate();
   }
@@ -79,7 +81,8 @@ public:
   /**
     Sets the background color.
   */
-  inline void setBackground(Color background) noexcept {
+  inline void setBackground(Color background) noexcept
+  {
     this->background = background;
     invalidate();
   }
@@ -87,7 +90,8 @@ public:
   /**
     Sets the text color.
   */
-  inline void setForeground(Color foreground) noexcept {
+  inline void setForeground(Color foreground) noexcept
+  {
     this->foreground = foreground;
     invalidate();
   }
@@ -100,7 +104,8 @@ public:
   /**
     Destroys the label.
   */
-  inline ~Label() noexcept {
+  inline ~Label() noexcept
+  {
   }
 };
 

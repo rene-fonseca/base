@@ -30,7 +30,8 @@ private:
   int state = 0;
 public:
 
-  Base() noexcept {
+  Base() noexcept
+  {
   }
 };
 
@@ -40,7 +41,8 @@ private:
   int childState = 0;
 public:
 
-  Child() noexcept {
+  Child() noexcept
+  {
   }
 };
 
@@ -50,7 +52,8 @@ private:
   int otherState = 0;
 public:
 
-  OtherChild() noexcept {
+  OtherChild() noexcept
+  {
   }
 };
 

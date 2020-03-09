@@ -210,7 +210,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
     SUBSYSTEM_EFI_RUNTIME_DRIVER = 12
   };
 
-  static String getSubsystemDescription(unsigned int subsystem) noexcept {
+  static String getSubsystemDescription(unsigned int subsystem) noexcept
+  {
     switch (subsystem) {
     case SUBSYSTEM_UNKNOWN:
       return Literal("unknown subsystem");
@@ -289,7 +290,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
 
-  static String getMachineDescription(uint32 machine) noexcept {
+  static String getMachineDescription(uint32 machine) noexcept
+  {
     switch (machine) {
     case MACHINE_UNKNOWN:
       return Literal("unknown");
@@ -341,11 +343,13 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
 
-  static bool isCOFF(const String& file) noexcept {
+  static bool isCOFF(const String& file) noexcept
+  {
     return false;
   }
   
-  static bool isPE(const String& file) noexcept {
+  static bool isPE(const String& file) noexcept
+  {
     return false;
     // if stub avail and offset is ok and signature is PE\0\0 then assume PE format
   }
@@ -354,7 +358,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const CommonObjectFileFormat::DirectoryEntry& entry) {
+  const CommonObjectFileFormat::DirectoryEntry& entry)
+{
   stream << '['
          << HEX << PREFIX << ZEROPAD << setWidth(10) << entry.rva << ':'
          << HEX << PREFIX << ZEROPAD << setWidth(10) << entry.size
@@ -380,12 +385,14 @@ public:
 
   // TAG: need function to check alignment
 
-  void error(const String& message) noexcept {
+  void error(const String& message) noexcept
+  {
     ferr << "Error: " << message << ENDL;
     setExitCode(EXIT_CODE_ERROR);
   }
 
-  void dump(const String& message, uint32 value) noexcept {
+  void dump(const String& message, uint32 value) noexcept
+  {
     fout << message << ':' << SP
          << HEX << PREFIX << ZEROPAD << setWidth(10) << value << ENDL;
   }
@@ -677,7 +684,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
     fout << dump << ENDL;
   }
   
-  void dumpDOSHeader(const String& path) noexcept {
+  void dumpDOSHeader(const String& path) noexcept
+  {
     CommonObjectFileFormat::ImageDosHeader header;
     File file(path, File::READ, File::EXCLUSIVE);
 

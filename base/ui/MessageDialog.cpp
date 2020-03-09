@@ -25,7 +25,8 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 MessageDialog::MessageDialog() noexcept
-  : category(MessageDialog::INFORMATION), answer(MessageDialog::CANCEL) {
+  : category(MessageDialog::INFORMATION), answer(MessageDialog::CANCEL)
+{
 }
 
 MessageDialog::MessageDialog(
@@ -33,7 +34,8 @@ MessageDialog::MessageDialog(
   : category(_category),
     title(_title),
     message(_message),
-    answer(MessageDialog::CANCEL) {
+    answer(MessageDialog::CANCEL)
+{
 }
 
 bool MessageDialog::execute()
@@ -84,7 +86,8 @@ bool MessageDialog::execute()
 #endif // flavor
 }
 
-MessageDialog::~MessageDialog() noexcept {
+MessageDialog::~MessageDialog() noexcept
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

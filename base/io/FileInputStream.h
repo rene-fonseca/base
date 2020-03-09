@@ -46,7 +46,9 @@ public:
   FileInputStream(
     const String& name, bool exclusive = true);
 
-  inline bool atEnd() const {
+  /** Returns true if end has been reached. */
+  inline bool atEnd() const noexcept
+  {
     return end;
   }
 
@@ -58,6 +60,7 @@ public:
   */
   unsigned int available() const;
 
+  /** Closes stream. */
   void close();
 
   unsigned int skip(unsigned int count);

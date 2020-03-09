@@ -460,7 +460,7 @@ public:
   template<typename RESULT, typename... ARGS>
   RESULT invoke(const String& id, ARGS... args)
   {
-    AnyValue _args[] = { AnyValue(args)..., AnyValue() };
+    AnyValue _args[] = { AnyValue(args)..., AnyValue() }; // c++: can we allow 0 size arrays
     return call(id, _args, getArraySize(_args) - 1).template getValue<RESULT>();
   }
 
@@ -481,9 +481,10 @@ public:
 
   /** WASM arguments helper. */
   class Arguments {
-  public:
+  private:
     
     const WASMValue* src = nullptr;
+  public:
 
     /** Initializes arguments. */
     inline Arguments(const WASMValue* arguments) noexcept
@@ -537,7 +538,7 @@ public:
                const WASMValue* _arguments, WASMValue* results)
   {
     // TAG: add support for memory
-    Arguments arguments(_arguments);
+    Arguments arguments(_arguments); // c++: this is only used to increment pointer - would be nice to avoid
     RESULT result = (object->*function)(arguments.next()->toNative<ARGS>()...);
     *results++ = result;
   }

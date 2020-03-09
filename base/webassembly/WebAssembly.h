@@ -86,12 +86,12 @@ public:
 
   /** Types. */
   enum Type {
-    TYPE_UNSPECIFIED,
-    TYPE_FUNCTION,
-    TYPE_i32,
-    TYPE_i64,
-    TYPE_f32,
-    TYPE_f64
+    TYPE_UNSPECIFIED, ///< Unspecified.
+    TYPE_FUNCTION, ///< Function reference.
+    TYPE_i32, ///< 32-bit integer.
+    TYPE_i64, ///< 64-bit integer.
+    TYPE_f32, ///< 32-bit floating point.
+    TYPE_f64 ///< 64-bit floating point.
   };
 
   /** Returns type as string. */
@@ -150,10 +150,10 @@ public:
   };
 
   enum ExternType {
-    EXTERN_FUNCTION,
-    EXTERN_GLOBAL,
-    EXTERN_TABLE,
-    EXTERN_MEMORY
+    EXTERN_FUNCTION, ///< Function extern.
+    EXTERN_GLOBAL, ///< Global extern.
+    EXTERN_TABLE, ///< Table extern.
+    EXTERN_MEMORY ///< Memory extern.
   };
   
   /** WASM value. */
@@ -261,6 +261,7 @@ public:
   /** Garbage collects any unused memory. */
   void garbageCollect();
 
+  /** Maps native type to WASM type. */
   template<class TYPE>
   class MapType {
   public:
@@ -379,7 +380,6 @@ public:
   */
   bool makeInstance(bool fake = false);
 
-  // TAG: there needs to be resource config - e.g. threads limits
   /**
     Makes a WASI instance.
   */
@@ -479,22 +479,26 @@ public:
   /** Returns function reference. */
   WebAssemblyFunction getFunction(unsigned int id);
 
+  /** WASM arguments helper. */
   class Arguments {
   public:
     
     const WASMValue* src = nullptr;
-    
+
+    /** Initializes arguments. */
     inline Arguments(const WASMValue* arguments) noexcept
       : src(arguments)
     {
     }
-    
+
+    /** Returns the next argument. */
     inline const WASMValue* next() noexcept
     {
       return src++;
     }
   };
   
+  /** Forward WASM callback to native function. */
   template<typename... ARGS>
   void forward(void (*function)(ARGS...),
                const WASMValue* _arguments, WASMValue* results)
@@ -504,6 +508,7 @@ public:
     (*function)(arguments.next()->toNative<ARGS>()...);
   }
   
+  /** Forward WASM callback to native function. */
   template<typename RESULT, typename... ARGS>
   void forward(RESULT (*function)(ARGS...),
                const WASMValue* _arguments, WASMValue* results)
@@ -514,6 +519,7 @@ public:
     *results++ = result;
   }
 
+  /** Forward WASM callback to native function. */
   template<class TYPE, typename... ARGS>
   void forward(void (*function)(ARGS...),
                TYPE* object,
@@ -524,6 +530,7 @@ public:
     (object->*function)(arguments.next()->toNative<ARGS>()...);
   }
   
+  /** Forward WASM callback to native function. */
   template<class TYPE, typename RESULT, typename... ARGS>
   void forward(RESULT (TYPE::*function)(ARGS...),
                TYPE* object,

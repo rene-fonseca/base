@@ -31,8 +31,10 @@ private:
   Posix& operator=(const Posix&) = delete;
 public:
 
+  /** Initializes Posix. */
   Posix();
   
+  /** Destructs Posix. */
   ~Posix();
   
   /** Returns true on success. Use for fast string to double conversion. */

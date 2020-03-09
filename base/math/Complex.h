@@ -688,12 +688,14 @@ public:
 #endif
 };
 
+/** Initializes Complex by real value. Imaginary value is 0. */
 template<typename TYPE>
 inline Complex<TYPE>::Complex(TYPE _real) noexcept
   : real(_real)
 {
 }
 
+/** Initializes Complex by real and imaginary values. */
 template<typename TYPE>
 inline Complex<TYPE>::Complex(TYPE _real, TYPE _imaginary) noexcept
   : real(_real), imaginary(_imaginary)

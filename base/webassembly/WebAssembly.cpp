@@ -2768,7 +2768,7 @@ bool WebAssembly::FunctionType::operator==(const FunctionType& type) const noexc
 MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "dev.wasmtime", "libwasmtime", "0.8", "https://wasmtime.dev/");
 #endif
 
-#if defined(_COM_AZURE_DEV__BASE__TESTS) && defined(_COM_AZURE_DEV__BASE__USE_WASMTIME)
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(WebAssembly) : public UnitTest {
 public:

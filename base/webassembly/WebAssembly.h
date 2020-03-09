@@ -101,9 +101,12 @@ public:
   class _COM_AZURE_DEV__BASE__API FunctionType {
   public:
 
+    /** The arguments types. */
     Array<Type> arguments;
+    /** The result types. */
     Array<Type> results;
     
+    /** Initializes void function() type. */
     FunctionType();
     
     /** Get function type from given function pointer. */
@@ -197,16 +200,21 @@ public:
   class _COM_AZURE_DEV__BASE__API Symbol {
   public:
 
+    /** Index of extern. */
     unsigned int index = 0;
+    /** Name of extern. */
     String name;
+    /** Module of import extern. */
     String moduleName;
+    /** Extern type. */
     ExternType externType = EXTERN_FUNCTION;
 
-    // function type
+    /** The function address. */
     void* func = nullptr;
+    /** The function type. */
     FunctionType functionType;
     
-    // memory type
+    /** The memory size. */
     MemorySize memorySize = 0;
   };
 
@@ -326,17 +334,18 @@ public:
   bool loadAny(const String& bytes);
   
   enum Format {
-    FORMAT_UNSPECIFIED,
-    FORMAT_WAT,
-    FORMAT_WASM
+    FORMAT_UNSPECIFIED, ///< Unknown format/any format.
+    FORMAT_WAT, ///< WAT type.
+    FORMAT_WASM ///< WASM type.
   };
 
   /** Returns the format for the given buffer. Only looks at header. */
   static Format getFormat(const String& bytes);
 
+  /** ABI type. */
   enum WASMABI {
-    WASM32,
-    WASM64
+    WASM32, ///< 32-bit WASM.
+    WASM64 ///< 64-bit WASM.
   };
   
   /** Returns the WASM ABI. */
@@ -369,7 +378,6 @@ public:
     @param fake If, true dummy imports will be registered automatically.
   */
   bool makeInstance(bool fake = false);
-  // TAG: add support for setting modules - Array<Pair<String, Module> >
 
   // TAG: there needs to be resource config - e.g. threads limits
   /**
@@ -527,6 +535,7 @@ public:
     *results++ = result;
   }
 
+  /** Releases WASM handle. */
   ~WebAssembly();
 };
 

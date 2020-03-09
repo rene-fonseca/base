@@ -39,6 +39,7 @@ public:
     makeCurrent(nullptr);
   }
 
+  /** Initializes translation. */
   Translation();
 
   // TAG: add support for meta info - version, date, vendor

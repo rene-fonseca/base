@@ -161,12 +161,12 @@ WebAssemblyFunction::WebAssemblyFunction()
 {
 }
 
-WebAssemblyFunction::WebAssemblyFunction(WebAssembly _wa, const String& _id)
+WebAssemblyFunction::WebAssemblyFunction(const WebAssembly& _wa, const String& _id)
   : wa(_wa), id(wa.getFunctionIndex(_id))
 {
 }
 
-WebAssemblyFunction::WebAssemblyFunction(WebAssembly _wa, unsigned int _id)
+WebAssemblyFunction::WebAssemblyFunction(const WebAssembly& _wa, unsigned int _id)
   : wa(_wa), id(_id)
 {
 }

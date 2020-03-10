@@ -559,10 +559,10 @@ public:
   WebAssemblyFunction();
 
   /** Initializes function. */
-  WebAssemblyFunction(WebAssembly wa, const String& id);
+  WebAssemblyFunction(const WebAssembly& wa, const String& id);
 
   /** Initializes function. */
-  WebAssemblyFunction(WebAssembly wa, unsigned int id);
+  WebAssemblyFunction(const WebAssembly& wa, unsigned int id);
 
   /** Returns the type of the function. */
   WebAssembly::FunctionType getType();
@@ -824,8 +824,10 @@ inline long double WebAssembly::WASMValue::toNative<long double>() const
   return static_cast<long double>(f64);
 }
 
+/** Write symbol to format stream. */
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const WebAssembly::Symbol& value);
 
+/** Write function type to format stream. */
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const WebAssembly::FunctionType& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

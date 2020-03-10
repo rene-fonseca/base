@@ -581,10 +581,24 @@ public:
   }
   
   /** Calls function. */
+  template<typename... ARGS>
+  inline void invoke(ARGS... args)
+  {
+    wa.invoke(id, args...);
+  }
+  
+  /** Calls function. */
   template<typename RESULT, typename... ARGS>
   inline RESULT operator()(ARGS... args)
   {
     return wa.invoke<RESULT>(id, args...);
+  }
+  
+  /** Calls function. */
+  template<typename... ARGS>
+  inline void operator()(ARGS... args)
+  {
+    wa.invoke(id, args...);
   }
   
   /** Calls function. */

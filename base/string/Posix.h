@@ -37,18 +37,36 @@ public:
   /** Destructs Posix. */
   ~Posix();
   
-  /** Returns true on success. Use for fast string to double conversion. */
+  /** Returns true on success. Use for fast string to float conversion. */
   // will be deprecated once fully implemented
   bool getSeries(const char* src, const char* end, float& d) noexcept;
+
+  /** Returns true on success. Use for fast string to float conversion. */
+  inline bool getSeries(const String& s, float& d) noexcept
+  {
+    return getSeries(s.native(), s.getEnd(), d);
+  }
 
   /** Returns true on success. Use for fast string to double conversion. */
   // will be deprecated once fully implemented
   bool getSeries(const char* src, const char* end, double& d) noexcept;
 
   /** Returns true on success. Use for fast string to double conversion. */
+  inline bool getSeries(const String& s, double& d) noexcept
+  {
+    return getSeries(s.native(), s.getEnd(), d);
+  }
+
+  /** Returns true on success. Use for fast string to long double conversion. */
   // will be deprecated once fully implemented
   bool getSeries(const char* src, const char* end, long double& d) noexcept;
-
+  
+  /** Returns true on success. Use for fast string to long double conversion. */
+  inline bool getSeries(const String& s, long double& d) noexcept
+  {
+    return getSeries(s.native(), s.getEnd(), d);
+  }
+  
   /** Returns true on success. */
   static bool toFloat(const char* src, const char* end, float& d) noexcept;
 

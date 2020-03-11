@@ -43,13 +43,23 @@ public:
   String join(const std::initializer_list<String>& items);
 
   /** Parses line. */
-  Array<String> parse(const String& line);
+  void parse(const String& line, Array<String>& result);
 
   /** Loads CSV data. */
   Array<Array<String> > load(InputStream* is);
 
   /** Loads CSV data. */
   Array<Array<String> > load(const String& path);
+
+  /** Line consumer. */
+  class LineConsumer {
+  public:
+    
+    virtual void operator()(const Array<String>& line) = 0;
+  };
+  
+  /** Loads CSV data. */
+  void load(InputStream* is, LineConsumer* consumer);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

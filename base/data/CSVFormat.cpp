@@ -102,9 +102,10 @@ String CSVFormat::join(const std::initializer_list<String>& items)
   return result;
 }
 
-Array<String> CSVFormat::parse(const String& line)
+void CSVFormat::parse(const String& line, Array<String>& result)
 {
-  Array<String> result;
+  result.setSize(0);
+  
   String field = String::makeCapacity(1024);
   UTF8Iterator i = line.getUTF8BeginReadIterator();
   const UTF8Iterator end = line.getUTF8EndReadIterator();
@@ -145,7 +146,7 @@ Array<String> CSVFormat::parse(const String& line)
         if (!(i < end)) {
           result.append(field.copy());
           field.forceToLength(0);
-          return result;
+          return;
         }
 
         if (*i++ != separator) {
@@ -164,10 +165,10 @@ Array<String> CSVFormat::parse(const String& line)
     }
   }
 
-    result.append(field.copy());
-    field.forceToLength(0);
+  result.append(field.copy());
+  field.forceToLength(0);
 
-  return result;
+  return;
 }
 
 Array<Array<String> > CSVFormat::load(InputStream* is)
@@ -176,7 +177,9 @@ Array<Array<String> > CSVFormat::load(InputStream* is)
   LineReader reader(is);
   while (!reader.hasMore()) {
     if (String line = reader.readLine()) {
-      result.append(parse(line));
+      Array<String> fields;
+      parse(line, fields);
+      result.append(fields);
     }
   }
   return result;
@@ -186,6 +189,19 @@ Array<Array<String> > CSVFormat::load(const String& path)
 {
   FileInputStream fis(path);
   return load(&fis);
+}
+
+void CSVFormat::load(InputStream* is, LineConsumer* consumer)
+{
+  Array<String> fields;
+  fields.ensureCapacity(64);
+  LineReader reader(is);
+  while (!reader.hasMore()) {
+    if (String line = reader.readLine()) { // TAG: add support for reading to line buffer
+      parse(line, fields);
+      (*consumer)(fields);
+    }
+  }
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

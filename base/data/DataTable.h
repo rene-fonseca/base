@@ -36,6 +36,13 @@ public:
     TYPE_STRING/*,
     TYPE_ENUM*/
   };
+
+  /** Custom converter. */
+  class Custom {
+  public:
+    
+    virtual AnyValue operator()(const String& text) = 0;
+  };
   
   /** Column info. */
   class Column {
@@ -45,26 +52,64 @@ public:
     String name;
     /** The type. */
     Type type = TYPE_INT32;
-    // TAG: add a way to map enum to ints Array<String> lot;
+    // TAG: convert int to string Array<String> presentation;
+    
+    inline Column()
+    {
+    }
+
+    inline Column(const String& _name, Type _type) noexcept
+      : name(_name), type(_type)
+    {
+    }
+
+    Column(const String& _name, const String& _type);
   };
+
+  /** A row. */
+  typedef Array<AnyValue> Row;
 private:
 
   /** Columns. */
   Array<Column> columns;
-  /** A row. */
-  typedef Array<AnyValue> Row;
   /** The data. */
   Array<Row> rows;
 public:
   
+  /** Load config. */
+  class Config {
+  public:
+    
+    enum Header {
+      HEADER_NONE,
+      HEADER_SKIP,
+      HEADER_USE
+    };
+    
+    /** Skip first line. */
+    Header header = HEADER_NONE;
+    /** Separator. */
+    ucs4 separator = ';';
+    Array<Custom*> customColumns;
+    
+    /** Initializes config. */
+    Config();
+
+    /** Initializes config. */
+    Config(Header header, char separator = ';');
+  };
+  
   /** Loads table from file. */
-  static DataTable load(const String& path, const Array<Column>& columns);
+  static DataTable load(const String& path, const Array<Column>& columns, const Config& config = Config());
 
   /** Loads data table from input stream. */
-  static DataTable load(InputStream* is, const Array<Column>& columns);
-  
+  static DataTable load(InputStream* is, const Array<Column>& columns, const Config& config = Config());
+
+  /** Loads data table from string. */
+  static DataTable loadFromString(const String& data, const Array<Column>& columns, const Config& config = Config());
+
   /** Loads data table from ObjectModel. */
-  static DataTable load(R<ObjectModel::Array> data, const Array<Column>& columns);
+  static DataTable load(R<ObjectModel::Array> data, const Array<Column>& columns, const Config& config = Config());
   
   /** Initializes empty table. */
   DataTable();
@@ -83,6 +128,12 @@ public:
 
   /** Returns the rows. */
   inline const Array<Row>& getRows() const noexcept
+  {
+    return rows;
+  }
+
+  /** Returns the rows. */
+  inline Array<Row>& getRows() noexcept
   {
     return rows;
   }
@@ -112,13 +163,19 @@ public:
   }
 
   /** Returns the name of the column. */
-  inline String getColumnName(unsigned int column) const
+  inline const String& getColumnName(unsigned int column) const
   {
     return getColumnInfo(column).name;
   }
 
+  /** Sets the name of the column. */
+  inline void setColumnName(unsigned int column, const String& name)
+  {
+    columns[column].name = name;
+  }
+
   /** Returns the value as a string. */
-  String getValueAsString(MemorySize index, unsigned int column);
+  String getValueAsString(MemorySize index, unsigned int column) const;
 
   /** Returns the value. */
   inline const AnyValue& getValue(MemorySize index, unsigned int column) const
@@ -242,11 +299,13 @@ public:
       ++count;
     }
 
+    /** Returns the minimum value. */
     inline TYPE getMinimum() const noexcept
     {
       return min;
     }
 
+    /** Returns the maximum value. */
     inline TYPE getMaximum() const noexcept
     {
       return max;
@@ -277,16 +336,19 @@ public:
       ++count;
     }
 
+    /** Returns the minimum value. */
     inline TYPE getMinimum() const noexcept
     {
       return min;
     }
 
+    /** Returns the maximum value. */
     inline TYPE getMaximum() const noexcept
     {
       return max;
     }
 
+    /** Returns the average value. */
     inline TYPE getAverage() const noexcept
     {
       return (count > 0) ? sum/count : 0;
@@ -358,7 +420,40 @@ public:
       }
     }
   };
-  
+
+  // TAG: could be multi-threaded - if operator has merge()
+  /** Calculates value for column. */
+  template<typename OP>
+  void calculate(unsigned int column, OP& op) const
+  {
+    switch (columns[column].type) {
+    case TYPE_INT32:
+      for (const auto& row : rows) {
+        op(row[column].getValue<int>());
+      }
+      break;
+    case TYPE_INT64:
+      for (const auto& row : rows) {
+        op(row[column].getValue<int64>());
+      }
+      break;
+    case TYPE_FLOAT32:
+      for (const auto& row : rows) {
+        op(row[column].getValue<float>());
+      }
+      break;
+    case TYPE_FLOAT64:
+      for (const auto& row : rows) {
+        op(row[column].getValue<double>());
+      }
+      break;
+    default:
+      for (const auto& row : rows) {
+        op(row[column].getValue<String>());
+      }
+    }
+  }
+
   // TAG: could be multi-threaded - if operator has merge()
   /** Calculates value for column. */
   template<typename TYPE>
@@ -394,7 +489,7 @@ public:
   }
 
   /** Prints stats for the columns. */
-  FormatOutputStream& dumpStats(FormatOutputStream& stream);
+  FormatOutputStream& dumpStats(FormatOutputStream& stream) const;
 
   /** Returns HTML for the given table snippet. */
   String getHTML(MemorySize from, MemorySize to, std::initializer_list<unsigned int> columns);
@@ -474,15 +569,22 @@ inline FormatOutputStream& operator<<(FormatOutputStream& stream, const DataTabl
   return stream << table.getRows();
 }
 
-_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_CONTAINER(DataTable)
-
 /** Returns container as HTML. */
 _COM_AZURE_DEV__BASE__API String getContainerAsHTML(const DataTable& table);
 
 /** Returns container as HTML. */
 _COM_AZURE_DEV__BASE__API String getContainerAsHTML(const DataTable::DataTableSnippet& table);
 
-_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_KEY_CONTAINER(DataTable)
-_COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_KEY_CONTAINER(DataTableSnippet)
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_CLING)
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const DataTable& v)
+{
+  return cling_getHTMLMimeBundle(getContainerAsHTML(v));
+}
+
+inline ClingMimeBundle _COM_AZURE_DEV__BASE__CLING_GET_MIME_BUNDLE_ID(const DataTable::DataTableSnippet& v)
+{
+  return cling_getHTMLMimeBundle(getContainerAsHTML(v));
+}
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

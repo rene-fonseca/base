@@ -139,24 +139,21 @@ void CSVFormat::parse(const String& line, Array<String>& result)
       }
     } else if (ch == '"') {
       if (inQuote) {
+        if ((i < end) && (*i == '"')) { // escaped quote
+          field.append(ch);
+          ++i;
+          continue;
+        }
         inQuote = false;
+        while ((i < end) && (*i == ' ')) {
+          ++i;
+        }
         if (!(i < end)) {
-          
-          if (trimSpaces) {
-            String::ReadIterator i = field.getBeginReadIterator();
-            String::ReadIterator end = field.getEndReadIterator();
-            while ((end != i) && (end[-1] == ' ')) { // trim ending spaces
-              --end;
-            }
-            field.removeFrom(end - i);
-          }
-          
           first = true;
           result.append(field.copy());
           field.forceToLength(0);
           return;
         }
-
         if (*i++ != separator) {
           _throw InvalidFormat("Expected separator.");
         }
@@ -166,7 +163,7 @@ void CSVFormat::parse(const String& line, Array<String>& result)
       } else {
         inQuote = true;
       }
-    } else if (ch == separator) {
+    } else if (!inQuote && (ch == separator)) {
 
       if (trimSpaces) {
         String::ReadIterator i = field.getBeginReadIterator();

@@ -182,6 +182,10 @@ void CSVFormat::parse(const String& line, Array<String>& result)
     }
   }
 
+  if (inQuote) {
+    // TAG: we need to continue reading if more
+  }
+  
   first = true;
   if (trimSpaces) {
     String::ReadIterator i = field.getBeginReadIterator();

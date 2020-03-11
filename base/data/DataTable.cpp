@@ -181,6 +181,12 @@ namespace {
           break;
         case DataTable::TYPE_STRING:
         default:
+#if 0
+          {
+            Date d = Date::parseISO8601(s, true);
+            v = d.getValue();
+          }
+#endif
           v = s;
         }
         row.append(v);

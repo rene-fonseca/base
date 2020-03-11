@@ -14,6 +14,8 @@
 #include <base/data/DataTable.h>
 #include <base/data/CSVFormat.h>
 #include <base/io/FileInputStream.h>
+#include <base/io/FileOutputStream.h>
+#include <base/io/BufferedOutputStream.h>
 #include <base/io/MemoryInputStream.h>
 #include <base/string/Posix.h>
 #include <base/Integer.h>
@@ -200,6 +202,42 @@ DataTable DataTable::load(InputStream* is, const Array<Column>& columns, const C
   CSVFormat csv(config.separator, config.trimSpaces);
   csv.load(is, &build);
   return build.table;
+}
+
+void DataTable::saveCSV(OutputStream* os, char separator)
+{
+  // https://tools.ietf.org/html/rfc4180
+  // TAG: add proper CSVFormat::quote to support escaping "" not \"
+  BufferedOutputStream bos(*os);
+  const char* eol = "\r\n";
+  bool first = true;
+  for (const auto& column : columns) {
+    if (!first) {
+      bos.write(reinterpret_cast<const uint8*>(&separator), 1);
+    }
+    first = false;
+    String s(CSVFormat::quote(column.name));
+    bos.write(s.getBytes(), s.getLength());
+    bos.write(reinterpret_cast<const uint8*>(eol), 2);
+  }
+  for (const auto& row : rows) {
+    bool first = true;
+    for (const auto& value : row) {
+      if (!first) {
+        bos.write(reinterpret_cast<const uint8*>(&separator), 1);
+      }
+      first = false;
+      String s(CSVFormat::quote(value.getString()));
+      bos.write(s.getBytes(), s.getLength());
+      bos.write(reinterpret_cast<const uint8*>(eol), 2);
+    }
+  }
+}
+
+void DataTable::saveCSV(const String& path)
+{
+  FileOutputStream fos(path);
+  saveCSV(&fos);
 }
 
 DataTable DataTable::load(R<ObjectModel::Array> data, const Array<Column>& columns, const Config& config)

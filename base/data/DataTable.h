@@ -182,6 +182,12 @@ public:
   /** Loads data table from ObjectModel. */
   static DataTable load(R<ObjectModel::Array> data, const Array<Column>& columns, const Config& config = Config());
   
+  /** Saves CSV data. */
+  void saveCSV(OutputStream* os, char separator = ';');
+
+  /** Saves CSV data. */
+  void saveCSV(const String& path);
+
   /** Initializes empty table. */
   DataTable();
 

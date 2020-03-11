@@ -175,8 +175,11 @@ Array<Array<String> > CSVFormat::load(InputStream* is)
 {
   Array<Array<String> > result;
   LineReader reader(is);
+  String line;
+  line.ensureCapacity(8 * 1024);
   while (!reader.hasMore()) {
-    if (String line = reader.readLine()) {
+    reader.readLine(line);
+    if (line) {
       Array<String> fields;
       parse(line, fields);
       result.append(fields);
@@ -194,10 +197,13 @@ Array<Array<String> > CSVFormat::load(const String& path)
 void CSVFormat::load(InputStream* is, LineConsumer* consumer)
 {
   Array<String> fields;
-  fields.ensureCapacity(64);
+  fields.ensureCapacity(128);
   LineReader reader(is);
+  String line;
+  line.ensureCapacity(8 * 1024);
   while (!reader.hasMore()) {
-    if (String line = reader.readLine()) { // TAG: add support for reading to line buffer
+    reader.readLine(line);
+    if (line) {
       parse(line, fields);
       (*consumer)(fields);
     }

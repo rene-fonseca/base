@@ -47,6 +47,9 @@ public:
     return bis.available();
   }
 
+  /** Reads the next line to reused buffer. */
+  void readLine(String& result);
+  
   /** Reads the next line. */
   String readLine();
 

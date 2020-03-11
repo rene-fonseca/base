@@ -33,8 +33,8 @@ String CSVFormat::quote(const String& text)
   return result;
 }
 
-CSVFormat::CSVFormat(ucs4 _separator) noexcept
-  : separator(_separator)
+CSVFormat::CSVFormat(ucs4 _separator, bool _trimSpaces) noexcept
+  : separator(_separator), trimSpaces(_trimSpaces)
 {
 }
 
@@ -110,13 +110,18 @@ void CSVFormat::parse(const String& line, Array<String>& result)
   UTF8Iterator i = line.getUTF8BeginReadIterator();
   const UTF8Iterator end = line.getUTF8EndReadIterator();
   bool inQuote = false;
+  bool first = true;
   while (i < end) {
-    const ucs4 ch = *i++;
 
-    if (!inQuote && (ch == ' ')) { // trim spaces
-      continue;
+    // TAG: also handle TAB
+    if (first && trimSpaces) { // trim initial spaces
+      while ((i < end) && (*i == ' ')) {
+        ++i;
+      }
     }
-    
+    first = false;
+
+    const ucs4 ch = *i++;
     if (ch == '\\') { // escape
       if (inQuote) {
         if (!(i < end)) {
@@ -134,16 +139,18 @@ void CSVFormat::parse(const String& line, Array<String>& result)
     } else if (ch == '"') {
       if (inQuote) {
         inQuote = false;
-
-        // trim spaces
-        while (i < end) {
-          const ucs4 ch = *i;
-          if (ch == ' ') {
-            continue;
-          }
-          ++i;
-        }
         if (!(i < end)) {
+          
+          if (trimSpaces) {
+            String::ReadIterator i = field.getBeginReadIterator();
+            String::ReadIterator end = field.getEndReadIterator();
+            while ((end != i) && (end[-1] == ' ')) { // trim ending spaces
+              --end;
+            }
+            field.removeFrom(end - i);
+          }
+          
+          first = true;
           result.append(field.copy());
           field.forceToLength(0);
           return;
@@ -152,12 +159,24 @@ void CSVFormat::parse(const String& line, Array<String>& result)
         if (*i++ != separator) {
           _throw InvalidFormat("Expected separator.");
         }
+        first = true;
         result.append(field.copy());
         field.forceToLength(0);
       } else {
         inQuote = true;
       }
     } else if (ch == separator) {
+
+      if (trimSpaces) {
+        String::ReadIterator i = field.getBeginReadIterator();
+        String::ReadIterator end = field.getEndReadIterator();
+        while ((end != i) && (end[-1] == ' ')) { // trim ending spaces
+          --end;
+        }
+        field.removeFrom(end - i);
+      }
+      
+      first = true;
       result.append(field.copy());
       field.forceToLength(0);
     } else {
@@ -165,10 +184,18 @@ void CSVFormat::parse(const String& line, Array<String>& result)
     }
   }
 
+  first = true;
+  if (trimSpaces) {
+    String::ReadIterator i = field.getBeginReadIterator();
+    String::ReadIterator end = field.getEndReadIterator();
+    while ((end != i) && (end[-1] == ' ')) { // trim ending spaces
+      --end;
+    }
+    field.removeFrom(end - i);
+  }
+
   result.append(field.copy());
   field.forceToLength(0);
-
-  return;
 }
 
 Array<Array<String> > CSVFormat::load(InputStream* is)
@@ -177,7 +204,7 @@ Array<Array<String> > CSVFormat::load(InputStream* is)
   LineReader reader(is);
   String line;
   line.ensureCapacity(8 * 1024);
-  while (!reader.hasMore()) {
+  while (reader.hasMore()) {
     reader.readLine(line);
     if (line) {
       Array<String> fields;
@@ -201,7 +228,7 @@ void CSVFormat::load(InputStream* is, LineConsumer* consumer)
   LineReader reader(is);
   String line;
   line.ensureCapacity(8 * 1024);
-  while (!reader.hasMore()) {
+  while (reader.hasMore()) {
     reader.readLine(line);
     if (line) {
       parse(line, fields);

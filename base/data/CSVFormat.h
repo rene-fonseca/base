@@ -25,13 +25,14 @@ class _COM_AZURE_DEV__BASE__API CSVFormat {
 private:
 
   ucs4 separator = ';';
+  bool trimSpaces = true;
 public:
 
   /** Quote string. */
   static String quote(const String& text);
 
   /** Initializes CSV format. */
-  CSVFormat(ucs4 separator = ';') noexcept;
+  CSVFormat(ucs4 separator = ';', bool trimSpaces = true) noexcept;
 
   /** Joing items into row. */
   String join(const Array<String>& items);

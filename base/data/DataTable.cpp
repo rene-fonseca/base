@@ -71,6 +71,7 @@ namespace {
     const Array<DataTable::Column>& columns;
     const DataTable::Config& config;
     Array<DataTable::Custom*> customColumns;
+    bool mapColumns = false;
     DataTable table;
     mutable Posix posix;
     mutable AnyValue v;
@@ -81,10 +82,19 @@ namespace {
     {
       customColumns = config.customColumns;
       customColumns.setSize(columns.getSize(), nullptr);
+      mapColumns = config.mapColumns;
     }
 
     void operator()(const Array<String>& line) override
     {
+      // TAG: add info about error position - line/column
+      // TAG: add support for pipelining with threads
+      // TAG: convert to values during load support - e.g. date
+      // TAG: lookup strings and reuse
+      if (!line) {
+        return;
+      }
+      
       if (line.getSize() < columns.getSize()) {
         _throw OutOfRange("Too few columns.");
       }
@@ -104,9 +114,8 @@ namespace {
       Array<AnyValue> row;
       row.ensureCapacity(columns.getSize());
       for (MemorySize c = 0; c < columns.getSize(); ++c) {
-        const String& s = line[c];
+        const String& s = !mapColumns ? line[c] : line[config.mapColumns[c]];
         const DataTable::Column& column = columns[c];
-
         if (DataTable::Custom* custom = customColumns[c]) {
           v = (*custom)(s);
           // TAG: should we check type here
@@ -160,15 +169,9 @@ namespace {
 
 DataTable DataTable::load(InputStream* is, const Array<Column>& columns, const Config& config)
 {
-  // TAG: add info about error position - line/column
-  // TAG: add support for pipelining with threads
-  // TAG: convert to values during load support - e.g. date
-  // TAG: lookup strings and reuse
-  // TAG: add support for multiple threads
-  
   BuildDataTable build(columns, config);
   build.table.columns = columns;
-  CSVFormat csv(config.separator);
+  CSVFormat csv(config.separator, config.trimSpaces);
   csv.load(is, &build);
   return build.table;
 }
@@ -194,6 +197,17 @@ DataTable::DataTable()
 String DataTable::getValueAsString(MemorySize index, unsigned int column) const
 {
   return rows[index][column].getString();
+}
+
+DataTable::DataTableSnippet DataTable::head(MemorySize n) const noexcept
+{
+  return DataTableSnippet(*this, 0, minimum(n, getNumberOfRows()));
+}
+
+DataTable::DataTableSnippet DataTable::tail(MemorySize n) const noexcept
+{
+  MemorySize count = getNumberOfRows();
+  return DataTableSnippet(*this, count - minimum(count, n), count);
 }
 
 FormatOutputStream& DataTable::dumpStats(FormatOutputStream& stream) const
@@ -320,12 +334,11 @@ String getContainerAsHTML(const DataTable::DataTableSnippet& snippet)
   return stream.getString();
 }
 
-// allow multiple threads support
 // need datatypes? e.g. ISO to date, microseconds, ...
 // add info about bad data
-// TAG: add column mapping 0->0,1->2 when loading
-// TAG: separator, comments, and other info when loading
+// TAG: add column mapping 0->0,1->2 when loading, {{0,0},{1,1},{2,3}}
 // TAG: add support for splitting string into one or more columns
+// add geo locaton https://en.wikipedia.org/wiki/ISO_6709
 
 #if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
 
@@ -339,8 +352,7 @@ public:
 
   void run() override
   {
-    DataTable table =
-    DataTable::load("path", {
+    DataTable table = DataTable::load("path", {
       DataTable::Column{"First", DataTable::TYPE_STRING},
       DataTable::Column{"Last", DataTable::TYPE_STRING}
     });

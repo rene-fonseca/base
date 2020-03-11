@@ -46,6 +46,7 @@ void LineReader::readLine(String& result)
     const uint8* begin = src;
     while (src != end) {
       if ((*src == '\n') || (*src == '\r')) {
+        const uint8* lineEnd = src;
         const uint8 otherCode = (*src == '\n') ? '\r' : '\n';
         ++src;
         if (src != end) {
@@ -57,7 +58,7 @@ void LineReader::readLine(String& result)
         }
 
         bis.skip(src - begin);
-        result.append(ConstSpan<char>(reinterpret_cast<const char*>(begin), src - begin));
+        result.append(ConstSpan<char>(reinterpret_cast<const char*>(begin), lineEnd - begin));
         return;
       }
       ++src;

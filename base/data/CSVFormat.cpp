@@ -104,6 +104,7 @@ String CSVFormat::join(const std::initializer_list<String>& items)
 
 void CSVFormat::parse(const String& line, Array<String>& result)
 {
+  // TAG: add support for reusing result buffers
   result.setSize(0);
   
   String field = String::makeCapacity(1024);

@@ -90,7 +90,11 @@ public:
     Header header = HEADER_NONE;
     /** Separator. */
     ucs4 separator = ';';
+    /** Trim spaces. */
+    bool trimSpaces = true;
     Array<Custom*> customColumns;
+    /** Map columns. */
+    Array<unsigned int> mapColumns;
     
     /** Initializes config. */
     Config();
@@ -509,10 +513,10 @@ public:
   };
 
   /** Returns the first items of the data table. */
-  DataTableSnippet head(MemorySize n = 5);
+  DataTableSnippet head(MemorySize n = 5) const noexcept;
   
   /** Returns the last items of the data table. */
-  DataTableSnippet tail(MemorySize n = 5);
+  DataTableSnippet tail(MemorySize n = 5) const noexcept;
 
   /** Returns the indices of the rows matching the given filter. */
   template<typename... ARGS>

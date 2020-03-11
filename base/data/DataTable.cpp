@@ -95,14 +95,20 @@ namespace {
         return;
       }
       
-      if (line.getSize() < columns.getSize()) {
-        _throw OutOfRange("Too few columns.");
+      if (!config.assumeBlank) {
+        if (line.getSize() < columns.getSize()) {
+          if (config.printInvalid) {
+            ferr << "Error: " << "Too few columns." << EOL
+                 << "> " << line << ENDL;
+          }
+          _throw OutOfRange("Too few columns.");
+        }
       }
 
       if (firstLine) {
         firstLine = false;
-        if (config.header != DataTable::Config::HEADER_NONE) {
-          if (config.header == DataTable::Config::HEADER_USE) {
+        if (config.header != DataTable::HEADER_NONE) {
+          if (config.header == DataTable::HEADER_USE) {
             for (MemorySize c = 0; c < columns.getSize(); ++c) {
               table.setColumnName(c, line[c]);
             }
@@ -131,12 +137,17 @@ namespace {
           v = Integer::parse(s);
           break;
         case DataTable::TYPE_INT64:
+          // TAG: print on error - use nothrow
           v = LongInteger::parse(s);
           break;
         case DataTable::TYPE_FLOAT32:
           {
             float f = 0;
             if (!posix.getSeries(s, f)) {
+              if (config.printInvalid) {
+                ferr << "Error: " << "Not a float." << EOL
+                     << "> " << line << ENDL;
+              }
               _throw InvalidException("Not a float.");
             }
             v = f;
@@ -146,6 +157,10 @@ namespace {
           {
             float d = 0;
             if (!posix.getSeries(s, d)) {
+              if (config.printInvalid) {
+                ferr << "Error: " << "Not a double." << EOL
+                     << "> " << line << ENDL;
+              }
               _throw InvalidException("Not a double.");
             }
             v = d;

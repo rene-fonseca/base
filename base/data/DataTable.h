@@ -76,22 +76,27 @@ private:
   Array<Row> rows;
 public:
   
+  enum Header {
+    HEADER_NONE,
+    HEADER_SKIP,
+    HEADER_USE
+  };
+
   /** Load config. */
   class Config {
   public:
-    
-    enum Header {
-      HEADER_NONE,
-      HEADER_SKIP,
-      HEADER_USE
-    };
-    
+        
     /** Skip first line. */
     Header header = HEADER_NONE;
     /** Separator. */
     ucs4 separator = ';';
     /** Trim spaces. */
     bool trimSpaces = true;
+    /** Assume blank field if too few columns. */
+    bool assumeBlank = true;
+    /** Print invalid lines. */
+    bool printInvalid = false;
+    /** Custom columns. */
     Array<Custom*> customColumns;
     /** Map columns. */
     Array<unsigned int> mapColumns;
@@ -101,6 +106,68 @@ public:
 
     /** Initializes config. */
     Config(Header header, char separator = ';');
+
+    /** Set header. */
+    inline Config& setHeader(Header header) noexcept
+    {
+      this->header = header;
+      return *this;
+    }
+    
+    /** Set separator. */
+    inline Config& setSeparator(ucs4 separator) noexcept
+    {
+      this->separator = separator;
+      return *this;
+    }
+    
+    /** Set trimming. */
+    inline Config& setTrimSpaces(bool trimSpaces) noexcept
+    {
+      this->trimSpaces = trimSpaces;
+      return *this;
+    }
+    
+    /** Set print invalid */
+    inline Config& setPrintInvalid(bool printInvalid) noexcept
+    {
+      this->printInvalid = printInvalid;
+      return *this;
+    }
+
+    /** Set assume empty. */
+    inline Config& setAssumeBlank(bool assumeBlank) noexcept
+    {
+      this->assumeBlank = assumeBlank;
+      return *this;
+    }
+
+    /** Set custom column. */
+    inline Config& setCustom(unsigned int column, Custom* custom)
+    {
+      if (customColumns.getSize() <= column) {
+        customColumns.setSize(column + 1, nullptr);
+      }
+      customColumns[column] = custom;
+      return *this;
+    }
+
+    /** Set column mapping. */
+    inline Config& setMapping(const Array<unsigned int>& mapColumns) noexcept
+    {
+      this->mapColumns = mapColumns;
+      return *this;
+    }
+
+    /** Set column mapping. */
+    inline Config& setMapping(unsigned int column, unsigned int src)
+    {
+      while (mapColumns.getSize() <= column) {
+        mapColumns.append(mapColumns.getSize());
+      }
+      mapColumns[column] = src;
+      return *this;
+    }
   };
   
   /** Loads table from file. */

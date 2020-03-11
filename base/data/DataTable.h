@@ -85,7 +85,7 @@ public:
   /** Load config. */
   class Config {
   public:
-        
+    
     /** Skip first line. */
     Header header = HEADER_NONE;
     /** Separator. */

@@ -76,6 +76,7 @@ namespace {
     mutable Posix posix;
     mutable AnyValue v;
     bool firstLine = true;
+    MemorySize count = 0;
     
     BuildDataTable(const Array<DataTable::Column>& _columns, const DataTable::Config& _config)
       : columns(_columns), config(_config)
@@ -91,10 +92,15 @@ namespace {
       // TAG: add support for pipelining with threads
       // TAG: convert to values during load support - e.g. date
       // TAG: lookup strings and reuse
+      ++count;
       if (!line) {
         return;
       }
-      
+
+      if (config.printInvalid) {
+        ferr << count << "> " << line << ENDL;
+      }
+
       if (!config.assumeBlank) {
         if (line.getSize() < columns.getSize()) {
           if (config.printInvalid) {
@@ -110,7 +116,10 @@ namespace {
         if (config.header != DataTable::HEADER_NONE) {
           if (config.header == DataTable::HEADER_USE) {
             for (MemorySize c = 0; c < columns.getSize(); ++c) {
-              table.setColumnName(c, line[c]);
+              const unsigned int cc = !mapColumns ? c : config.mapColumns[c];
+              const bool useBlank = (cc >= line.getSize()) && config.assumeBlank;
+              const String& s = useBlank ? (format() << "<" << c << ">") : line[cc];
+              table.setColumnName(c, s);
             }
           }
           return;
@@ -120,7 +129,9 @@ namespace {
       Array<AnyValue> row;
       row.ensureCapacity(columns.getSize());
       for (MemorySize c = 0; c < columns.getSize(); ++c) {
-        const String& s = !mapColumns ? line[c] : line[config.mapColumns[c]];
+        const unsigned int cc = !mapColumns ? c : config.mapColumns[c];
+        const bool useBlank = (cc >= line.getSize()) && config.assumeBlank;
+        const String& s = useBlank ? String() : line[cc];
         const DataTable::Column& column = columns[c];
         if (DataTable::Custom* custom = customColumns[c]) {
           v = (*custom)(s);

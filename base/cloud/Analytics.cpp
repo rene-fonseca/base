@@ -12,23 +12,8 @@
  ***************************************************************************/
 
 #include <base/cloud/Analytics.h>
-#include <base/concurrency/Thread.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
-
-namespace {
-
-  class AnalyticsWorker : public Thread {
-  public:
-  
-    void run()
-    {
-      Analytics::getAnalytics().worker();
-    }
-  };
-
-  AnalyticsWorker thread;
-}
 
 Analytics::Event Analytics::makeResource(const String& resource, const String& title)
 {
@@ -52,7 +37,7 @@ Analytics::Analytics()
 {
 }
 
-void Analytics::worker()
+void Analytics::run()
 {
   while (true) {
     event.wait();
@@ -94,7 +79,7 @@ void Analytics::start()
 {
   if (!running) {
     running = true;
-    thread.start();
+    Thread::start();
   }
 }
 
@@ -103,7 +88,7 @@ void Analytics::stop()
   if (running) {
     running = false;
     event.signal();
-    thread.join();
+    Thread::join();
     // thread = Worker();
   }
 }

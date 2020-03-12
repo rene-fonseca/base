@@ -20,6 +20,7 @@
 #include <base/Date.h>
 #include <base/concurrency/Event.h>
 #include <base/concurrency/MutualExclusion.h>
+#include <base/concurrency/Thread.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -27,7 +28,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   Analytics.
 */
 
-class _COM_AZURE_DEV__BASE__API Analytics {
+class _COM_AZURE_DEV__BASE__API Analytics : public Thread  {
 public:
   
   /** Event. */
@@ -101,9 +102,8 @@ private:
 
   /** Initializes analytics instance. */
   Analytics();
-public:
   
-  void worker();
+  void run() override;
 public:
 
   /** Returns resource event. */

@@ -216,6 +216,8 @@ file(GLOB base_SRC
   "base/*.cpp"
   "base/archive/*.h"
   "base/archive/*.cpp"
+  "base/cloud/*.h"
+  "base/cloud/*.cpp"
   "base/collection/*.h"
   "base/collection/*.cpp"
   "base/concurrency/*.h"

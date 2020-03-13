@@ -17,8 +17,9 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Analytics::Event Analytics::makeResource(const String& resource, const String& title)
 {
+  static String type("resource");
   Event e;
-  e.type = "resource";
+  e.type = type;
   e.category = resource;
   e.label = title;
   return e;
@@ -26,8 +27,9 @@ Analytics::Event Analytics::makeResource(const String& resource, const String& t
 
 Analytics::Event Analytics::makeEvent(const String& category, const String& action)
 {
+  static String type("event");
   Event e;
-  e.type = "event";
+  e.type = type;
   e.category = category;
   e.action = action;
   return e;

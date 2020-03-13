@@ -46,24 +46,28 @@ public:
     String label; // resource title
     String value;
 
+    /** Sets the category. */
     inline Event& setCategory(const String& category) noexcept
     {
       this->category = category;
       return *this;
     }
 
+    /** Sets the action. */
     inline Event& setAction(const String& action) noexcept
     {
       this->action = action;
       return *this;
     }
 
+    /** Sets the label. */
     inline Event& setLabel(const String& label) noexcept
     {
       this->label = label;
       return *this;
     }
 
+    /** Sets the value. */
     inline Event& setValue(const String& value) noexcept
     {
       this->value = value;
@@ -72,7 +76,7 @@ public:
   };
 
   /** Analytics consumer. */
-  class Consumer : public DynamicObject {
+  class Consumer : public DynamicObject { // TAG: maybe Provider is a better name
   public:
 
     /** Opens consumer. */
@@ -86,6 +90,9 @@ public:
 
     /** Sends event to consumer. */
     virtual void send(const Event& e) = 0;
+
+    /** Flushes consumer. */
+    virtual void flush() = 0;
 
     /** Closes consumer. */
     virtual void close() = 0;
@@ -105,6 +112,9 @@ private:
   
   void run() override;
 public:
+
+  /** Returns Google Analytics consumer. */
+  static Consumer* createGoogleAnalytics(const String& property, bool batch = true);
 
   /** Returns resource event. */
   static Event makeResource(const String& resource, const String& title);

@@ -43,29 +43,43 @@ Analytics::Analytics()
 
 void Analytics::run()
 {
+  bool flush = false;
   while (true) {
-    bool flush = false;
-    if (!event.wait(1000 * 1000)) {
-      flush = true;
+    if (flush) {
+      event.wait(500 * 1000);
+    } else {
+      event.wait();
     }
-    MutualExclusion::Sync _sync(mutex);
-    if (!running) {
-      break;
+    
+    List<Event> queue;
+    {
+      MutualExclusion::Sync _sync(mutex);
+      if (!running) {
+        break;
+      }
+      swapper(queue, this->queue);
     }
     
     if (queue) {
-      const auto e = queue.getFirst();
-      queue.removeFirst();
-      for (auto consumer : consumers) {
-        if (consumer->isEnabled()) {
-          consumer->send(e);
+      for (const auto& e : queue) {
+        for (auto consumer : consumers) {
+          try {
+            consumer->send(e); // can block for some time
+          } catch (...) {
+          }
         }
       }
+      flush = true;
+      continue; // wait before flushing
     }
-
+    
     if (flush) {
+      flush = false;
       for (auto consumer : consumers) {
-        consumer->flush();
+        try {
+          consumer->flush(); // can block for some time
+        } catch (...) {
+        }
       }
     }
   }
@@ -88,11 +102,13 @@ void Analytics::registerConsumer(Consumer* consumer)
 
 bool Analytics::isRunning() const noexcept
 {
+  MutualExclusion::Sync _sync(mutex);
   return running;
 }
 
 void Analytics::start()
 {
+  MutualExclusion::Sync _sync(mutex);
   if (!running) {
     running = true;
     Thread::start();
@@ -101,6 +117,7 @@ void Analytics::start()
 
 void Analytics::stop()
 {
+  MutualExclusion::Sync _sync(mutex);
   if (running) {
     running = false;
     event.signal();
@@ -118,6 +135,9 @@ void Analytics::send(const Event& e)
 
 Analytics::~Analytics()
 {
+  for (auto consumer : consumers) {
+    consumer->close();
+  }
   for (auto consumer : consumers) {
     delete consumer;
   }
